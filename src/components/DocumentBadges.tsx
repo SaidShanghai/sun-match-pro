@@ -162,7 +162,7 @@ const DocumentBadges = ({ userId, companyId, onStatusChange }: DocumentBadgesPro
       <span
         className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${
           cotisationsAJour
-            ? "bg-blue-500/10 text-blue-700 border-blue-500/20"
+            ? "bg-green-500/10 text-green-700 border-green-500/20"
             : "bg-amber-500/10 text-amber-700 border-amber-500/20"
         }`}
       >
