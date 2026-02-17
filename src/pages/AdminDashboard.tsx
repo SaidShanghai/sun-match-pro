@@ -6,10 +6,18 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, CheckCircle2, XCircle, Clock, ShieldCheck, LogOut, Building2, Mail, Phone, MapPin, FileText, FileCheck, CreditCard, Package, Truck } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Clock, ShieldCheck, LogOut, Building2, Mail, Phone, MapPin, FileText, FileCheck, CreditCard, Package, Truck, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+
+interface DocDetail {
+  id: string;
+  doc_type: string;
+  file_path: string;
+  file_name: string;
+  validated: boolean;
+}
 
 interface PartnerRequest {
   id: string;
@@ -28,6 +36,7 @@ interface PartnerRequest {
     service_areas: string[] | null;
   } | null;
   docs: { rc: boolean; modele_j: boolean; cotisations: boolean };
+  docDetails: DocDetail[];
   hasKits: boolean;
   hasTarifs: boolean;
 }
@@ -69,17 +78,17 @@ const AdminDashboard = () => {
       return;
     }
 
-    // Fetch companies, docs, kits, tarifs for each partner
     const enriched: PartnerRequest[] = await Promise.all(
       profiles.map(async (p) => {
         const [companyRes, docsRes, kitsRes, tarifsRes] = await Promise.all([
           supabase.from("companies").select("name, ice, city, phone, email, certifications, service_areas").eq("user_id", p.user_id).maybeSingle(),
-          supabase.from("partner_documents").select("doc_type").eq("user_id", p.user_id),
+          supabase.from("partner_documents").select("id, doc_type, file_path, file_name, validated").eq("user_id", p.user_id),
           supabase.from("kits").select("id", { count: "exact", head: true }).eq("user_id", p.user_id).eq("is_active", true),
           supabase.from("delivery_costs").select("id", { count: "exact", head: true }).eq("user_id", p.user_id),
         ]);
 
-        const docTypes = (docsRes.data || []).map((d: any) => d.doc_type);
+        const docDetails: DocDetail[] = (docsRes.data || []) as DocDetail[];
+        const docTypes = docDetails.map((d) => d.doc_type);
 
         return {
           ...p,
@@ -91,6 +100,7 @@ const AdminDashboard = () => {
             modele_j: docTypes.includes("modele_j"),
             cotisations: docTypes.includes("cotisations"),
           },
+          docDetails,
           hasKits: (kitsRes.count ?? 0) > 0,
           hasTarifs: (tarifsRes.count ?? 0) > 0,
         };
@@ -122,6 +132,44 @@ const AdminDashboard = () => {
     setUpdating(null);
   };
 
+  const handleDownloadDoc = async (filePath: string, fileName: string) => {
+    const { data, error } = await supabase.storage
+      .from("partner-documents")
+      .download(filePath);
+
+    if (error || !data) {
+      toast({ title: "Erreur", description: "Impossible de télécharger le fichier.", variant: "destructive" });
+      return;
+    }
+
+    const url = URL.createObjectURL(data);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleValidateDoc = async (docId: string, validated: boolean) => {
+    const { error } = await supabase
+      .from("partner_documents")
+      .update({ validated })
+      .eq("id", docId);
+
+    if (error) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    toast({ title: validated ? "Document validé" : "Document invalidé" });
+    setPartners((prev) =>
+      prev.map((p) => ({
+        ...p,
+        docDetails: p.docDetails.map((d) => (d.id === docId ? { ...d, validated } : d)),
+      }))
+    );
+  };
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate("/");
@@ -138,7 +186,10 @@ const AdminDashboard = () => {
   if (!isAdmin) return null;
 
   const isFullyComplete = (p: PartnerRequest) =>
-    !!p.company && p.hasKits && p.hasTarifs && p.docs.rc && p.docs.modele_j && p.docs.cotisations;
+    !!p.company && p.hasKits && p.hasTarifs &&
+    p.docDetails.some((d) => d.doc_type === "rc" && d.validated) &&
+    p.docDetails.some((d) => d.doc_type === "modele_j" && d.validated) &&
+    p.docDetails.some((d) => d.doc_type === "cotisations" && d.validated);
 
   const pending = partners.filter((p) => p.status === "pending");
   const credited = partners.filter((p) => p.status === "approved" && isFullyComplete(p));
@@ -213,6 +264,8 @@ const AdminDashboard = () => {
                   updating={updating}
                   onApprove={() => updateStatus(p.id, "approved")}
                   onReject={() => updateStatus(p.id, "rejected")}
+                  onDownloadDoc={handleDownloadDoc}
+                  onValidateDoc={handleValidateDoc}
                 />
               ))}
             </div>
@@ -232,6 +285,8 @@ const AdminDashboard = () => {
                   updating={updating}
                   onApprove={() => updateStatus(p.id, "approved")}
                   onReject={() => updateStatus(p.id, "rejected")}
+                  onDownloadDoc={handleDownloadDoc}
+                  onValidateDoc={handleValidateDoc}
                 />
               ))}
             </div>
@@ -251,6 +306,8 @@ const AdminDashboard = () => {
                   updating={updating}
                   onApprove={() => updateStatus(p.id, "approved")}
                   onReject={() => updateStatus(p.id, "rejected")}
+                  onDownloadDoc={handleDownloadDoc}
+                  onValidateDoc={handleValidateDoc}
                 />
               ))}
             </div>
@@ -270,6 +327,8 @@ const AdminDashboard = () => {
                   updating={updating}
                   onApprove={() => updateStatus(p.id, "approved")}
                   onReject={() => updateStatus(p.id, "rejected")}
+                  onDownloadDoc={handleDownloadDoc}
+                  onValidateDoc={handleValidateDoc}
                 />
               ))}
             </div>
@@ -289,16 +348,26 @@ const AdminDashboard = () => {
   );
 };
 
+const DOC_LABELS: Record<string, { label: string; icon: React.ReactNode }> = {
+  rc: { label: "RC", icon: <FileText className="w-3.5 h-3.5" /> },
+  modele_j: { label: "Modèle J", icon: <FileCheck className="w-3.5 h-3.5" /> },
+  cotisations: { label: "Cotisations", icon: <CreditCard className="w-3.5 h-3.5" /> },
+};
+
 const PartnerCard = ({
   partner,
   updating,
   onApprove,
   onReject,
+  onDownloadDoc,
+  onValidateDoc,
 }: {
   partner: PartnerRequest;
   updating: string | null;
   onApprove: () => void;
   onReject: () => void;
+  onDownloadDoc: (filePath: string, fileName: string) => void;
+  onValidateDoc: (docId: string, validated: boolean) => void;
 }) => {
   const statusBadge = {
     pending: <Badge variant="outline" className="border-amber-500 text-amber-500">En attente</Badge>,
@@ -362,24 +431,79 @@ const PartnerCard = ({
             {/* Validation indicators */}
             {partner.status === "approved" && (
               <div className="mt-3 space-y-2">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Clefs de validation</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">État du profil</p>
                 <div className="flex flex-wrap gap-2">
                   <ValidationBadge done={!!partner.company} label="Entreprise" icon={<Building2 className="w-3 h-3" />} />
                   <ValidationBadge done={partner.hasKits} label="Kits" icon={<Package className="w-3 h-3" />} />
                   <ValidationBadge done={partner.hasTarifs} label="Tarifs" icon={<Truck className="w-3 h-3" />} />
-                  <ValidationBadge done={partner.docs.rc} label="RC" icon={<FileText className="w-3 h-3" />} />
-                  <ValidationBadge done={partner.docs.modele_j} label="Modèle J" icon={<FileCheck className="w-3 h-3" />} />
-                  <ValidationBadge done={partner.docs.cotisations} label="Cotisations" icon={<CreditCard className="w-3 h-3" />} />
                 </div>
-                {partner.setup_complete && partner.docs.rc && partner.docs.modele_j && partner.docs.cotisations ? (
-                  <p className="text-xs text-green-600 font-medium flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3" /> Visible dans les recherches clients
-                  </p>
-                ) : (
-                  <p className="text-xs text-amber-600 font-medium flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> Profil incomplet — non visible
-                  </p>
-                )}
+
+                {/* Documents with download/validate */}
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-3">Documents justificatifs</p>
+                <div className="space-y-1.5">
+                  {(["rc", "modele_j", "cotisations"] as const).map((docType) => {
+                    const doc = partner.docDetails.find((d) => d.doc_type === docType);
+                    const config = DOC_LABELS[docType];
+                    return (
+                      <div key={docType} className="flex items-center gap-2">
+                        <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full border ${
+                          doc?.validated
+                            ? "bg-green-500/10 text-green-700 border-green-500/20"
+                            : doc
+                            ? "bg-blue-500/10 text-blue-700 border-blue-500/20"
+                            : "bg-red-500/10 text-red-600 border-red-500/20"
+                        }`}>
+                          {config.icon}
+                          {config.label}
+                          {doc?.validated ? (
+                            <CheckCircle2 className="w-2.5 h-2.5" />
+                          ) : doc ? (
+                            <Clock className="w-2.5 h-2.5" />
+                          ) : (
+                            <XCircle className="w-2.5 h-2.5" />
+                          )}
+                        </span>
+                        {doc && (
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 px-2 text-[10px]"
+                              onClick={() => onDownloadDoc(doc.file_path, doc.file_name)}
+                            >
+                              <Download className="w-3 h-3 mr-1" />
+                              Télécharger
+                            </Button>
+                            {!doc.validated ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-6 px-2 text-[10px] border-green-500 text-green-600 hover:bg-green-50"
+                                onClick={() => onValidateDoc(doc.id, true)}
+                              >
+                                <CheckCircle2 className="w-3 h-3 mr-1" />
+                                Valider
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-6 px-2 text-[10px] border-amber-500 text-amber-600 hover:bg-amber-50"
+                                onClick={() => onValidateDoc(doc.id, false)}
+                              >
+                                <XCircle className="w-3 h-3 mr-1" />
+                                Invalider
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                        {!doc && (
+                          <span className="text-[10px] text-muted-foreground italic">Non envoyé</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
