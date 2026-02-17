@@ -351,7 +351,7 @@ const Index = () => {
             viewport={{ once: true }}
             className="flex justify-center"
           >
-            <div className="w-full max-w-[400px] h-[700px] rounded-3xl overflow-hidden shadow-2xl border border-border">
+            <div className="w-full max-w-[380px] h-[720px] rounded-[2.5rem] overflow-hidden shadow-2xl bg-muted/30">
               <iframe
                 src="https://id-preview--824f9b79-4bdc-44ff-acd3-c89e0db92f66.lovable.app"
                 className="w-full h-full border-0"
