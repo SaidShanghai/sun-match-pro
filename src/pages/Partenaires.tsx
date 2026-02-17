@@ -433,13 +433,10 @@ const Partenaires = () => {
             <div className="grid md:grid-cols-3 gap-6">
               <Card
                 onClick={() => handleCardClick("entreprise")}
-                className="border-2 border-primary/30 hover:border-primary transition-colors cursor-pointer group relative overflow-hidden"
+                className={`border-2 transition-colors cursor-pointer group relative overflow-hidden ${entrepriseRegistered ? "border-green-500/30 hover:border-green-500" : "border-primary/30 hover:border-primary"}`}
               >
                 {entrepriseRegistered && (
-                  <div className="absolute top-3 right-3 flex items-center gap-1.5">
-                    <span className="bg-amber-500/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> ATTENTE CERTIFICATION
-                    </span>
+                  <div className="absolute top-3 right-3">
                     <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                       <CheckCircle2 className="w-3 h-3" /> COMPLÉTÉ
                     </span>
@@ -451,8 +448,8 @@ const Partenaires = () => {
                   </div>
                 )}
                 <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                    <Building2 className="w-7 h-7 text-primary" />
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-colors ${entrepriseRegistered ? "bg-green-500/10" : "bg-primary/10 group-hover:bg-primary/20"}`}>
+                    <Building2 className={`w-7 h-7 ${entrepriseRegistered ? "text-green-600" : "text-primary"}`} />
                   </div>
                   <h3 className="font-semibold text-lg mb-1">Mon Entreprise</h3>
                   <p className="text-muted-foreground text-sm">Profil, certifications et zones d'intervention</p>
@@ -461,16 +458,23 @@ const Partenaires = () => {
 
               <Card
                 onClick={() => handleCardClick("kits")}
-                className={`border-2 transition-colors cursor-pointer group relative overflow-hidden ${entrepriseRegistered ? "border-dashed hover:border-primary/50" : "border-muted opacity-60"}`}
+                className={`border-2 transition-colors cursor-pointer group relative overflow-hidden ${!entrepriseRegistered ? "border-muted opacity-60" : hasKits ? "border-green-500/30 hover:border-green-500" : "border-dashed hover:border-primary/50"}`}
               >
                 {!entrepriseRegistered && (
                   <div className="absolute inset-0 bg-background/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
                     <Lock className="w-8 h-8 text-muted-foreground/50" />
                   </div>
                 )}
+                {hasKits && (
+                  <div className="absolute top-3 right-3">
+                    <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> COMPLÉTÉ
+                    </span>
+                  </div>
+                )}
                 <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                    <Package className="w-7 h-7 text-primary" />
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 ${hasKits ? "bg-green-500/10" : "bg-primary/10"}`}>
+                    <Package className={`w-7 h-7 ${hasKits ? "text-green-600" : "text-primary"}`} />
                   </div>
                   <h3 className="font-semibold text-lg mb-1">Kits Solaires</h3>
                   <p className="text-muted-foreground text-sm">Ajoutez et gérez vos kits toiture & au sol</p>
@@ -479,19 +483,26 @@ const Partenaires = () => {
 
               <Card
                 onClick={() => handleCardClick("tarifs")}
-                className={`border-2 transition-colors cursor-pointer group relative overflow-hidden ${entrepriseRegistered ? "border-dashed hover:border-primary/50" : "border-muted opacity-60"}`}
+                className={`border-2 transition-colors cursor-pointer group relative overflow-hidden ${!entrepriseRegistered ? "border-muted opacity-60" : hasTarifs ? "border-green-500/30 hover:border-green-500" : "border-dashed hover:border-primary/50"}`}
               >
                 {!entrepriseRegistered && (
                   <div className="absolute inset-0 bg-background/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
                     <Lock className="w-8 h-8 text-muted-foreground/50" />
                   </div>
                 )}
+                {hasTarifs && (
+                  <div className="absolute top-3 right-3">
+                    <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> COMPLÉTÉ
+                    </span>
+                  </div>
+                )}
                 <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                    <Zap className="w-7 h-7 text-primary" />
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 ${hasTarifs ? "bg-green-500/10" : "bg-primary/10"}`}>
+                    <Zap className={`w-7 h-7 ${hasTarifs ? "text-green-600" : "text-primary"}`} />
                   </div>
                   <h3 className="font-semibold text-lg mb-1">Tarification</h3>
-                  <p className="text-muted-foreground text-sm">Définissez vos prix et promotions</p>
+                  <p className="text-muted-foreground text-sm">Définissez vos frais de livraison par ville</p>
                 </CardContent>
               </Card>
             </div>
