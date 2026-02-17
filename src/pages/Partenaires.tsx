@@ -13,11 +13,22 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-const moroccoCities = [
-  "Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès",
-  "Oujda", "Kénitra", "Tétouan", "Safi", "El Jadida", "Nador", "Béni Mellal",
-  "Mohammedia", "Laâyoune", "Khouribga", "Settat", "Berrechid",
-];
+const moroccoRegions: Record<string, string[]> = {
+  "Casablanca-Settat": ["Casablanca", "Mohammedia", "Settat", "Berrechid", "El Jadida", "Benslimane", "Médiouna"],
+  "Rabat-Salé-Kénitra": ["Rabat", "Salé", "Kénitra", "Témara", "Skhirate", "Khémisset"],
+  "Marrakech-Safi": ["Marrakech", "Safi", "Essaouira", "El Kelâa des Sraghna", "Youssoufia", "Chichaoua"],
+  "Fès-Meknès": ["Fès", "Meknès", "Taza", "Ifrane", "Sefrou", "Moulay Yacoub"],
+  "Tanger-Tétouan-Al Hoceïma": ["Tanger", "Tétouan", "Al Hoceïma", "Larache", "Chefchaouen", "Ouezzane"],
+  "Souss-Massa": ["Agadir", "Inezgane", "Tiznit", "Taroudant", "Chtouka Aït Baha", "Tata"],
+  "Oriental": ["Oujda", "Nador", "Berkane", "Taourirt", "Jerada", "Driouch"],
+  "Béni Mellal-Khénifra": ["Béni Mellal", "Khouribga", "Khénifra", "Fquih Ben Salah", "Azilal"],
+  "Drâa-Tafilalet": ["Errachidia", "Ouarzazate", "Tinghir", "Zagora", "Midelt"],
+  "Guelmim-Oued Noun": ["Guelmim", "Tan-Tan", "Sidi Ifni", "Assa-Zag"],
+  "Laâyoune-Sakia El Hamra": ["Laâyoune", "Boujdour", "Tarfaya", "Es-Semara"],
+  "Dakhla-Oued Ed-Dahab": ["Dakhla", "Aousserd"],
+};
+
+const allCities = Object.values(moroccoRegions).flat();
 
 const Partenaires = () => {
   const { user, loading: authLoading, signOut } = useAuth();
@@ -37,7 +48,8 @@ const Partenaires = () => {
   const [ice, setIce] = useState("");
   const [certifications, setCertifications] = useState("");
   const [city, setCity] = useState("Casablanca");
-  const [serviceAreas, setServiceAreas] = useState("");
+  const [serviceAreas, setServiceAreas] = useState<string[]>([]);
+  const [selectedRegion, setSelectedRegion] = useState("");
   const [phone, setPhone] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
 
@@ -84,7 +96,7 @@ const Partenaires = () => {
           setIce(data.ice);
           setCertifications((data.certifications || []).join(", "));
           setCity(data.city);
-          setServiceAreas((data.service_areas || []).join(", "));
+          setServiceAreas(data.service_areas || []);
           setPhone(data.phone);
           setCompanyEmail(data.email);
         }
@@ -126,7 +138,7 @@ const Partenaires = () => {
         ice: ice.trim(),
         certifications: certifications.split(",").map((c) => c.trim()).filter(Boolean),
         city,
-        service_areas: serviceAreas.split(",").map((s) => s.trim()).filter(Boolean),
+        service_areas: serviceAreas,
         phone: phone.trim(),
         email: companyEmail.trim(),
       };
@@ -259,14 +271,60 @@ const Partenaires = () => {
                         className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
                         required
                       >
-                        {moroccoCities.map((c) => (
+                        {allCities.map((c) => (
                           <option key={c} value={c}>{c}</option>
                         ))}
                       </select>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="serviceAreas">Zones d'intervention (séparées par des virgules)</Label>
-                      <Input id="serviceAreas" value={serviceAreas} onChange={(e) => setServiceAreas(e.target.value)} placeholder="Casablanca, Rabat, Kénitra" />
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Zones d'intervention</Label>
+                      <div className="flex gap-2">
+                        <select
+                          value={selectedRegion}
+                          onChange={(e) => setSelectedRegion(e.target.value)}
+                          className="flex-1 h-10 rounded-md border border-input bg-background px-3 text-sm"
+                        >
+                          <option value="">-- Choisir une région --</option>
+                          {Object.keys(moroccoRegions).map((r) => (
+                            <option key={r} value={r}>{r}</option>
+                          ))}
+                        </select>
+                        <select
+                          disabled={!selectedRegion}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            if (val && !serviceAreas.includes(val)) {
+                              setServiceAreas([...serviceAreas, val]);
+                            }
+                            e.target.value = "";
+                          }}
+                          className="flex-1 h-10 rounded-md border border-input bg-background px-3 text-sm disabled:opacity-50"
+                        >
+                          <option value="">-- Choisir une ville --</option>
+                          {selectedRegion && moroccoRegions[selectedRegion]?.map((c) => (
+                            <option key={c} value={c}>{c}</option>
+                          ))}
+                        </select>
+                      </div>
+                      {serviceAreas.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {serviceAreas.map((area) => (
+                            <span
+                              key={area}
+                              className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs font-medium px-2.5 py-1 rounded-full"
+                            >
+                              {area}
+                              <button
+                                type="button"
+                                onClick={() => setServiceAreas(serviceAreas.filter((a) => a !== area))}
+                                className="hover:text-destructive ml-0.5"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Téléphone *</Label>
