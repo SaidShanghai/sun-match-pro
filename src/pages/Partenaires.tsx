@@ -49,6 +49,7 @@ const Partenaires = () => {
   const [hasKits, setHasKits] = useState(false);
   const [hasTarifs, setHasTarifs] = useState(false);
   const [setupComplete, setSetupComplete] = useState(false);
+  const [docsComplete, setDocsComplete] = useState(false);
 
   // Form state
   const [companyName, setCompanyName] = useState("");
@@ -276,14 +277,23 @@ const Partenaires = () => {
 
           {setupComplete && (
             <div className="space-y-3">
-              <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-center">
-                <p className="text-sm font-medium text-green-700 flex items-center justify-center gap-2">
-                  <CheckCircle2 className="w-4 h-4" />
-                  Votre profil est complet ! Vous apparaissez dans les résultats de recherche des clients NOORIA.
-                </p>
-              </div>
+              {docsComplete ? (
+                <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-center">
+                  <p className="text-sm font-medium text-green-700 flex items-center justify-center gap-2">
+                    <CheckCircle2 className="w-4 h-4" />
+                    Votre profil est complet ! Vous apparaissez dans les résultats de recherche des clients NOORIA.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-center">
+                  <p className="text-sm font-medium text-amber-700 flex items-center justify-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    Documents manquants — téléchargez tous vos justificatifs pour apparaître dans les recherches clients.
+                  </p>
+                </div>
+              )}
               {user && companyId && (
-                <DocumentBadges userId={user.id} companyId={companyId} />
+                <DocumentBadges userId={user.id} companyId={companyId} onStatusChange={setDocsComplete} />
               )}
             </div>
           )}

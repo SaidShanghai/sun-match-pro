@@ -12,6 +12,7 @@ interface DocStatus {
 interface DocumentBadgesProps {
   userId: string;
   companyId: string;
+  onStatusChange?: (allDone: boolean) => void;
 }
 
 const DOC_CONFIG = [
@@ -20,7 +21,7 @@ const DOC_CONFIG = [
   { key: "cotisations" as const, label: "Cotisations", icon: CreditCard, uploadLabel: "Cotisations non fournies", doneLabel: "Cotisations à jour" },
 ];
 
-const DocumentBadges = ({ userId, companyId }: DocumentBadgesProps) => {
+const DocumentBadges = ({ userId, companyId, onStatusChange }: DocumentBadgesProps) => {
   const { toast } = useToast();
   const [docs, setDocs] = useState<DocStatus>({ rc: false, modele_j: false, cotisations: false });
   const [uploading, setUploading] = useState<string | null>(null);
@@ -41,6 +42,7 @@ const DocumentBadges = ({ userId, companyId }: DocumentBadgesProps) => {
           }
         });
         setDocs(status);
+        onStatusChange?.(status.rc && status.modele_j && status.cotisations);
       }
     };
     fetchDocs();
@@ -75,7 +77,9 @@ const DocumentBadges = ({ userId, companyId }: DocumentBadgesProps) => {
 
       if (dbError) throw dbError;
 
-      setDocs((prev) => ({ ...prev, [docType]: true }));
+      const newDocs = { ...docs, [docType]: true };
+      setDocs(newDocs);
+      onStatusChange?.(newDocs.rc && newDocs.modele_j && newDocs.cotisations);
       toast({ title: "Document téléchargé", description: file.name });
     } catch (error: any) {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
