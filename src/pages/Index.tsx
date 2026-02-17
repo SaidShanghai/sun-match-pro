@@ -91,7 +91,7 @@ const Index = () => {
   const [ville, setVille] = useState("Casablanca");
   const [villeOpen, setVilleOpen] = useState(false);
   const [villeSearch, setVilleSearch] = useState("");
-  const [roofAccess, setRoofAccess] = useState<"oui" | "non" | null>(null);
+  const [panelAccess, setPanelAccess] = useState<"toit" | "sol" | "toit_sol" | null>(null);
   const [selectedSurface, setSelectedSurface] = useState<string | null>(null);
   const [selectedUsages, setSelectedUsages] = useState<string[]>([]);
   const [analyseProgress, setAnalyseProgress] = useState(0);
@@ -448,22 +448,23 @@ const Index = () => {
                           <h4 className="text-sm font-bold">Votre site</h4>
                         </div>
 
-                        {/* Accès au toit */}
+                        {/* Accès Panneaux */}
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Accès au toit</label>
+                          <label className="text-[10px] font-semibold text-foreground">Accès Panneaux</label>
                           <div className="flex gap-2">
-                            <button
-                              onClick={() => setRoofAccess("oui")}
-                              className={`flex-1 py-2 rounded-full text-[10px] font-medium border transition-colors ${roofAccess === "oui" ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
-                            >
-                              Oui
-                            </button>
-                            <button
-                              onClick={() => setRoofAccess("non")}
-                              className={`flex-1 py-2 rounded-full text-[10px] font-medium border transition-colors ${roofAccess === "non" ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
-                            >
-                              Non
-                            </button>
+                            {([
+                              { value: "toit", label: "Toit" },
+                              { value: "sol", label: "Sol" },
+                              { value: "toit_sol", label: "Toit et Sol" },
+                            ] as const).map((opt) => (
+                              <button
+                                key={opt.value}
+                                onClick={() => setPanelAccess(opt.value)}
+                                className={`flex-1 py-2 rounded-full text-[10px] font-medium border transition-colors ${panelAccess === opt.value ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
+                              >
+                                {opt.label}
+                              </button>
+                            ))}
                           </div>
                         </div>
 
