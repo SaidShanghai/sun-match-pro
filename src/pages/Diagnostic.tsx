@@ -19,7 +19,7 @@ const StopwatchIcon = () => {
   const angle = (seconds / 180) * 360;
 
   return (
-    <div className="relative w-[280px] h-[280px] mx-auto">
+    <div className="relative w-[180px] h-[180px] mx-auto">
       <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-2xl">
         <rect x="92" y="2" width="16" height="18" rx="4" className="fill-muted-foreground/60" />
         <circle cx="100" cy="22" r="6" className="fill-muted-foreground/40" />
