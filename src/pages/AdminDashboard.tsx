@@ -52,7 +52,7 @@ const AdminDashboard = () => {
     setLoadingData(true);
     const { data: profiles, error } = await supabase
       .from("partner_profiles")
-      .select("id, user_id, status, created_at")
+      .select("id, user_id, status, created_at, email")
       .order("created_at", { ascending: false });
 
     if (error || !profiles) {
@@ -69,9 +69,9 @@ const AdminDashboard = () => {
           .eq("user_id", p.user_id)
           .maybeSingle();
 
-        // Get user email from auth (via edge function or stored)
         return {
           ...p,
+          user_email: (p as any).email,
           company,
         };
       })
@@ -267,6 +267,13 @@ const PartnerCard = ({
               )}
               {statusBadge[partner.status as keyof typeof statusBadge]}
             </div>
+
+            {partner.user_email && (
+              <p className="text-sm flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-muted-foreground" />
+                {partner.user_email}
+              </p>
+            )}
 
             <p className="text-xs text-muted-foreground">
               Inscrit le {new Date(partner.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
