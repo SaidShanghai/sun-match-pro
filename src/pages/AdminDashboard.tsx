@@ -137,8 +137,12 @@ const AdminDashboard = () => {
 
   if (!isAdmin) return null;
 
+  const isFullyComplete = (p: PartnerRequest) =>
+    !!p.company && p.hasKits && p.hasTarifs && p.docs.rc && p.docs.modele_j && p.docs.cotisations;
+
   const pending = partners.filter((p) => p.status === "pending");
-  const approved = partners.filter((p) => p.status === "approved");
+  const credited = partners.filter((p) => p.status === "approved" && isFullyComplete(p));
+  const approved = partners.filter((p) => p.status === "approved" && !isFullyComplete(p));
   const rejected = partners.filter((p) => p.status === "rejected");
 
   return (
@@ -168,7 +172,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-4 gap-4">
             <Card>
               <CardContent className="py-4 text-center">
                 <div className="text-3xl font-bold text-amber-500">{pending.length}</div>
@@ -179,6 +183,12 @@ const AdminDashboard = () => {
               <CardContent className="py-4 text-center">
                 <div className="text-3xl font-bold text-green-500">{approved.length}</div>
                 <p className="text-sm text-muted-foreground">Approuvés</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="py-4 text-center">
+                <div className="text-3xl font-bold text-blue-500">{credited.length}</div>
+                <p className="text-sm text-muted-foreground">Crédités</p>
               </CardContent>
             </Card>
             <Card>
@@ -208,7 +218,7 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          {/* Approved */}
+          {/* Approved (incomplete) */}
           {approved.length > 0 && (
             <div className="space-y-4">
               <h2 className="text-xl font-semibold flex items-center gap-2">
@@ -216,6 +226,25 @@ const AdminDashboard = () => {
                 Partenaires approuvés ({approved.length})
               </h2>
               {approved.map((p) => (
+                <PartnerCard
+                  key={p.id}
+                  partner={p}
+                  updating={updating}
+                  onApprove={() => updateStatus(p.id, "approved")}
+                  onReject={() => updateStatus(p.id, "rejected")}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Credited (fully complete) */}
+          {credited.length > 0 && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-blue-500" />
+                Partenaires crédités ({credited.length})
+              </h2>
+              {credited.map((p) => (
                 <PartnerCard
                   key={p.id}
                   partner={p}
