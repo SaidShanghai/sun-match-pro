@@ -92,6 +92,7 @@ const Index = () => {
   const [villeSearch, setVilleSearch] = useState("");
   const [roofAccess, setRoofAccess] = useState<"oui" | "non" | null>(null);
   const [selectedSurface, setSelectedSurface] = useState<string | null>(null);
+  const [selectedUsages, setSelectedUsages] = useState<string[]>([]);
   const villeRef = useRef<HTMLDivElement>(null);
 
   const villes = ["Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", "Oujda", "Kénitra", "Tétouan", "Safi", "El Jadida", "Nador", "Béni Mellal", "Mohammedia"];
@@ -506,12 +507,19 @@ const Index = () => {
                               { icon: "💨", label: "Compresseur air" },
                               { icon: "💡", label: "Éclairage indus." },
                               { icon: "⚙️", label: "Machines-outils" },
-                            ].map((u) => (
-                              <button key={u.label} className="flex flex-col items-center gap-0.5 p-1.5 rounded-xl border border-border hover:border-primary/40 transition-colors">
-                                <span className="text-xs">{u.icon}</span>
-                                <span className="text-[7px] text-muted-foreground leading-tight text-center">{u.label}</span>
-                              </button>
-                            ))}
+                            ].map((u) => {
+                              const isSelected = selectedUsages.includes(u.label);
+                              return (
+                                <button
+                                  key={u.label}
+                                  onClick={() => setSelectedUsages(prev => isSelected ? prev.filter(x => x !== u.label) : [...prev, u.label])}
+                                  className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl border transition-colors ${isSelected ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}
+                                >
+                                  <span className="text-xs">{u.icon}</span>
+                                  <span className={`text-[7px] leading-tight text-center ${isSelected ? "text-primary font-medium" : "text-muted-foreground"}`}>{u.label}</span>
+                                </button>
+                              );
+                            })}
                           </div>
                         </div>
 
