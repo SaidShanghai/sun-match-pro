@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -51,7 +51,24 @@ const Index = () => {
   const [conso, setConso] = useState("");
   const [facture, setFacture] = useState("");
   const [ville, setVille] = useState("Casablanca");
+  const [villeOpen, setVilleOpen] = useState(false);
+  const [villeSearch, setVilleSearch] = useState("");
+  const villeRef = useRef<HTMLDivElement>(null);
 
+  const villes = ["Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", "Oujda", "Kénitra", "Tétouan", "Safi", "El Jadida", "Nador", "Béni Mellal", "Mohammedia"];
+  const filteredVilles = villes.filter(v => v.toLowerCase().includes(villeSearch.toLowerCase()));
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (villeRef.current && !villeRef.current.contains(e.target as Node)) {
+        setVilleOpen(false);
+        setVilleSearch("");
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -336,31 +353,47 @@ const Index = () => {
                           </div>
                           <div className="space-y-1">
                             <label className="text-[10px] font-semibold text-foreground">Ville</label>
-                            <div className="relative">
-                              <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl cursor-pointer"
-                                onClick={() => {
-                                  const el = document.getElementById('ville-dropdown');
-                                  if (el) el.classList.toggle('hidden');
-                                }}>
+                            <div className="relative" ref={villeRef}>
+                              <div 
+                                className={`flex items-center gap-2 px-3 py-2 border rounded-xl cursor-pointer transition-colors ${villeOpen ? "border-primary ring-1 ring-primary/30" : "border-border hover:border-primary/40"}`}
+                                onClick={() => { setVilleOpen(!villeOpen); setVilleSearch(""); }}
+                              >
                                 <MapPinned className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                                <span className="text-[10px] text-foreground flex-1">{ville}</span>
-                                <ChevronDown className="w-3 h-3 text-muted-foreground shrink-0" />
+                                <span className={`text-[10px] flex-1 ${ville ? "text-foreground" : "text-muted-foreground"}`}>{ville || "Sélectionner"}</span>
+                                <ChevronDown className={`w-3 h-3 text-muted-foreground shrink-0 transition-transform ${villeOpen ? "rotate-180" : ""}`} />
                               </div>
-                              <div id="ville-dropdown" className="hidden absolute z-50 top-full left-0 right-0 mt-1 bg-background border border-border rounded-xl shadow-lg max-h-32 overflow-y-auto">
-                                {["Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", "Oujda", "Kénitra", "Tétouan", "Safi", "El Jadida", "Nador", "Béni Mellal", "Mohammedia"].map((v) => (
-                                  <div
-                                    key={v}
-                                    className="px-3 py-1.5 text-[10px] text-foreground hover:bg-accent cursor-pointer first:rounded-t-xl last:rounded-b-xl"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setVille(v);
-                                      document.getElementById('ville-dropdown')?.classList.add('hidden');
-                                    }}
-                                  >
-                                    {v}
+                              {villeOpen && (
+                                <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border border-border rounded-xl shadow-xl overflow-hidden">
+                                  <div className="p-1.5 border-b border-border">
+                                    <input
+                                      type="text"
+                                      value={villeSearch}
+                                      onChange={(e) => setVilleSearch(e.target.value)}
+                                      placeholder="Rechercher..."
+                                      className="w-full text-[10px] bg-transparent outline-none px-2 py-1 text-foreground placeholder:text-muted-foreground"
+                                      autoFocus
+                                    />
                                   </div>
-                                ))}
-                              </div>
+                                  <div className="max-h-28 overflow-y-auto">
+                                    {filteredVilles.length > 0 ? filteredVilles.map((v) => (
+                                      <div
+                                        key={v}
+                                        className={`px-3 py-1.5 text-[10px] cursor-pointer transition-colors ${ville === v ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-accent"}`}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setVille(v);
+                                          setVilleOpen(false);
+                                          setVilleSearch("");
+                                        }}
+                                      >
+                                        {v}
+                                      </div>
+                                    )) : (
+                                      <div className="px-3 py-2 text-[10px] text-muted-foreground text-center">Aucune ville trouvée</div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
