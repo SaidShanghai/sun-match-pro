@@ -245,69 +245,70 @@ const KitsSolaires = ({ userId, companyId, onBack }: KitsSolairesProps) => {
         </div>
       )}
 
-      {/* Add/Edit Dialog */}
-      <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+      {/* Add/Edit Form inline */}
+      {showForm && (
+        <Card>
+          <CardContent className="pt-6">
+            <h3 className="text-lg font-bold flex items-center gap-2 mb-4">
               <Package className="w-5 h-5 text-primary" />
               {editingKit ? "Modifier le kit" : "Ajouter un kit"}
-            </DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSave} className="space-y-4">
-            <div className="space-y-2">
-              <Label>Nom du kit *</Label>
-              <Input value={form.name} onChange={(e) => updateField("name", e.target.value)} placeholder="Kit Toiture Premium 6kWc" required />
-            </div>
-            <div className="space-y-2">
-              <Label>Puissance (kWc) *</Label>
-              <Input type="number" step="0.01" min="0" value={form.power_kwc} onChange={(e) => updateField("power_kwc", e.target.value)} placeholder="6.00" required />
-            </div>
-            <div className="space-y-2">
-              <Label>Nombre de panneaux *</Label>
-              <Input type="number" min="1" value={form.panel_count} onChange={(e) => updateField("panel_count", e.target.value)} placeholder="12" required />
-            </div>
-            <div className="space-y-2">
-              <Label>Marque panneaux *</Label>
-              <Input value={form.panel_brand} onChange={(e) => updateField("panel_brand", e.target.value)} placeholder="JA Solar, Longi..." required />
-            </div>
-            <div className="space-y-2">
-              <Label>Inverteur *</Label>
-              <Input value={form.inverter} onChange={(e) => updateField("inverter", e.target.value)} placeholder="Huawei, SMA..." required />
-            </div>
-            <div className="space-y-2">
-              <Label>Structure</Label>
-              <Input value={form.structure} onChange={(e) => updateField("structure", e.target.value)} placeholder="Aluminium, K2..." />
-            </div>
-            <div className="space-y-2">
-              <Label>Batteries</Label>
-              <Input value={form.batteries} onChange={(e) => updateField("batteries", e.target.value)} placeholder="BSLBATT 5kWh..." />
-            </div>
-            <div className="space-y-2">
-              <Label>Production estimée (kWh/an)</Label>
-              <Input type="number" min="0" value={form.estimated_production_kwh} onChange={(e) => updateField("estimated_production_kwh", e.target.value)} placeholder="9000" />
-            </div>
-            <div className="space-y-2">
-              <Label>Garantie (années) *</Label>
-              <Input type="number" min="1" value={form.warranty_years} onChange={(e) => updateField("warranty_years", e.target.value)} placeholder="10" required />
-            </div>
-            <div className="space-y-2">
-              <Label>Prix TTC (MAD) *</Label>
-              <Input type="number" step="0.01" min="0" value={form.price_ttc} onChange={(e) => updateField("price_ttc", e.target.value)} placeholder="65000.00" required />
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
-                Annuler
-              </Button>
-              <Button type="submit" disabled={saving || !formValid}>
-                {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-                {editingKit ? "Mettre à jour" : "Ajouter"}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+            </h3>
+            <form onSubmit={handleSave} className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Nom du kit *</Label>
+                  <Input value={form.name} onChange={(e) => updateField("name", e.target.value)} placeholder="Kit Toiture Premium 6kWc" required />
+                </div>
+                <div className="space-y-2">
+                  <Label>Puissance (kWc) *</Label>
+                  <Input type="number" step="0.01" min="0" value={form.power_kwc} onChange={(e) => updateField("power_kwc", e.target.value)} placeholder="6.00" required />
+                </div>
+                <div className="space-y-2">
+                  <Label>Nombre de panneaux *</Label>
+                  <Input type="number" min="1" value={form.panel_count} onChange={(e) => updateField("panel_count", e.target.value)} placeholder="12" required />
+                </div>
+                <div className="space-y-2">
+                  <Label>Marque panneaux *</Label>
+                  <Input value={form.panel_brand} onChange={(e) => updateField("panel_brand", e.target.value)} placeholder="JA Solar, Longi..." required />
+                </div>
+                <div className="space-y-2">
+                  <Label>Inverteur *</Label>
+                  <Input value={form.inverter} onChange={(e) => updateField("inverter", e.target.value)} placeholder="Huawei, SMA..." required />
+                </div>
+                <div className="space-y-2">
+                  <Label>Structure</Label>
+                  <Input value={form.structure} onChange={(e) => updateField("structure", e.target.value)} placeholder="Aluminium, K2..." />
+                </div>
+                <div className="space-y-2">
+                  <Label>Batteries</Label>
+                  <Input value={form.batteries} onChange={(e) => updateField("batteries", e.target.value)} placeholder="BSLBATT 5kWh..." />
+                </div>
+                <div className="space-y-2">
+                  <Label>Production estimée (kWh/an)</Label>
+                  <Input type="number" min="0" value={form.estimated_production_kwh} onChange={(e) => updateField("estimated_production_kwh", e.target.value)} placeholder="9000" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Garantie (années) *</Label>
+                  <Input type="number" min="1" value={form.warranty_years} onChange={(e) => updateField("warranty_years", e.target.value)} placeholder="10" required />
+                </div>
+                <div className="space-y-2">
+                  <Label>Prix TTC (MAD) *</Label>
+                  <Input type="number" step="0.01" min="0" value={form.price_ttc} onChange={(e) => updateField("price_ttc", e.target.value)} placeholder="65000.00" required />
+                </div>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                  Annuler
+                </Button>
+                <Button type="submit" disabled={saving || !formValid}>
+                  {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+                  {editingKit ? "Mettre à jour" : "Ajouter"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Delete confirm dialog */}
       <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
