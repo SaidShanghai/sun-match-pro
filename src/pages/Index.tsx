@@ -16,6 +16,10 @@ import {
   Battery,
   MapPinned,
   ChevronDown,
+  Home,
+  Building2,
+  Store,
+  Warehouse,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -232,28 +236,22 @@ const Index = () => {
                         className="px-5 py-8 flex flex-col items-center text-center gap-6"
                       >
                         <h3 className="text-sm font-bold">Vous êtes…</h3>
-                        <div className="w-full flex flex-col gap-3">
-                          <button
-                            onClick={() => setPhoneScreen("form")}
-                            className="w-full flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-border bg-card hover:border-primary hover:bg-primary/5 transition-all active:scale-[0.97]"
-                          >
-                            <span className="text-3xl">🏠</span>
-                            <span className="text-sm font-semibold">Particulier</span>
-                          </button>
-                          <button
-                            onClick={() => setPhoneScreen("form")}
-                            className="w-full flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-border bg-card hover:border-primary hover:bg-primary/5 transition-all active:scale-[0.97]"
-                          >
-                            <span className="text-3xl">🏢</span>
-                            <span className="text-sm font-semibold">Entreprise</span>
-                          </button>
-                          <button
-                            onClick={() => setPhoneScreen("form")}
-                            className="w-full flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-border bg-card hover:border-primary hover:bg-primary/5 transition-all active:scale-[0.97]"
-                          >
-                            <span className="text-3xl">🌾</span>
-                            <span className="text-sm font-semibold">Ferme</span>
-                          </button>
+                        <div className="w-full grid grid-cols-2 gap-3">
+                          {[
+                            { icon: Home, label: "Maison" },
+                            { icon: Building2, label: "Appartement" },
+                            { icon: Store, label: "Entreprise" },
+                            { icon: Warehouse, label: "Ferme" },
+                          ].map(({ icon: Icon, label }) => (
+                            <button
+                              key={label}
+                              onClick={() => setPhoneScreen("form")}
+                              className="flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-border bg-card hover:border-primary hover:bg-primary/5 transition-all active:scale-[0.97]"
+                            >
+                              <Icon className="w-6 h-6 text-muted-foreground" />
+                              <span className="text-xs font-semibold">{label}</span>
+                            </button>
+                          ))}
                         </div>
                       </motion.div>
                     ) : (
