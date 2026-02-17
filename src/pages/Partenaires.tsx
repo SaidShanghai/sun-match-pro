@@ -384,8 +384,13 @@ const Partenaires = () => {
                 className="border-2 border-primary/30 hover:border-primary transition-colors cursor-pointer group relative overflow-hidden"
               >
                 {entrepriseRegistered && (
-                  <div className="absolute top-3 right-3 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3" /> COMPLÉTÉ
+                  <div className="absolute top-3 right-3 flex items-center gap-1.5">
+                    <span className="bg-amber-500/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <Clock className="w-3 h-3" /> ATTENTE CERTIFICATION
+                    </span>
+                    <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> COMPLÉTÉ
+                    </span>
                   </div>
                 )}
                 {!entrepriseRegistered && (
