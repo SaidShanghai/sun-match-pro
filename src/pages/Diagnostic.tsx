@@ -96,7 +96,7 @@ const Diagnostic = () => {
         <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-2xl" />
 
         <div className="max-w-[1600px] w-full mx-auto px-6 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 items-center overflow-visible">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -108,7 +108,7 @@ const Diagnostic = () => {
                 <span className="text-sm font-medium">Gratuit • Sans engagement • Résultat instantané</span>
               </div>
 
-              <h1 className="font-black leading-[1.1] overflow-visible">
+              <h1 className="font-black leading-[1.1] overflow-visible whitespace-nowrap">
                 <span className="block" style={{ fontSize: "60px" }}>Vous êtes à</span>
                 <span className="block text-gradient" style={{ fontSize: "112px" }}>3 minutes</span>
                 <span className="block" style={{ fontSize: "60px" }}>de grosses</span>
