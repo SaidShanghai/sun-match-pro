@@ -367,7 +367,7 @@ const Partenaires = () => {
                     <Button
                       type="submit"
                       disabled={saving || !formValid || (entrepriseRegistered && !hasChanges)}
-                      className={entrepriseRegistered && hasChanges ? "bg-[hsl(24_95%_53%)] hover:bg-[hsl(24_95%_45%)] text-white" : ""}
+                      className={entrepriseRegistered ? "bg-[hsl(24_95%_53%)] hover:bg-[hsl(24_95%_45%)] text-white" : ""}
                     >
                       {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
                       {entrepriseRegistered ? "Mettre à jour" : "Enregistrer"}
