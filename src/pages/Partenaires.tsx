@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Building2, Package, Zap, ShieldAlert, Lock, ArrowRight, AlertTriangle, Loader2, LogOut, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { Building2, Package, Zap, ShieldAlert, Lock, ArrowRight, AlertTriangle, Loader2, LogOut, CheckCircle2, Clock, XCircle, FileCheck, FileText, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -274,11 +274,24 @@ const Partenaires = () => {
           </div>
 
           {setupComplete && (
-            <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-center">
-              <p className="text-sm font-medium text-green-700 flex items-center justify-center gap-2">
-                <CheckCircle2 className="w-4 h-4" />
-                Votre profil est complet ! Vous apparaissez dans les résultats de recherche des clients NOORIA.
-              </p>
+            <div className="space-y-3">
+              <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-center">
+                <p className="text-sm font-medium text-green-700 flex items-center justify-center gap-2">
+                  <CheckCircle2 className="w-4 h-4" />
+                  Votre profil est complet ! Vous apparaissez dans les résultats de recherche des clients NOORIA.
+                </p>
+              </div>
+              <div className="flex items-center justify-center gap-3 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 bg-green-500/10 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full border border-green-500/20">
+                  <FileText className="w-3.5 h-3.5" /> RC téléchargé
+                </span>
+                <span className="inline-flex items-center gap-1.5 bg-green-500/10 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full border border-green-500/20">
+                  <FileCheck className="w-3.5 h-3.5" /> Modèle J téléchargé
+                </span>
+                <span className="inline-flex items-center gap-1.5 bg-green-500/10 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full border border-green-500/20">
+                  <CreditCard className="w-3.5 h-3.5" /> Cotisations à jour
+                </span>
+              </div>
             </div>
           )}
 
