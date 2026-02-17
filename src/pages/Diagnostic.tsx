@@ -62,8 +62,9 @@ const Diagnostic = () => {
               </h1>
 
               <p className="text-xl text-muted-foreground max-w-lg">
-                Notre diagnostic solaire analyse votre situation et vous connecte
-                avec les meilleurs installateurs certifiés près de chez vous.
+                Particulier ou entreprise, on vous accompagne. Diagnostic personnalisé,
+                installateurs certifiés, et pour les pros : montage des dossiers SR500,
+                Tatwir Al Harariya, et bien plus encore.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
