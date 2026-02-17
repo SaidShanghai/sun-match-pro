@@ -157,7 +157,8 @@ const FraisLivraison = ({ userId, companyId, companyCity, serviceAreas, onBack }
               <Button
                 onClick={handleSave}
                 disabled={saving || saved}
-                className={saved ? "bg-[hsl(24_95%_53%)]/50 text-white cursor-not-allowed" : "bg-[hsl(24_95%_53%)] hover:bg-[hsl(24_95%_45%)] text-white"}
+                style={saved ? { backgroundColor: "hsla(24, 95%, 53%, 0.5)", color: "white" } : { backgroundColor: "hsl(24, 95%, 53%)", color: "white" }}
+                className={`${saved ? "cursor-not-allowed opacity-100" : "hover:opacity-90"} disabled:opacity-100`}
               >
                 {saving ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
