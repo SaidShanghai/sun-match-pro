@@ -44,7 +44,7 @@ const features = [
   },
 ];
 
-const regions = ["Île-de-France", "PACA", "Occitanie", "Nouvelle-Aquitaine", "Auvergne-Rhône-Alpes", "Bretagne"];
+
 
 const Index = () => {
   const [phoneScreen, setPhoneScreen] = useState<"home" | "analyzing" | "result" | "match">("home");
@@ -330,35 +330,36 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Regions */}
+      {/* Sun Installer Finder */}
       <section className="py-24">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-12"
           >
-            <h2 className="text-4xl font-bold mb-4">Partout en France</h2>
+            <h2 className="text-4xl font-bold mb-4">Sun Installer Finder</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Des installateurs certifiés dans toutes les régions.
+              Trouvez la solution solaire idéale pour votre projet en quelques clics.
             </p>
           </motion.div>
 
-          <div className="flex flex-wrap justify-center gap-4">
-            {regions.map((region, index) => (
-              <motion.div
-                key={region}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className="px-6 py-3 bg-card border border-border rounded-full text-lg font-medium hover:border-primary hover:text-primary transition-colors cursor-default"
-              >
-                {region}
-              </motion.div>
-            ))}
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex justify-center"
+          >
+            <div className="w-full max-w-[400px] h-[700px] rounded-3xl overflow-hidden shadow-2xl border border-border">
+              <iframe
+                src="https://id-preview--824f9b79-4bdc-44ff-acd3-c89e0db92f66.lovable.app"
+                className="w-full h-full border-0"
+                title="Sun Installer Finder"
+                allow="clipboard-write"
+              />
+            </div>
+          </motion.div>
         </div>
       </section>
 
