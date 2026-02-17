@@ -83,6 +83,7 @@ const HeroRotatingTitle = () => {
 
 const Index = () => {
   const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form" | "site">("intro");
+  const [selectedType, setSelectedType] = useState<string | null>(null);
   const [objectif, setObjectif] = useState<"facture" | "autonomie" | null>(null);
   const [tension, setTension] = useState<"220" | "380" | null>(null);
   const [conso, setConso] = useState("");
@@ -279,7 +280,7 @@ const Index = () => {
                           ].map(({ icon: Icon, label }) => (
                             <button
                               key={label}
-                              onClick={() => setPhoneScreen("form")}
+                              onClick={() => { setSelectedType(label); setPhoneScreen("form"); }}
                               className="flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-border bg-card hover:border-primary hover:bg-primary/5 transition-all active:scale-[0.97]"
                             >
                               <Icon className="w-6 h-6 text-muted-foreground" />
@@ -495,7 +496,25 @@ const Index = () => {
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-semibold text-foreground">Usages spécifiques</label>
                           <div className="grid grid-cols-3 gap-1.5">
-                            {[
+                            {(selectedType === "Maison" ? [
+                              { icon: "❄️", label: "Climatisation" },
+                              { icon: "🔥", label: "Chauffage" },
+                              { icon: "🚿", label: "Chauffe-eau" },
+                              { icon: "🚗", label: "Véhicule élec." },
+                              { icon: "🏊", label: "Piscine" },
+                              { icon: "🍳", label: "Cuisine élec." },
+                              { icon: "🧺", label: "Lave-linge" },
+                              { icon: "💻", label: "Informatique" },
+                              { icon: "🧊", label: "Frigo/Congél." },
+                            ] : selectedType === "Appartement" ? [
+                              { icon: "❄️", label: "Climatisation" },
+                              { icon: "🔥", label: "Chauffage" },
+                              { icon: "🚿", label: "Chauffe-eau" },
+                              { icon: "🍳", label: "Cuisine élec." },
+                              { icon: "🧺", label: "Lave-linge" },
+                              { icon: "💻", label: "Informatique" },
+                              { icon: "🧊", label: "Frigo/Congél." },
+                            ] : [
                               { icon: "❄️", label: "Climatisation" },
                               { icon: "🔥", label: "Chauffage" },
                               { icon: "🚿", label: "Chauffe-eau" },
@@ -507,7 +526,7 @@ const Index = () => {
                               { icon: "💨", label: "Compresseur air" },
                               { icon: "💡", label: "Éclairage indus." },
                               { icon: "⚙️", label: "Machines-outils" },
-                            ].map((u) => {
+                            ]).map((u) => {
                               const isSelected = selectedUsages.includes(u.label);
                               return (
                                 <button
