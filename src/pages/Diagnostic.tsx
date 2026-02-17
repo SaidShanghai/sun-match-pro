@@ -235,10 +235,10 @@ const Diagnostic = () => {
           {/* Navigation */}
           <div className="mt-8 flex justify-between">
             <Button
-              variant="ghost"
+              variant="outline"
               onClick={() => setStep(Math.max(0, step - 1))}
               disabled={step === 0}
-              className="rounded-full gap-2"
+              className="rounded-full gap-2 px-6 h-12 text-base"
             >
               <ArrowLeft className="h-4 w-4" /> Retour
             </Button>
