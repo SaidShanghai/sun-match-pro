@@ -11,7 +11,7 @@ const Header = () => {
             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
               <Sun className="w-6 h-6 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold">NOORIA</span>
+            <span className="text-xl font-bold">NOOR<span style={{ color: "hsl(24 95% 53%)" }}>IA</span></span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">
