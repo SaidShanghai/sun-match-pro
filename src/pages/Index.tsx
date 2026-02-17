@@ -205,6 +205,7 @@ const Index = () => {
                     <span className="text-[9px] text-muted-foreground">SunStone Finance</span>
                   </div>
 
+                  <div className="flex-1 overflow-y-auto min-h-0">
                   <AnimatePresence mode="wait">
                     {phoneScreen === "intro" ? (
                       <motion.div
@@ -518,6 +519,7 @@ const Index = () => {
                       </motion.div>
                     )}
                   </AnimatePresence>
+                  </div>
 
                   {/* Home indicator */}
                   <div className="flex justify-center py-2">
