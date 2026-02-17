@@ -172,7 +172,7 @@ const Partenaires = () => {
     );
   }
 
-  const formValid = companyName.trim() && ice.trim() && city && phone.trim() && companyEmail.trim();
+  const formValid = companyName.trim() && /^\d{15}$/.test(ice) && city && phone.trim() && companyEmail.trim();
 
   return (
     <div className="min-h-screen bg-background">
@@ -256,7 +256,7 @@ const Partenaires = () => {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="ice">ICE (Identifiant Commun de l'Entreprise) *</Label>
-                      <Input id="ice" value={ice} onChange={(e) => setIce(e.target.value)} placeholder="001234567000089" required />
+                      <Input id="ice" value={ice} onChange={(e) => { const v = e.target.value.replace(/\D/g, "").slice(0, 15); setIce(v); }} placeholder="001234567000089" required minLength={15} maxLength={15} pattern="\d{15}" title="L'ICE doit contenir exactement 15 chiffres" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="certifications">Certifications (séparées par des virgules)</Label>
