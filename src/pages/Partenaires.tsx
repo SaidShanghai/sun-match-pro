@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import KitsSolaires from "@/components/KitsSolaires";
+import FraisLivraison from "@/components/FraisLivraison";
 
 const moroccoRegions: Record<string, string[]> = {
   "Casablanca-Settat": ["Casablanca", "Mohammedia", "Settat", "Berrechid", "El Jadida", "Benslimane", "Médiouna"],
@@ -37,7 +38,7 @@ const Partenaires = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [activeSection, setActiveSection] = useState<"none" | "entreprise" | "kits">("none");
+  const [activeSection, setActiveSection] = useState<"none" | "entreprise" | "kits" | "tarifs">("none");
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [showLockedDialog, setShowLockedDialog] = useState(false);
   const [entrepriseRegistered, setEntrepriseRegistered] = useState(false);
@@ -125,9 +126,7 @@ const Partenaires = () => {
       setShowLockedDialog(true);
       return;
     }
-    if (section === "entreprise" || section === "kits") {
-      setActiveSection(section);
-    }
+    setActiveSection(section);
   };
 
   const handleSaveCompany = async (e: React.FormEvent) => {
@@ -381,6 +380,8 @@ const Partenaires = () => {
             </Card>
           ) : activeSection === "kits" && user && companyId ? (
             <KitsSolaires userId={user.id} companyId={companyId} onBack={() => setActiveSection("none")} />
+          ) : activeSection === "tarifs" && user && companyId ? (
+            <FraisLivraison userId={user.id} companyId={companyId} companyCity={city} serviceAreas={serviceAreas} onBack={() => setActiveSection("none")} />
           ) : (
             /* Cards */
             <div className="grid md:grid-cols-3 gap-6">
