@@ -615,10 +615,10 @@ const Index = () => {
                         <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center relative">
                           <motion.div
                             animate={{
-                              x: [0, 80, -60, 100, -90, 50, -80, 70, -40, 0],
-                              y: [0, -80, 60, -120, 100, -60, 80, -100, 40, 0],
+                              x: [-80, 80],
+                              y: [-100, 100],
                             }}
-                            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                            transition={{ duration: 4, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
                             className="absolute top-1/2 left-1/2 z-0"
                           >
                             <div className="w-12 h-12 -ml-6 -mt-6 bg-primary/20 rounded-full flex items-center justify-center" style={{ boxShadow: "0 0 30px hsl(var(--primary) / 0.4)" }}>
