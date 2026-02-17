@@ -615,10 +615,6 @@ const Index = () => {
                         <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
                           {/* Sun circular orbit */}
                           <div className="relative w-28 h-28">
-                            {/* Dashed circle path */}
-                            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 112 112">
-                              <circle cx="56" cy="56" r="44" fill="none" stroke="hsl(var(--primary) / 0.15)" strokeWidth="1.5" strokeDasharray="4 3" />
-                            </svg>
                             {/* Sun following the circle */}
                             <motion.div
                               animate={{ offsetDistance: ["0%", "100%"] }}
