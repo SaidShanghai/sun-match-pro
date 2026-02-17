@@ -48,7 +48,7 @@ const features = [
   },
 ];
 
-const heroWords = ["Le solaire,", "Le financement,", "Le diagnostic,", "L'installation,", "La maintenance,"];
+const heroWords = ["Le solaire,", "Le diagnostic,", "Le soutien,", "Le financement,", "Le chantier,", "Le suivi,"];
 
 const HeroRotatingTitle = () => {
   const [index, setIndex] = useState(0);
