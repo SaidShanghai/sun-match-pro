@@ -612,27 +612,41 @@ const Index = () => {
                         </div>
 
                         {/* Analyse animation */}
-                        <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
+                        <div className="flex-1 flex flex-col items-center justify-center gap-5 text-center relative overflow-hidden">
+                          {/* Fond dégradé subtil */}
                           <motion.div
-                            animate={{ rotate: analyseProgress < 100 ? 360 : 0 }}
-                            transition={{ duration: 2, repeat: analyseProgress < 100 ? Infinity : 0, ease: "linear" }}
-                            className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center"
-                          >
-                            <Sun className="w-9 h-9 text-primary" />
-                          </motion.div>
-                          <div>
-                            <h4 className="text-sm font-bold">Analyse en cours…</h4>
-                            <p className="text-[10px] text-muted-foreground mt-1">{analyseLabel}</p>
-                          </div>
-                          <div className="w-full space-y-1">
-                            <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                              <motion.div
-                                className="h-full bg-primary rounded-full"
-                                animate={{ width: `${analyseProgress}%` }}
-                                transition={{ duration: 0.4 }}
-                              />
+                            className="absolute inset-0 bg-gradient-to-b from-primary/0 via-primary/5 to-primary/15 rounded-xl"
+                            animate={{ opacity: analyseProgress / 100 }}
+                            transition={{ duration: 0.5 }}
+                          />
+                          <div className="relative z-10 flex flex-col items-center gap-5">
+                            <motion.div
+                              animate={{ 
+                                rotate: analyseProgress < 100 ? 360 : 0,
+                                scale: analyseProgress < 100 ? [1, 1.08, 1] : 1,
+                              }}
+                              transition={{ 
+                                rotate: { duration: 3, repeat: analyseProgress < 100 ? Infinity : 0, ease: "linear" },
+                                scale: { duration: 1.5, repeat: analyseProgress < 100 ? Infinity : 0, ease: "easeInOut" },
+                              }}
+                              className="w-24 h-24 bg-primary/20 rounded-3xl flex items-center justify-center shadow-lg"
+                            >
+                              <Sun className="w-14 h-14 text-primary" />
+                            </motion.div>
+                            <div>
+                              <h4 className="text-base font-bold">Analyse en cours…</h4>
+                              <p className="text-[10px] text-muted-foreground mt-1">{analyseLabel}</p>
                             </div>
-                            <span className="text-[10px] font-semibold text-foreground">{analyseProgress}%</span>
+                            <div className="w-full space-y-1.5 px-2">
+                              <div className="w-full h-2.5 bg-muted rounded-full overflow-hidden">
+                                <motion.div
+                                  className="h-full bg-primary rounded-full"
+                                  animate={{ width: `${analyseProgress}%` }}
+                                  transition={{ duration: 0.4 }}
+                                />
+                              </div>
+                              <span className="text-xs font-bold text-foreground">{analyseProgress}%</span>
+                            </div>
                           </div>
                         </div>
                       </motion.div>
