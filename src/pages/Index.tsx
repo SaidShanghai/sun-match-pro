@@ -614,29 +614,31 @@ const Index = () => {
                         {/* Analyse animation - sun arc */}
                         <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
                           {/* Sun arc container */}
-                          <div className="relative w-full h-24 overflow-hidden">
+                          <div className="relative w-full h-24">
                             {/* Arc path (dashed) */}
-                            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 100" preserveAspectRatio="none">
+                            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 100">
                               <path d="M 10 90 Q 100 -10 190 90" fill="none" stroke="hsl(var(--primary) / 0.15)" strokeWidth="1.5" strokeDasharray="4 3" />
                             </svg>
-                            {/* Animated sun along arc */}
+                            {/* Sun following the exact arc path */}
                             <motion.div
-                              animate={{ x: ["-10%", "50%", "110%"] }}
-                              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", repeatDelay: 0.5 }}
-                              className="absolute bottom-2"
-                              style={{ left: 0 }}
+                              animate={{ offsetDistance: ["0%", "100%"] }}
+                              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", repeatDelay: 0.3 }}
+                              style={{
+                                offsetPath: "path('M 10 90 Q 100 -10 190 90')",
+                                offsetRotate: "0deg",
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: 0,
+                                height: 0,
+                              }}
                             >
-                              <motion.div
-                                animate={{ y: [0, -60, 0] }}
-                                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", repeatDelay: 0.5 }}
-                              >
-                                <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center shadow-lg" style={{ boxShadow: "0 0 20px hsl(var(--primary) / 0.4)" }}>
-                                  <Sun className="w-7 h-7 text-primary" />
-                                </div>
-                              </motion.div>
+                              <div className="w-12 h-12 -ml-6 -mt-6 bg-primary/20 rounded-full flex items-center justify-center" style={{ boxShadow: "0 0 20px hsl(var(--primary) / 0.4)" }}>
+                                <Sun className="w-7 h-7 text-primary" />
+                              </div>
                             </motion.div>
                             {/* Horizon line */}
-                            <div className="absolute bottom-1 left-2 right-2 h-px bg-primary/20" />
+                            <div className="absolute bottom-[10px] left-[5%] right-[5%] h-px bg-primary/20" />
                           </div>
                           <div>
                             <h4 className="text-sm font-bold">Analyse en cours…</h4>
