@@ -125,7 +125,7 @@ const Index = () => {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                <span className="text-sm font-medium">500+ installateurs certifiés au Maroc</span>
+                <span className="text-sm font-medium">100+ installateurs certifiés au Maroc</span>
               </div>
 
               <HeroRotatingTitle />
