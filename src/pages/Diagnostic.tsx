@@ -142,7 +142,7 @@ const Diagnostic = () => {
             className="inline-flex items-center gap-2 bg-primary/10 text-primary px-5 py-2 rounded-full text-sm font-semibold mb-8"
           >
             <Zap className="w-4 h-4" />
-            Bientôt disponible
+            Rapide &amp; gratuit
           </motion.div>
 
           <motion.div
@@ -240,9 +240,9 @@ const Diagnostic = () => {
             className="mt-16 text-center"
           >
             <div className="inline-flex items-center gap-3 bg-muted/50 border border-border rounded-2xl px-6 py-4">
-              <span className="text-2xl">🚧</span>
+              <span className="text-2xl">💡</span>
               <p className="text-sm text-muted-foreground">
-                Le diagnostic en ligne arrive très bientôt. Restez connectés !
+                Un diagnostic complet et personnalisé, 100% gratuit et sans engagement.
               </p>
             </div>
           </motion.div>
