@@ -1,6 +1,5 @@
-import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Sun,
   PiggyBank,
@@ -11,11 +10,6 @@ import {
   Star,
   MapPin,
   FileText,
-  CheckCircle,
-  Loader,
-  Check,
-  TrendingUp,
-  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -44,31 +38,8 @@ const features = [
   },
 ];
 
-
-
 const Index = () => {
-  const [phoneScreen, setPhoneScreen] = useState<"home" | "analyzing" | "result" | "match">("home");
-  const phoneTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const triggerPhoneAnimation = () => {
-    if (phoneTimeoutRef.current) clearTimeout(phoneTimeoutRef.current);
-    setPhoneScreen("analyzing");
-    phoneTimeoutRef.current = setTimeout(() => {
-      setPhoneScreen("result");
-      phoneTimeoutRef.current = setTimeout(() => {
-        setPhoneScreen("match");
-        phoneTimeoutRef.current = setTimeout(() => {
-          setPhoneScreen("home");
-        }, 3000);
-      }, 2000);
-    }, 2000);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (phoneTimeoutRef.current) clearTimeout(phoneTimeoutRef.current);
-    };
-  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -105,12 +76,14 @@ const Index = () => {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
+                  asChild
                   size="lg"
-                  className="group h-14 px-8 text-base cursor-pointer"
-                  onClick={triggerPhoneAnimation}
+                  className="group h-14 px-8 text-base"
                 >
-                  Lancer mon diagnostic
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <Link to="/diagnostic">
+                    Lancer mon diagnostic
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="h-14 px-8 text-base">
                   <Link to="/diagnostic">
@@ -144,149 +117,71 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="hidden lg:block"
             >
-              <div className="relative mx-auto w-[300px] h-[600px] bg-foreground rounded-[3rem] p-3 shadow-2xl">
-                <div className="w-full h-full bg-background rounded-[2.5rem] overflow-hidden relative">
-                  <AnimatePresence mode="wait">
-                    {phoneScreen === "home" && (
-                      <motion.div
-                        key="home"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="p-6 space-y-6 absolute inset-0"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-sm text-muted-foreground">Bonjour 👋</div>
-                            <div className="text-lg font-semibold">Mon diagnostic solaire</div>
-                          </div>
-                          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                            <Sun className="w-5 h-5 text-primary" />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-4 bg-muted rounded-xl">
-                          <MapPin className="w-5 h-5 text-primary" />
-                          <span className="text-muted-foreground text-sm">Entrez votre adresse...</span>
-                        </div>
-                        <div className="h-32 bg-muted rounded-xl flex items-center justify-center">
-                          <div className="text-center">
-                            <Sun className="w-10 h-10 text-primary mx-auto mb-2" />
-                            <span className="text-sm text-muted-foreground">Potentiel solaire</span>
-                          </div>
-                        </div>
-                        <div className="space-y-3">
-                          <div className="text-sm font-medium">Type de logement</div>
-                          <div className="grid grid-cols-2 gap-2">
-                            <div className="p-3 bg-primary/5 border border-primary/20 rounded-xl text-center text-sm font-medium">🏠 Maison</div>
-                            <div className="p-3 bg-muted rounded-xl text-center text-sm text-muted-foreground">🏢 Appartement</div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
+              <div className="relative mx-auto w-[300px] bg-foreground rounded-[3rem] p-3 shadow-2xl">
+                <div className="w-full bg-background rounded-[2.5rem] overflow-hidden flex flex-col">
+                  {/* Notch */}
+                  <div className="flex justify-center pt-3 pb-1">
+                    <div className="w-24 h-4 bg-muted rounded-full" />
+                  </div>
 
-                    {phoneScreen === "analyzing" && (
-                      <motion.div
-                        key="analyzing"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        className="p-6 space-y-6 absolute inset-0 flex flex-col items-center justify-center"
-                      >
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                        >
-                          <Loader className="w-12 h-12 text-primary" />
-                        </motion.div>
-                        <div className="text-center">
-                          <div className="text-lg font-semibold">Analyse en cours...</div>
-                          <div className="text-sm text-muted-foreground mt-1">Calcul de votre potentiel solaire</div>
-                        </div>
-                        <div className="w-full space-y-2">
-                          <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
-                            <div className="w-2 h-2 bg-primary rounded-full" />
-                            <span className="text-sm">Ensoleillement: 1450h/an</span>
-                          </div>
-                          <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
-                            <div className="w-2 h-2 bg-primary rounded-full" />
-                            <span className="text-sm">Surface toiture: 45m²</span>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
+                        <Sun className="w-4 h-4 text-primary-foreground" />
+                      </div>
+                      <span className="text-xs font-bold">SUN_GPT</span>
+                    </div>
+                    <span className="text-[9px] text-muted-foreground">SunStone Finance</span>
+                  </div>
 
-                    {phoneScreen === "result" && (
-                      <motion.div
-                        key="result"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="p-6 space-y-5 absolute inset-0"
-                      >
-                        <div className="text-center">
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ type: "spring", stiffness: 200 }}
-                            className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-3"
-                          >
-                            <Check className="w-8 h-8 text-primary-foreground" />
-                          </motion.div>
-                          <div className="text-lg font-semibold">Excellent potentiel !</div>
-                        </div>
-                        <div className="p-4 bg-primary/5 rounded-xl border border-primary/20 text-center">
-                          <div className="text-sm text-muted-foreground">Économies estimées</div>
-                          <div className="text-3xl font-bold text-primary">1 250 €/an</div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl">
-                            <Sun className="w-4 h-4 text-primary" />
-                            <span className="text-xs">Puissance recommandée: 6 kWc</span>
-                          </div>
-                          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl">
-                            <TrendingUp className="w-4 h-4 text-primary" />
-                            <span className="text-xs">Rentabilité: 8 ans</span>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
+                  {/* Content */}
+                  <div className="px-5 py-6 flex flex-col items-center text-center gap-4">
+                    <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
+                      <Sun className="w-7 h-7 text-primary-foreground" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold">SUN_GPT</h3>
+                      <p className="text-[10px] text-muted-foreground">par SunStone Finance</p>
+                      <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+                        Analysez votre consommation, découvrez<br />la solution solaire optimale
+                      </p>
+                    </div>
 
-                    {phoneScreen === "match" && (
-                      <motion.div
-                        key="match"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="p-6 space-y-5 absolute inset-0"
-                      >
-                        <div className="text-center">
-                          <div className="text-sm text-muted-foreground">Installateurs disponibles</div>
-                          <motion.div
-                            className="text-5xl font-bold text-primary mt-1"
-                            initial={{ scale: 1.3 }}
-                            animate={{ scale: 1 }}
-                            transition={{ type: "spring" }}
-                          >
-                            3
-                          </motion.div>
+                    <div className="w-full space-y-2">
+                      <div className="flex items-center gap-2.5 p-3 bg-background border border-border/80 rounded-xl text-left shadow-sm">
+                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                          <Zap className="w-4 h-4 text-primary" />
                         </div>
-                        {["SolarTech Pro", "GreenEnergy 31", "EcoSolaire"].map((name, i) => (
-                          <div key={i} className="flex items-center gap-3 p-3 bg-muted rounded-xl">
-                            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                              <Users className="w-5 h-5 text-primary" />
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-semibold text-sm">{name}</div>
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Star className="w-3 h-3 text-warning fill-warning" />
-                                {(4.7 + i * 0.1).toFixed(1)} • Certifié RGE
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                        <span className="text-[10px] leading-snug">Dimensionnement intelligent basé sur votre consommation</span>
+                      </div>
+                      <div className="flex items-center gap-2.5 p-3 bg-background border border-border/80 rounded-xl text-left shadow-sm">
+                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                          <Shield className="w-4 h-4 text-primary" />
+                        </div>
+                        <span className="text-[10px] leading-snug">Catalogue complet 220V & 380V adapté au Maroc</span>
+                      </div>
+                      <div className="flex items-center gap-2.5 p-3 bg-background border border-border/80 rounded-xl text-left shadow-sm">
+                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                          <Sun className="w-4 h-4 text-primary" />
+                        </div>
+                        <span className="text-[10px] leading-snug">Devis personnalisé en quelques minutes</span>
+                      </div>
+                    </div>
+
+                    <div className="w-full bg-primary text-primary-foreground rounded-full py-3 text-xs font-semibold flex items-center justify-center gap-1.5 mt-1">
+                      Lancer l'analyse solaire <ArrowRight className="w-3.5 h-3.5" />
+                    </div>
+
+                    <p className="text-[9px] text-muted-foreground">
+                      Gratuit • Sans engagement • Résultat instantané
+                    </p>
+                  </div>
+
+                  {/* Home indicator */}
+                  <div className="flex justify-center py-2">
+                    <div className="w-24 h-1 bg-foreground/15 rounded-full" />
+                  </div>
                 </div>
               </div>
             </motion.div>
