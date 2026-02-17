@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, MapPin, Home, Layers, Compass, Ruler, Zap, Wallet, User, Building2, UserRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, MapPin, Home, Layers, Compass, Ruler, Zap, Wallet, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -76,14 +76,13 @@ const OptionCard = ({
 
 const Diagnostic = () => {
   const navigate = useNavigate();
-  const [profileType, setProfileType] = useState<"particulier" | "entreprise" | null>(null);
   const [step, setStep] = useState(0);
   const [data, setData] = useState<DiagnosticData>({
     postalCode: "", housingType: "", roofType: "", orientation: "",
     surface: "", consumption: "", budget: "", name: "", email: "", phone: "",
   });
 
-  const progress = profileType ? ((step + 1) / steps.length) * 100 : 0;
+  const progress = ((step + 1) / steps.length) * 100;
 
   const updateField = (field: keyof DiagnosticData, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
@@ -191,76 +190,13 @@ const Diagnostic = () => {
     }
   };
 
-  // Profile type selection screen
-  if (!profileType) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1 flex items-center justify-center relative">
-          <div className="absolute top-20 -left-32 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
-          <div className="absolute bottom-20 -right-32 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
-
-          <div className="container max-w-2xl py-12 relative z-10">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="profile-select"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Card className="border-0 shadow-xl rounded-3xl">
-                  <CardContent className="p-8 md:p-12">
-                    <div className="text-center mb-10">
-                      <h2 className="text-3xl font-bold mb-2">D'abord, une question</h2>
-                      <p className="text-muted-foreground text-lg">Quel type de projet solaire avez-vous ?</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      <button
-                        onClick={() => setProfileType("particulier")}
-                        className="group flex flex-col items-center gap-4 p-8 rounded-3xl border-2 border-border bg-card hover:border-primary hover:bg-primary/5 transition-all hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg"
-                      >
-                        <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                          <UserRound className="w-10 h-10 text-primary" />
-                        </div>
-                        <div className="text-center">
-                          <h3 className="text-xl font-bold mb-1">Un particulier</h3>
-                          <p className="text-sm text-muted-foreground">Maison, appartement, résidence</p>
-                        </div>
-                      </button>
-
-                      <button
-                        onClick={() => setProfileType("entreprise")}
-                        className="group flex flex-col items-center gap-4 p-8 rounded-3xl border-2 border-border bg-card hover:border-primary hover:bg-primary/5 transition-all hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg"
-                      >
-                        <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                          <Building2 className="w-10 h-10 text-primary" />
-                        </div>
-                        <div className="text-center">
-                          <h3 className="text-xl font-bold mb-1">Une entreprise</h3>
-                          <p className="text-sm text-muted-foreground">Bureau, commerce, industrie</p>
-                        </div>
-                      </button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 relative">
         {/* Fun background blobs */}
         <div className="absolute top-20 -left-32 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
-        <div className="absolute bottom-20 -right-32 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute bottom-20 -right-32 h-64 w-64 rounded-full bg-solar-purple/5 blur-3xl" />
 
         <div className="container max-w-2xl py-12 relative z-10">
           {/* Progress */}
@@ -300,10 +236,8 @@ const Diagnostic = () => {
           <div className="mt-8 flex justify-between">
             <Button
               variant="outline"
-              onClick={() => {
-                if (step === 0) setProfileType(null);
-                else setStep(step - 1);
-              }}
+              onClick={() => setStep(Math.max(0, step - 1))}
+              disabled={step === 0}
               className="rounded-full gap-2 px-6 h-12 text-base"
             >
               <ArrowLeft className="h-4 w-4" /> Retour
