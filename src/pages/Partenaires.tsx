@@ -12,6 +12,7 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import KitsSolaires from "@/components/KitsSolaires";
 
 const moroccoRegions: Record<string, string[]> = {
   "Casablanca-Settat": ["Casablanca", "Mohammedia", "Settat", "Berrechid", "El Jadida", "Benslimane", "Médiouna"],
@@ -36,7 +37,8 @@ const Partenaires = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [activeSection, setActiveSection] = useState<"none" | "entreprise">("none");
+  const [activeSection, setActiveSection] = useState<"none" | "entreprise" | "kits">("none");
+  const [companyId, setCompanyId] = useState<string | null>(null);
   const [showLockedDialog, setShowLockedDialog] = useState(false);
   const [entrepriseRegistered, setEntrepriseRegistered] = useState(false);
   const [loadingCompany, setLoadingCompany] = useState(true);
@@ -94,6 +96,7 @@ const Partenaires = () => {
 
         if (data) {
           setEntrepriseRegistered(true);
+          setCompanyId(data.id);
           setCompanyName(data.name);
           setIce(data.ice);
           setCertifications((data.certifications || []).join(", "));
@@ -122,8 +125,8 @@ const Partenaires = () => {
       setShowLockedDialog(true);
       return;
     }
-    if (section === "entreprise") {
-      setActiveSection("entreprise");
+    if (section === "entreprise" || section === "kits") {
+      setActiveSection(section);
     }
   };
 
@@ -376,6 +379,8 @@ const Partenaires = () => {
                 </form>
               </CardContent>
             </Card>
+          ) : activeSection === "kits" && user && companyId ? (
+            <KitsSolaires userId={user.id} companyId={companyId} onBack={() => setActiveSection("none")} />
           ) : (
             /* Cards */
             <div className="grid md:grid-cols-3 gap-6">
