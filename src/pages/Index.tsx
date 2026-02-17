@@ -263,7 +263,7 @@ const Index = () => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
                         transition={{ duration: 0.25 }}
-                        className="px-4 py-3 flex flex-col gap-3"
+                        className="px-4 py-3 flex flex-col gap-3 overflow-y-auto flex-1"
                       >
                         {/* Stepper */}
                         <div className="flex items-center justify-between px-1">
