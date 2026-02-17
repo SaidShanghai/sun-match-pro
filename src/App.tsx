@@ -9,6 +9,7 @@ import Results from "./pages/Results";
 import Partenaires from "./pages/Partenaires";
 import AuthPartenaires from "./pages/AuthPartenaires";
 import AdminDashboard from "./pages/AdminDashboard";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/partenaires" element={<Partenaires />} />
           <Route path="/auth-partenaires" element={<AuthPartenaires />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
