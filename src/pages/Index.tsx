@@ -82,7 +82,7 @@ const HeroRotatingTitle = () => {
 };
 
 const Index = () => {
-  const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form" | "site">("intro");
+  const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form" | "site" | "analyse">("intro");
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [objectif, setObjectif] = useState<"facture" | "autonomie" | null>(null);
   const [tension, setTension] = useState<"220" | "380" | null>(null);
@@ -94,6 +94,8 @@ const Index = () => {
   const [roofAccess, setRoofAccess] = useState<"oui" | "non" | null>(null);
   const [selectedSurface, setSelectedSurface] = useState<string | null>(null);
   const [selectedUsages, setSelectedUsages] = useState<string[]>([]);
+  const [analyseProgress, setAnalyseProgress] = useState(0);
+  const [analyseLabel, setAnalyseLabel] = useState("");
   const villeRef = useRef<HTMLDivElement>(null);
 
   const villes = ["Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", "Oujda", "Kénitra", "Tétouan", "Safi", "El Jadida", "Nador", "Béni Mellal", "Mohammedia"];
@@ -195,7 +197,7 @@ const Index = () => {
                   <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
                     <div className="flex items-center gap-2">
                       {phoneScreen !== "intro" && (
-                        <button onClick={() => setPhoneScreen(phoneScreen === "site" ? "form" : phoneScreen === "form" ? "type" : "intro")} className="p-0.5">
+                        <button onClick={() => setPhoneScreen(phoneScreen === "analyse" ? "site" : phoneScreen === "site" ? "form" : phoneScreen === "form" ? "type" : "intro")} className="p-0.5">
                           <ChevronLeft className="w-4 h-4 text-foreground" />
                         </button>
                       )}
@@ -414,7 +416,7 @@ const Index = () => {
                           Continuer <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </motion.div>
-                    ) : (
+                    ) : phoneScreen === "site" ? (
                       /* Site screen */
                       <motion.div
                         key="site"
@@ -558,15 +560,81 @@ const Index = () => {
                         </div>
 
                         {/* CTA Analyser */}
-                        <Button
-                          asChild
-                          size="sm"
-                          className="w-full rounded-full mt-1 text-[11px] h-10"
+                        <button
+                          onClick={() => {
+                            setPhoneScreen("analyse");
+                            setAnalyseProgress(0);
+                            const labels = [
+                              "Analyse de la consommation...",
+                              "Calcul de l'ensoleillement...",
+                              "Optimisation de la couverture...",
+                              "Dimensionnement des panneaux...",
+                              "Estimation des économies...",
+                              "Finalisation du rapport...",
+                            ];
+                            let p = 0;
+                            const interval = setInterval(() => {
+                              p += Math.random() * 15 + 5;
+                              if (p >= 100) { p = 100; clearInterval(interval); }
+                              setAnalyseProgress(Math.round(p));
+                              setAnalyseLabel(labels[Math.min(Math.floor(p / 18), labels.length - 1)]);
+                            }, 600);
+                          }}
+                          className="w-full bg-primary text-primary-foreground rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors"
                         >
-                          <Link to="/diagnostic">
-                            Analyser <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                          </Link>
-                        </Button>
+                          Analyser <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </motion.div>
+                    ) : (
+                      /* Analyse screen */
+                      <motion.div
+                        key="analyse"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.25 }}
+                        className="px-4 py-3 flex flex-col gap-3 flex-1"
+                      >
+                        {/* Stepper - Analyse active */}
+                        <div className="flex items-center justify-between px-1">
+                          {["Profil", "Site", "Analyse", "Solutions", "Contact"].map((step, i) => {
+                            const isDone = i <= 1;
+                            const isActive = i === 2;
+                            return (
+                              <div key={step} className="flex flex-col items-center gap-0.5">
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${isDone ? "bg-success text-success-foreground" : isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
+                                  {isDone ? "✓" : i + 1}
+                                </div>
+                                <span className={`text-[8px] ${isActive || isDone ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Analyse animation */}
+                        <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
+                          <motion.div
+                            animate={{ rotate: analyseProgress < 100 ? 360 : 0 }}
+                            transition={{ duration: 2, repeat: analyseProgress < 100 ? Infinity : 0, ease: "linear" }}
+                            className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center"
+                          >
+                            <Sun className="w-9 h-9 text-primary" />
+                          </motion.div>
+                          <div>
+                            <h4 className="text-sm font-bold">Analyse en cours…</h4>
+                            <p className="text-[10px] text-muted-foreground mt-1">{analyseLabel}</p>
+                          </div>
+                          <div className="w-full space-y-1">
+                            <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                              <motion.div
+                                className="h-full bg-primary rounded-full"
+                                animate={{ width: `${analyseProgress}%` }}
+                                transition={{ duration: 0.4 }}
+                              />
+                            </div>
+                            <span className="text-[10px] font-semibold text-foreground">{analyseProgress}%</span>
+                          </div>
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
