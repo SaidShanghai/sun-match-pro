@@ -1,65 +1,11 @@
-import { useEffect, useState } from "react";
+
 import { motion } from "framer-motion";
-import { Sun, ClipboardCheck, BarChart3, Shield, Zap, ArrowRight, Star, Timer } from "lucide-react";
+import { Sun, ClipboardCheck, BarChart3, Shield, Zap, ArrowRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-const StopwatchIcon = () => {
-  const [seconds, setSeconds] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSeconds((s) => (s + 1) % 180);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const angle = (seconds / 180) * 360;
-
-  return (
-    <div className="relative w-[180px] h-[180px] mx-auto">
-      <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-2xl">
-        <rect x="92" y="2" width="16" height="18" rx="4" className="fill-muted-foreground/60" />
-        <circle cx="100" cy="22" r="6" className="fill-muted-foreground/40" />
-        <circle cx="100" cy="110" r="78" className="fill-card stroke-border" strokeWidth="4" />
-        <circle cx="100" cy="110" r="70" className="fill-none stroke-primary/20" strokeWidth="2" />
-        {Array.from({ length: 12 }).map((_, i) => {
-          const a = (i * 30 * Math.PI) / 180;
-          const x1 = 100 + 62 * Math.sin(a);
-          const y1 = 110 - 62 * Math.cos(a);
-          const x2 = 100 + 68 * Math.sin(a);
-          const y2 = 110 - 68 * Math.cos(a);
-          return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} className="stroke-foreground/30" strokeWidth="2" strokeLinecap="round" />;
-        })}
-        <circle
-          cx="100" cy="110" r="58"
-          className="fill-none stroke-primary"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeDasharray={`${(angle / 360) * 364.4} 364.4`}
-          transform="rotate(-90 100 110)"
-          style={{ transition: "stroke-dasharray 1s linear" }}
-        />
-        <line
-          x1="100" y1="110"
-          x2={100 + 50 * Math.sin((angle * Math.PI) / 180)}
-          y2={110 - 50 * Math.cos((angle * Math.PI) / 180)}
-          className="stroke-primary"
-          strokeWidth="3"
-          strokeLinecap="round"
-          style={{ transition: "all 1s linear" }}
-        />
-        <circle cx="100" cy="110" r="5" className="fill-primary" />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center pt-5">
-        <span className="text-4xl font-black font-display text-foreground mt-8">3:00</span>
-        <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">minutes</span>
-      </div>
-    </div>
-  );
-};
 
 const features = [
   {
@@ -147,23 +93,6 @@ const Diagnostic = () => {
               </div>
             </motion.div>
 
-            {/* Stopwatch visual */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="hidden lg:flex flex-col items-center justify-center"
-            >
-              <StopwatchIcon />
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="mt-6 text-lg font-semibold text-muted-foreground"
-              >
-                C'est le temps qu'il faut ⏱️
-              </motion.p>
-            </motion.div>
           </div>
         </div>
       </section>
