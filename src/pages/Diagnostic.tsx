@@ -57,7 +57,7 @@ const Diagnostic = () => {
               <h1 className="font-black leading-[1.1] overflow-visible whitespace-nowrap">
                 <span className="block" style={{ fontSize: "60px" }}>Vous êtes à</span>
                 <span className="block text-gradient" style={{ fontSize: "112px" }}>3 minutes</span>
-                <span className="block" style={{ fontSize: "150px" }}>de grosses</span>
+                <span className="block" style={{ fontSize: "100px" }}>de grosses</span>
                 <span className="block text-gradient" style={{ fontSize: "160px" }}>économies !</span>
               </h1>
 
