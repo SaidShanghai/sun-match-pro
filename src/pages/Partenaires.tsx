@@ -301,7 +301,7 @@ const Partenaires = () => {
                           className="flex-1 h-10 rounded-md border border-input bg-background px-3 text-sm disabled:opacity-50"
                         >
                           <option value="">-- Choisir une ville --</option>
-                          {selectedRegion && moroccoRegions[selectedRegion]?.map((c) => (
+                          {selectedRegion && moroccoRegions[selectedRegion]?.filter((c) => !serviceAreas.includes(c)).map((c) => (
                             <option key={c} value={c}>{c}</option>
                           ))}
                         </select>
