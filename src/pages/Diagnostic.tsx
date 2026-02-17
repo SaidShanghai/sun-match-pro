@@ -108,7 +108,7 @@ const Diagnostic = () => {
                 <span className="text-sm font-medium">Gratuit • Sans engagement • Résultat instantané</span>
               </div>
 
-              <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
+              <h1 className="text-7xl md:text-8xl lg:text-9xl font-black leading-[1.05]">
                 Vous êtes à
                 <br />
                 <span className="text-gradient">3 minutes</span>
