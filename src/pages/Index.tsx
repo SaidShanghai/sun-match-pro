@@ -351,13 +351,76 @@ const Index = () => {
             viewport={{ once: true }}
             className="flex justify-center"
           >
-            <div className="w-full max-w-[380px] h-[720px] rounded-[2.5rem] overflow-hidden shadow-2xl bg-muted/30">
-              <iframe
-                src="https://id-preview--824f9b79-4bdc-44ff-acd3-c89e0db92f66.lovable.app"
-                className="w-full h-full border-0"
-                title="Sun Installer Finder"
-                allow="clipboard-write"
-              />
+            <div className="w-full max-w-[380px] rounded-[2.5rem] border-2 border-border bg-background shadow-2xl overflow-hidden flex flex-col">
+              {/* Notch */}
+              <div className="flex justify-center pt-3 pb-1">
+                <div className="w-28 h-5 bg-muted rounded-full" />
+              </div>
+
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-2 border-b border-border/50">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-primary/15 rounded-lg flex items-center justify-center">
+                    <Sun className="w-4 h-4 text-primary" />
+                  </div>
+                  <span className="text-sm font-bold">SUN_GPT</span>
+                </div>
+                <span className="text-[11px] text-muted-foreground">SunStone Finance</span>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 px-6 py-8 flex flex-col items-center text-center gap-6">
+                <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center">
+                  <Sun className="w-9 h-9 text-primary-foreground" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold mb-1">SUN_GPT</h3>
+                  <p className="text-sm text-muted-foreground">par SunStone Finance</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Analysez votre consommation, découvrez<br />la solution solaire optimale
+                  </p>
+                </div>
+
+                <div className="w-full space-y-3">
+                  <div className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl text-left">
+                    <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                      <Zap className="w-4 h-4 text-primary" />
+                    </div>
+                    <span className="text-sm">Dimensionnement intelligent basé sur votre consommation</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl text-left">
+                    <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                      <Shield className="w-4 h-4 text-primary" />
+                    </div>
+                    <span className="text-sm">Catalogue complet 220V & 380V adapté au Maroc</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl text-left">
+                    <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                      <FileText className="w-4 h-4 text-primary" />
+                    </div>
+                    <span className="text-sm">Devis personnalisé en quelques minutes</span>
+                  </div>
+                </div>
+
+                <Button
+                  asChild
+                  size="lg"
+                  className="w-full h-14 text-base rounded-2xl mt-2"
+                >
+                  <Link to="/diagnostic">
+                    Lancer l'analyse solaire <ArrowRight className="w-5 h-5 ml-2" />
+                  </Link>
+                </Button>
+
+                <p className="text-xs text-muted-foreground">
+                  Gratuit • Sans engagement • Résultat instantané
+                </p>
+              </div>
+
+              {/* Home indicator */}
+              <div className="flex justify-center py-3">
+                <div className="w-28 h-1 bg-foreground/15 rounded-full" />
+              </div>
             </div>
           </motion.div>
         </div>
