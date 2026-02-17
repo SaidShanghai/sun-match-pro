@@ -109,6 +109,8 @@ export type Database = {
           name: string
           panel_brand: string
           panel_count: number
+          panel_dimensions: string | null
+          panel_wattage: number | null
           power_kwc: number
           price_ttc: number
           structure: string | null
@@ -127,6 +129,8 @@ export type Database = {
           name: string
           panel_brand: string
           panel_count: number
+          panel_dimensions?: string | null
+          panel_wattage?: number | null
           power_kwc: number
           price_ttc: number
           structure?: string | null
@@ -145,6 +149,8 @@ export type Database = {
           name?: string
           panel_brand?: string
           panel_count?: number
+          panel_dimensions?: string | null
+          panel_wattage?: number | null
           power_kwc?: number
           price_ttc?: number
           structure?: string | null
