@@ -160,10 +160,10 @@ const Diagnostic = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-5xl md:text-7xl font-black font-display mb-8 text-foreground leading-tight"
           >
-            Votre diagnostic solaire
+            Vous êtes à 3 minutes
             <br />
             <span className="bg-gradient-to-r from-primary to-amber-500 bg-clip-text text-transparent">
-              en 3 minutes chrono
+              de grosses économies !
             </span>
           </motion.h1>
 
