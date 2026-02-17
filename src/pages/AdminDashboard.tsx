@@ -24,6 +24,7 @@ interface PartnerRequest {
   user_id: string;
   status: string;
   setup_complete: boolean;
+  cotisations_a_jour: boolean;
   created_at: string;
   user_email?: string;
   company?: {
@@ -35,7 +36,7 @@ interface PartnerRequest {
     certifications: string[] | null;
     service_areas: string[] | null;
   } | null;
-  docs: { rc: boolean; modele_j: boolean; cotisations: boolean };
+  docs: { rc: boolean; modele_j: boolean };
   docDetails: DocDetail[];
   hasKits: boolean;
   hasTarifs: boolean;
@@ -70,7 +71,7 @@ const AdminDashboard = () => {
     setLoadingData(true);
     const { data: profiles, error } = await supabase
       .from("partner_profiles")
-      .select("id, user_id, status, created_at, email, setup_complete")
+      .select("id, user_id, status, created_at, email, setup_complete, cotisations_a_jour")
       .order("created_at", { ascending: false });
 
     if (error || !profiles) {
@@ -93,14 +94,14 @@ const AdminDashboard = () => {
         return {
           ...p,
           setup_complete: (p as any).setup_complete ?? false,
+          cotisations_a_jour: (p as any).cotisations_a_jour ?? false,
           user_email: (p as any).email,
           company: companyRes.data,
           docs: {
             rc: docTypes.includes("rc"),
             modele_j: docTypes.includes("modele_j"),
-            cotisations: docTypes.includes("cotisations"),
           },
-          docDetails,
+          docDetails: docDetails.filter((d) => d.doc_type !== "cotisations"),
           hasKits: (kitsRes.count ?? 0) > 0,
           hasTarifs: (tarifsRes.count ?? 0) > 0,
         };
@@ -150,50 +151,22 @@ const AdminDashboard = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handleToggleCotisations = async (partnerUserId: string, docDetails: DocDetail[]) => {
-    const existingDoc = docDetails.find((d) => d.doc_type === "cotisations");
-    if (existingDoc) {
-      await handleValidateDoc(existingDoc.id, true);
-    } else {
-      // Create a cotisations record directly (no file needed)
-      const { data: company } = await supabase
-        .from("companies")
-        .select("id")
-        .eq("user_id", partnerUserId)
-        .maybeSingle();
+  const handleToggleCotisations = async (profileId: string, currentValue: boolean) => {
+    const newValue = !currentValue;
+    const { error } = await supabase
+      .from("partner_profiles")
+      .update({ cotisations_a_jour: newValue })
+      .eq("id", profileId);
 
-      if (!company) {
-        toast({ title: "Erreur", description: "Entreprise introuvable.", variant: "destructive" });
-        return;
-      }
-
-      const { data: newDoc, error } = await supabase
-        .from("partner_documents")
-        .insert({
-          user_id: partnerUserId,
-          company_id: company.id,
-          doc_type: "cotisations",
-          file_path: "",
-          file_name: "cotisations-admin",
-          validated: true,
-        })
-        .select("id, doc_type, file_path, file_name, validated")
-        .single();
-
-      if (error) {
-        toast({ title: "Erreur", description: error.message, variant: "destructive" });
-        return;
-      }
-
-      toast({ title: "Cotisations marquées à jour" });
-      setPartners((prev) =>
-        prev.map((p) =>
-          p.user_id === partnerUserId
-            ? { ...p, docDetails: [...p.docDetails, newDoc as DocDetail] }
-            : p
-        )
-      );
+    if (error) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      return;
     }
+
+    toast({ title: newValue ? "Cotisations marquées à jour" : "Cotisations marquées non à jour" });
+    setPartners((prev) =>
+      prev.map((p) => (p.id === profileId ? { ...p, cotisations_a_jour: newValue } : p))
+    );
   };
 
   const handleValidateDoc = async (docId: string, validated: boolean) => {
@@ -232,10 +205,9 @@ const AdminDashboard = () => {
   if (!isAdmin) return null;
 
   const isFullyComplete = (p: PartnerRequest) =>
-    !!p.company && p.hasKits && p.hasTarifs &&
+    !!p.company && p.hasKits && p.hasTarifs && p.cotisations_a_jour &&
     p.docDetails.some((d) => d.doc_type === "rc" && d.validated) &&
-    p.docDetails.some((d) => d.doc_type === "modele_j" && d.validated) &&
-    p.docDetails.some((d) => d.doc_type === "cotisations" && d.validated);
+    p.docDetails.some((d) => d.doc_type === "modele_j" && d.validated);
 
   const pending = partners.filter((p) => p.status === "pending");
   const credited = partners.filter((p) => p.status === "approved" && isFullyComplete(p));
@@ -401,7 +373,6 @@ const AdminDashboard = () => {
 const DOC_LABELS: Record<string, { label: string; icon: React.ReactNode }> = {
   rc: { label: "RC", icon: <FileText className="w-3.5 h-3.5" /> },
   modele_j: { label: "Modèle J", icon: <FileCheck className="w-3.5 h-3.5" /> },
-  cotisations: { label: "Cotisations", icon: <CreditCard className="w-3.5 h-3.5" /> },
 };
 
 const PartnerCard = ({
@@ -419,7 +390,7 @@ const PartnerCard = ({
   onReject: () => void;
   onDownloadDoc: (filePath: string, fileName: string) => void;
   onValidateDoc: (docId: string, validated: boolean) => void;
-  onToggleCotisations: (userId: string, docDetails: DocDetail[]) => void;
+  onToggleCotisations: (profileId: string, currentValue: boolean) => void;
 }) => {
   const statusBadge = {
     pending: <Badge variant="outline" className="border-amber-500 text-amber-500">En attente</Badge>,
@@ -556,48 +527,33 @@ const PartnerCard = ({
                     );
                   })}
 
-                  {/* Cotisations - admin toggle */}
+                  {/* Cotisations - admin toggle from partner_profiles */}
                   <div className="flex items-center gap-2">
-                    {(() => {
-                      const cotisDoc = partner.docDetails.find((d) => d.doc_type === "cotisations");
-                      const isValid = cotisDoc?.validated ?? false;
-                      return (
-                        <>
-                          <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full border ${
-                            isValid
-                              ? "bg-green-500/10 text-green-700 border-green-500/20"
-                              : "bg-amber-500/10 text-amber-600 border-amber-500/20"
-                          }`}>
-                            <CreditCard className="w-3.5 h-3.5" />
-                            Cotisations
-                            {isValid ? <CheckCircle2 className="w-2.5 h-2.5" /> : <XCircle className="w-2.5 h-2.5" />}
-                          </span>
-                          {isValid ? (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-6 px-2 text-[10px] border-amber-500 text-amber-600 hover:bg-amber-50"
-                              onClick={() => {
-                                if (cotisDoc) onValidateDoc(cotisDoc.id, false);
-                              }}
-                            >
-                              <XCircle className="w-3 h-3 mr-1" />
-                              Marquer non à jour
-                            </Button>
-                          ) : (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-6 px-2 text-[10px] border-green-500 text-green-600 hover:bg-green-50"
-                              onClick={() => onToggleCotisations(partner.user_id, partner.docDetails)}
-                            >
-                              <CheckCircle2 className="w-3 h-3 mr-1" />
-                              Marquer à jour
-                            </Button>
-                          )}
-                        </>
-                      );
-                    })()}
+                    <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full border ${
+                      partner.cotisations_a_jour
+                        ? "bg-green-500/10 text-green-700 border-green-500/20"
+                        : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                    }`}>
+                      <CreditCard className="w-3.5 h-3.5" />
+                      Cotisations
+                      {partner.cotisations_a_jour ? <CheckCircle2 className="w-2.5 h-2.5" /> : <XCircle className="w-2.5 h-2.5" />}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={`h-6 px-2 text-[10px] ${
+                        partner.cotisations_a_jour
+                          ? "border-amber-500 text-amber-600 hover:bg-amber-50"
+                          : "border-green-500 text-green-600 hover:bg-green-50"
+                      }`}
+                      onClick={() => onToggleCotisations(partner.id, partner.cotisations_a_jour)}
+                    >
+                      {partner.cotisations_a_jour ? (
+                        <><XCircle className="w-3 h-3 mr-1" /> Non à jour</>
+                      ) : (
+                        <><CheckCircle2 className="w-3 h-3 mr-1" /> À jour</>
+                      )}
+                    </Button>
                   </div>
                 </div>
               </div>

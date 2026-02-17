@@ -249,6 +249,7 @@ export type Database = {
       }
       partner_profiles: {
         Row: {
+          cotisations_a_jour: boolean
           created_at: string
           email: string | null
           id: string
@@ -258,6 +259,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          cotisations_a_jour?: boolean
           created_at?: string
           email?: string | null
           id?: string
@@ -267,6 +269,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          cotisations_a_jour?: boolean
           created_at?: string
           email?: string | null
           id?: string

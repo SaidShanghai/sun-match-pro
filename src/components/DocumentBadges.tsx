@@ -11,7 +11,6 @@ interface DocState {
 interface DocStatus {
   rc: DocState;
   modele_j: DocState;
-  cotisations: DocState;
 }
 
 interface DocumentBadgesProps {
@@ -28,35 +27,45 @@ const UPLOAD_DOC_CONFIG = [
 const DEFAULT_STATUS: DocStatus = {
   rc: { sent: false, validated: false },
   modele_j: { sent: false, validated: false },
-  cotisations: { sent: false, validated: false },
 };
 
 const DocumentBadges = ({ userId, companyId, onStatusChange }: DocumentBadgesProps) => {
   const { toast } = useToast();
   const [docs, setDocs] = useState<DocStatus>(DEFAULT_STATUS);
+  const [cotisationsAJour, setCotisationsAJour] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   useEffect(() => {
-    const fetchDocs = async () => {
-      const { data } = await supabase
-        .from("partner_documents")
-        .select("doc_type, validated")
-        .eq("company_id", companyId);
+    const fetchData = async () => {
+      const [docsRes, profileRes] = await Promise.all([
+        supabase
+          .from("partner_documents")
+          .select("doc_type, validated")
+          .eq("company_id", companyId),
+        supabase
+          .from("partner_profiles")
+          .select("cotisations_a_jour")
+          .eq("user_id", userId)
+          .maybeSingle(),
+      ]);
 
-      if (data) {
+      const cotis = profileRes.data?.cotisations_a_jour ?? false;
+      setCotisationsAJour(cotis);
+
+      if (docsRes.data) {
         const status: DocStatus = { ...DEFAULT_STATUS };
-        data.forEach((d: any) => {
+        docsRes.data.forEach((d: any) => {
           if (d.doc_type in status) {
             status[d.doc_type as keyof DocStatus] = { sent: true, validated: !!d.validated };
           }
         });
         setDocs(status);
-        onStatusChange?.(status.rc.validated && status.modele_j.validated && status.cotisations.validated);
+        onStatusChange?.(status.rc.validated && status.modele_j.validated && cotis);
       }
     };
-    fetchDocs();
-  }, [companyId]);
+    fetchData();
+  }, [companyId, userId]);
 
   const handleUpload = async (docType: keyof DocStatus, file: File) => {
     setUploading(docType);
@@ -87,7 +96,7 @@ const DocumentBadges = ({ userId, companyId, onStatusChange }: DocumentBadgesPro
 
       const newDocs = { ...docs, [docType]: { sent: true, validated: false } };
       setDocs(newDocs);
-      onStatusChange?.(newDocs.rc.validated && newDocs.modele_j.validated && newDocs.cotisations.validated);
+      onStatusChange?.(newDocs.rc.validated && newDocs.modele_j.validated && cotisationsAJour);
       toast({ title: "Document envoyé", description: file.name });
     } catch (error: any) {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
@@ -96,9 +105,7 @@ const DocumentBadges = ({ userId, companyId, onStatusChange }: DocumentBadgesPro
     }
   };
 
-    const cotisationsState = docs.cotisations;
-
-    return (
+  return (
     <div className="flex items-center justify-center gap-3 flex-wrap">
       {UPLOAD_DOC_CONFIG.map(({ key, icon: Icon, uploadLabel, sentLabel, validatedLabel }) => {
         const state = docs[key];
@@ -154,14 +161,14 @@ const DocumentBadges = ({ userId, companyId, onStatusChange }: DocumentBadgesPro
       {/* Cotisations - read-only badge, controlled by admin */}
       <span
         className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${
-          cotisationsState.validated
+          cotisationsAJour
             ? "bg-green-500/10 text-green-700 border-green-500/20"
             : "bg-amber-500/10 text-amber-700 border-amber-500/20"
         }`}
       >
         <CreditCard className="w-3.5 h-3.5" />
-        {cotisationsState.validated ? "Cotisations à jour" : "Cotisations non vérifiées"}
-        {cotisationsState.validated ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Clock className="w-3.5 h-3.5" />}
+        {cotisationsAJour ? "Cotisations à jour" : "Cotisations non vérifiées"}
+        {cotisationsAJour ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Clock className="w-3.5 h-3.5" />}
       </span>
     </div>
   );
