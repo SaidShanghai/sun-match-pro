@@ -1,253 +1,361 @@
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Sun, Leaf, Zap, PiggyBank, ArrowRight, Star, Sparkles, TrendingUp, Shield, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Sun,
+  PiggyBank,
+  Leaf,
+  Zap,
+  Shield,
+  ArrowRight,
+  Star,
+  MapPin,
+  FileText,
+  CheckCircle,
+  Loader,
+  Check,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-const advantages = [
+const features = [
   {
-    icon: PiggyBank,
-    emoji: "💰",
-    title: "Économies folles",
-    description: "Jusqu'à 70% de réduction sur votre facture. Votre portefeuille vous dit merci !",
-    color: "from-solar-warm/20 to-solar-gold/20",
+    icon: MapPin,
+    title: "Installateurs Locaux",
+    description: "Des professionnels certifiés RGE près de chez vous, vérifiés et notés.",
   },
   {
-    icon: Leaf,
-    emoji: "🌍",
-    title: "Planète heureuse",
-    description: "Énergie 100% propre et renouvelable. Chaque panneau compte pour le climat.",
-    color: "from-primary/20 to-primary/5",
+    icon: Shield,
+    title: "Qualité Garantie",
+    description: "Installateurs certifiés, garanties décennales et suivi post-installation.",
+  },
+  {
+    icon: PiggyBank,
+    title: "Économies Réelles",
+    description: "Jusqu'à 70% de réduction sur votre facture d'électricité.",
   },
   {
     icon: Zap,
-    emoji: "⚡",
-    title: "Liberté totale",
-    description: "Fini les mauvaises surprises sur les prix. Produisez votre propre énergie !",
-    color: "from-solar-purple/20 to-solar-pink/20",
+    title: "Diagnostic Express",
+    description: "En 2 minutes, obtenez une estimation personnalisée de votre potentiel.",
   },
 ];
 
-const stats = [
-  { value: "500+", label: "Installateurs", emoji: "🔧" },
-  { value: "15k+", label: "Diagnostics", emoji: "📊" },
-  { value: "98%", label: "Satisfaits", emoji: "😍" },
-  { value: "30%", label: "Économies moy.", emoji: "📉" },
-];
-
-const testimonials = [
-  {
-    name: "Marie D.",
-    location: "Lyon 🇫🇷",
-    rating: 5,
-    text: "En 48h j'avais mon installateur. Mes panneaux sont posés et je fais déjà des économies de ouf !",
-    avatar: "🙋‍♀️",
-  },
-  {
-    name: "Pierre L.",
-    location: "Bordeaux 🍷",
-    rating: 5,
-    text: "Le diagnostic m'a ouvert les yeux sur mon potentiel solaire. L'installateur recommandé était au top.",
-    avatar: "👨‍💼",
-  },
-  {
-    name: "Sophie M.",
-    location: "Marseille ☀️",
-    rating: 5,
-    text: "J'ai comparé 4 devis en 5 minutes. Le service est vraiment pratique et rapide !",
-    avatar: "👩‍🔬",
-  },
-];
-
-const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.5 },
-};
+const regions = ["Île-de-France", "PACA", "Occitanie", "Nouvelle-Aquitaine", "Auvergne-Rhône-Alpes", "Bretagne"];
 
 const Index = () => {
+  const [phoneScreen, setPhoneScreen] = useState<"home" | "analyzing" | "result" | "match">("home");
+  const phoneTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const triggerPhoneAnimation = () => {
+    if (phoneTimeoutRef.current) clearTimeout(phoneTimeoutRef.current);
+    setPhoneScreen("analyzing");
+    phoneTimeoutRef.current = setTimeout(() => {
+      setPhoneScreen("result");
+      phoneTimeoutRef.current = setTimeout(() => {
+        setPhoneScreen("match");
+        phoneTimeoutRef.current = setTimeout(() => {
+          setPhoneScreen("home");
+        }, 3000);
+      }, 2000);
+    }, 2000);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (phoneTimeoutRef.current) clearTimeout(phoneTimeoutRef.current);
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden">
+    <div className="min-h-screen flex flex-col">
       <Header />
 
       {/* Hero */}
-      <section className="relative py-20 md:py-32">
-        {/* Fun blobs */}
-        <div className="absolute top-10 -left-32 h-80 w-80 rounded-full bg-primary/10 blur-3xl animate-[pulse_6s_ease-in-out_infinite]" />
-        <div className="absolute top-40 -right-32 h-96 w-96 rounded-full bg-solar-purple/10 blur-3xl animate-[pulse_8s_ease-in-out_infinite]" />
-        <div className="absolute bottom-10 left-1/3 h-64 w-64 rounded-full bg-solar-warm/10 blur-3xl animate-[pulse_7s_ease-in-out_infinite]" />
+      <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-16">
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5" />
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-2xl" />
 
-        <div className="container relative z-10">
-          <div className="mx-auto max-w-3xl text-center">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
+              className="space-y-8"
             >
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-                className="mb-6 inline-flex items-center gap-2 rounded-full border bg-card px-5 py-2 text-sm font-medium shadow-sm"
-              >
-                <span className="text-lg">☀️</span>
-                Le comparateur solaire n°1 en France
-                <Sparkles className="h-4 w-4 text-solar-gold" />
-              </motion.div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                <span className="text-sm font-medium">500+ installateurs certifiés en France</span>
+              </div>
 
-              <h1 className="mb-6 text-5xl font-extrabold tracking-tight font-display md:text-7xl">
-                Le solaire,
-                <br />
-                <span className="text-gradient-fun">c'est maintenant</span>{" "}
-                <motion.span
-                  animate={{ rotate: [0, 14, -8, 14, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
-                  className="inline-block"
-                >
-                  🚀
-                </motion.span>
+              <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
+                Le solaire,{" "}
+                <span className="text-gradient">simplifié</span>
               </h1>
 
-              <p className="mb-10 text-lg text-muted-foreground md:text-xl max-w-xl mx-auto">
-                Diagnostic personnalisé en 2 minutes, devis gratuits d'installateurs certifiés. Simple, rapide, efficace.
+              <p className="text-xl text-muted-foreground max-w-lg">
+                SolairePro connecte particuliers et installateurs certifiés.
+                Diagnostic gratuit, devis personnalisés, installation garantie.
               </p>
 
-              <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                <Button size="lg" className="gap-2 text-base px-8 rounded-full h-14 text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105" asChild>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button
+                  size="lg"
+                  className="group h-14 px-8 text-base cursor-pointer"
+                  onClick={triggerPhoneAnimation}
+                >
+                  Lancer mon diagnostic
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+                <Button asChild variant="outline" size="lg" className="h-14 px-8 text-base">
                   <Link to="/diagnostic">
-                    Lancer mon diagnostic
-                    <ArrowRight className="h-5 w-5" />
+                    Comment ça marche ?
                   </Link>
                 </Button>
-                <Button variant="outline" size="lg" className="rounded-full h-14 text-base px-8" asChild>
-                  <a href="#comment-ca-marche">
-                    Comment ça marche ?
-                  </a>
-                </Button>
+              </div>
+
+              {/* Trust indicators */}
+              <div className="flex items-center gap-8 pt-8 border-t border-border">
+                <div className="text-center">
+                  <div className="text-3xl font-bold">15K+</div>
+                  <div className="text-sm text-muted-foreground">Diagnostics</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold">500+</div>
+                  <div className="text-sm text-muted-foreground">Installateurs</div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Star className="w-5 h-5 text-warning fill-warning" />
+                  <span className="text-3xl font-bold">4.9</span>
+                  <span className="text-sm text-muted-foreground">/5</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Phone mockup */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="hidden lg:block"
+            >
+              <div className="relative mx-auto w-[300px] h-[600px] bg-foreground rounded-[3rem] p-3 shadow-2xl">
+                <div className="w-full h-full bg-background rounded-[2.5rem] overflow-hidden relative">
+                  <AnimatePresence mode="wait">
+                    {phoneScreen === "home" && (
+                      <motion.div
+                        key="home"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="p-6 space-y-6 absolute inset-0"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-sm text-muted-foreground">Bonjour 👋</div>
+                            <div className="text-lg font-semibold">Mon diagnostic solaire</div>
+                          </div>
+                          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                            <Sun className="w-5 h-5 text-primary" />
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-4 bg-muted rounded-xl">
+                          <MapPin className="w-5 h-5 text-primary" />
+                          <span className="text-muted-foreground text-sm">Entrez votre adresse...</span>
+                        </div>
+                        <div className="h-32 bg-muted rounded-xl flex items-center justify-center">
+                          <div className="text-center">
+                            <Sun className="w-10 h-10 text-primary mx-auto mb-2" />
+                            <span className="text-sm text-muted-foreground">Potentiel solaire</span>
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="text-sm font-medium">Type de logement</div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="p-3 bg-primary/5 border border-primary/20 rounded-xl text-center text-sm font-medium">🏠 Maison</div>
+                            <div className="p-3 bg-muted rounded-xl text-center text-sm text-muted-foreground">🏢 Appartement</div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {phoneScreen === "analyzing" && (
+                      <motion.div
+                        key="analyzing"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="p-6 space-y-6 absolute inset-0 flex flex-col items-center justify-center"
+                      >
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                        >
+                          <Loader className="w-12 h-12 text-primary" />
+                        </motion.div>
+                        <div className="text-center">
+                          <div className="text-lg font-semibold">Analyse en cours...</div>
+                          <div className="text-sm text-muted-foreground mt-1">Calcul de votre potentiel solaire</div>
+                        </div>
+                        <div className="w-full space-y-2">
+                          <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
+                            <div className="w-2 h-2 bg-primary rounded-full" />
+                            <span className="text-sm">Ensoleillement: 1450h/an</span>
+                          </div>
+                          <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
+                            <div className="w-2 h-2 bg-primary rounded-full" />
+                            <span className="text-sm">Surface toiture: 45m²</span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {phoneScreen === "result" && (
+                      <motion.div
+                        key="result"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="p-6 space-y-5 absolute inset-0"
+                      >
+                        <div className="text-center">
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 200 }}
+                            className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-3"
+                          >
+                            <Check className="w-8 h-8 text-primary-foreground" />
+                          </motion.div>
+                          <div className="text-lg font-semibold">Excellent potentiel !</div>
+                        </div>
+                        <div className="p-4 bg-primary/5 rounded-xl border border-primary/20 text-center">
+                          <div className="text-sm text-muted-foreground">Économies estimées</div>
+                          <div className="text-3xl font-bold text-primary">1 250 €/an</div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl">
+                            <Sun className="w-4 h-4 text-primary" />
+                            <span className="text-xs">Puissance recommandée: 6 kWc</span>
+                          </div>
+                          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl">
+                            <TrendingUp className="w-4 h-4 text-primary" />
+                            <span className="text-xs">Rentabilité: 8 ans</span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {phoneScreen === "match" && (
+                      <motion.div
+                        key="match"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="p-6 space-y-5 absolute inset-0"
+                      >
+                        <div className="text-center">
+                          <div className="text-sm text-muted-foreground">Installateurs disponibles</div>
+                          <motion.div
+                            className="text-5xl font-bold text-primary mt-1"
+                            initial={{ scale: 1.3 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring" }}
+                          >
+                            3
+                          </motion.div>
+                        </div>
+                        {["SolarTech Pro", "GreenEnergy 31", "EcoSolaire"].map((name, i) => (
+                          <div key={i} className="flex items-center gap-3 p-3 bg-muted rounded-xl">
+                            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                              <Users className="w-5 h-5 text-primary" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-semibold text-sm">{name}</div>
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Star className="w-3 h-3 text-warning fill-warning" />
+                                {(4.7 + i * 0.1).toFixed(1)} • Certifié RGE
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Stats – pill shaped */}
-      <section className="pb-16">
-        <div className="container">
-          <div className="mx-auto max-w-3xl">
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              {stats.map((stat, i) => (
-                <motion.div
-                  key={i}
-                  {...fadeInUp}
-                  transition={{ ...fadeInUp.transition, delay: i * 0.1 }}
-                  className="flex flex-col items-center gap-1 rounded-2xl border bg-card p-5 shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <span className="text-2xl">{stat.emoji}</span>
-                  <div className="text-2xl font-extrabold font-display text-foreground">{stat.value}</div>
-                  <div className="text-xs text-muted-foreground font-medium">{stat.label}</div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Advantages */}
-      <section className="py-20 bg-muted/40">
-        <div className="container">
-          <motion.div {...fadeInUp} className="mx-auto mb-14 max-w-2xl text-center">
-            <span className="text-4xl mb-4 block">🌞</span>
-            <h2 className="mb-4 text-3xl font-bold font-display md:text-5xl">
-              Pourquoi le solaire ?
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              3 bonnes raisons de franchir le pas (et il y en a plein d'autres)
+      {/* Features */}
+      <section className="py-24 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl font-bold mb-4">Pourquoi SolairePro ?</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Le comparateur solaire pensé pour simplifier votre transition énergétique.
             </p>
           </motion.div>
-          <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
-            {advantages.map((adv, i) => (
-              <motion.div key={i} {...fadeInUp} transition={{ ...fadeInUp.transition, delay: i * 0.15 }}>
-                <Card className="h-full border-0 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 overflow-hidden group">
-                  <CardContent className="p-8">
-                    <span className="text-4xl mb-4 block group-hover:scale-125 transition-transform origin-left">
-                      {adv.emoji}
-                    </span>
-                    <h3 className="mb-2 text-xl font-bold font-display">{adv.title}</h3>
-                    <p className="text-muted-foreground">{adv.description}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* How it works */}
-      <section id="comment-ca-marche" className="py-20">
-        <div className="container">
-          <motion.div {...fadeInUp} className="mx-auto mb-14 max-w-2xl text-center">
-            <h2 className="mb-4 text-3xl font-bold font-display md:text-5xl">
-              3 étapes, c'est tout ! ✌️
-            </h2>
-            <p className="text-muted-foreground text-lg">Du diagnostic aux devis en quelques minutes.</p>
-          </motion.div>
-          <div className="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto">
-            {[
-              { step: "1", emoji: "📋", title: "Diagnostic", desc: "Répondez à 8 questions simples sur votre logement et vos besoins énergétiques.", color: "bg-primary" },
-              { step: "2", emoji: "🔍", title: "Comparaison", desc: "On sélectionne les meilleurs installateurs certifiés près de chez vous.", color: "bg-accent" },
-              { step: "3", emoji: "✅", title: "Devis gratuits", desc: "Recevez et comparez des devis personnalisés. Vous choisissez, on gère !", color: "bg-solar-purple" },
-            ].map((item, i) => (
-              <motion.div key={i} {...fadeInUp} transition={{ ...fadeInUp.transition, delay: i * 0.15 }} className="relative">
-                <div className="text-center">
-                  <div className={`mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl ${item.color} text-3xl shadow-lg`}>
-                    {item.emoji}
-                  </div>
-                  <div className="mb-1 text-xs font-bold uppercase tracking-widest text-muted-foreground">Étape {item.step}</div>
-                  <h3 className="mb-2 text-xl font-bold font-display">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground">{item.desc}</p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="ride-card text-center"
+              >
+                <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <feature.icon className="w-7 h-7 text-primary" />
                 </div>
-                {i < 2 && (
-                  <div className="hidden md:block absolute top-8 -right-4 text-muted-foreground/30">
-                    <ChevronRight className="h-8 w-8" />
-                  </div>
-                )}
+                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                <p className="text-muted-foreground">{feature.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-20 bg-muted/40">
-        <div className="container">
-          <motion.div {...fadeInUp} className="mx-auto mb-14 max-w-2xl text-center">
-            <h2 className="mb-4 text-3xl font-bold font-display md:text-5xl">
-              Ils ont adoré 💚
-            </h2>
+      {/* Regions */}
+      <section className="py-24">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl font-bold mb-4">Partout en France</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Des installateurs certifiés dans toutes les régions.
+            </p>
           </motion.div>
-          <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
-            {testimonials.map((t, i) => (
-              <motion.div key={i} {...fadeInUp} transition={{ ...fadeInUp.transition, delay: i * 0.15 }}>
-                <Card className="h-full hover:shadow-lg transition-all hover:-translate-y-1">
-                  <CardContent className="p-6">
-                    <div className="mb-4 flex gap-0.5">
-                      {Array.from({ length: t.rating }).map((_, j) => (
-                        <Star key={j} className="h-4 w-4 fill-solar-gold text-solar-gold" />
-                      ))}
-                    </div>
-                    <p className="mb-5 text-sm leading-relaxed text-foreground">"{t.text}"</p>
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{t.avatar}</span>
-                      <div>
-                        <div className="text-sm font-semibold">{t.name}</div>
-                        <div className="text-xs text-muted-foreground">{t.location}</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+
+          <div className="flex flex-wrap justify-center gap-4">
+            {regions.map((region, index) => (
+              <motion.div
+                key={region}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05 }}
+                className="px-6 py-3 bg-card border border-border rounded-full text-lg font-medium hover:border-primary hover:text-primary transition-colors cursor-default"
+              >
+                {region}
               </motion.div>
             ))}
           </div>
@@ -255,33 +363,65 @@ const Index = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20">
-        <div className="container">
-          <motion.div {...fadeInUp}>
-            <div className="mx-auto max-w-3xl rounded-3xl gradient-fun p-12 md:p-16 text-center shadow-2xl relative overflow-hidden">
-              <div className="absolute top-4 right-8 text-6xl opacity-20 rotate-12">☀️</div>
-              <div className="absolute bottom-4 left-8 text-5xl opacity-20 -rotate-12">⚡</div>
-              <div className="relative z-10">
-                <h2 className="mb-4 text-3xl font-bold text-white font-display md:text-4xl">
-                  Prêt à passer au solaire ? 🌞
-                </h2>
-                <p className="mb-8 text-white/80 text-lg">
-                  2 minutes de diagnostic, des économies pour des années.
-                </p>
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  className="gap-2 text-base px-8 rounded-full h-14 text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105"
-                  asChild
-                >
+      <section className="py-24 bg-foreground text-background">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              <h2 className="text-4xl lg:text-5xl font-bold">
+                Prêt à passer au solaire ?
+              </h2>
+              <p className="text-xl text-background/70 max-w-lg">
+                Rejoignez des milliers de Français qui ont réduit leur facture
+                d'énergie grâce à SolairePro.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 h-14 px-8 text-base">
                   <Link to="/diagnostic">
-                    C'est parti !
-                    <ArrowRight className="h-5 w-5" />
+                    <Sun className="w-5 h-5 mr-2" />
+                    Diagnostic gratuit
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="border-background/30 text-background hover:bg-background/10 h-14 px-8 text-base">
+                  <Link to="/diagnostic">
+                    En savoir plus
                   </Link>
                 </Button>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="grid grid-cols-2 gap-6"
+            >
+              <div className="p-6 bg-background/5 rounded-2xl">
+                <Leaf className="w-10 h-10 mb-4" />
+                <div className="text-3xl font-bold">15K+</div>
+                <div className="text-background/70">Diagnostics réalisés</div>
+              </div>
+              <div className="p-6 bg-background/5 rounded-2xl">
+                <Sun className="w-10 h-10 mb-4" />
+                <div className="text-3xl font-bold">500+</div>
+                <div className="text-background/70">Installateurs certifiés</div>
+              </div>
+              <div className="p-6 bg-background/5 rounded-2xl">
+                <PiggyBank className="w-10 h-10 mb-4" />
+                <div className="text-3xl font-bold">30%</div>
+                <div className="text-background/70">Économies moyennes</div>
+              </div>
+              <div className="p-6 bg-background/5 rounded-2xl">
+                <Star className="w-10 h-10 mb-4" />
+                <div className="text-3xl font-bold">4.9</div>
+                <div className="text-background/70">Note moyenne</div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 

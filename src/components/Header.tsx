@@ -1,33 +1,30 @@
-import { Sun, Sparkles } from "lucide-react";
+import { Sun } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const Header = () => {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-lg">
-      <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl gradient-fun transition-transform group-hover:scale-110 group-hover:rotate-12">
-            <Sun className="h-5 w-5 text-white" />
-          </div>
-          <span className="text-xl font-bold font-display">
-            Solaire<span className="text-gradient-fun">Pro</span>
-          </span>
-        </Link>
-        <nav className="hidden items-center gap-6 md:flex">
-          <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Accueil
+    <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+              <Sun className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <span className="text-xl font-bold">SolairePro</span>
           </Link>
-          <Link to="/diagnostic" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Diagnostic
-          </Link>
-        </nav>
-        <Button asChild size="sm" className="rounded-full gap-2 px-5">
-          <Link to="/diagnostic">
-            <Sparkles className="h-4 w-4" />
-            Mon diagnostic
-          </Link>
-        </Button>
+          <nav className="hidden md:flex items-center gap-6">
+            <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">
+              Accueil
+            </Link>
+            <Link to="/diagnostic" className="text-sm font-medium hover:text-primary transition-colors">
+              Diagnostic
+            </Link>
+          </nav>
+          <Button asChild size="sm">
+            <Link to="/diagnostic">Mon diagnostic</Link>
+          </Button>
+        </div>
       </div>
     </header>
   );
