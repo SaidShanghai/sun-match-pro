@@ -526,10 +526,12 @@ const Partenaires = () => {
 
           <div className="text-center pt-4">
             <p className="text-sm text-muted-foreground">
-              {setupComplete
+              {setupComplete && docsComplete
                 ? "✅ Profil complet — visible dans les recherches clients."
+                : setupComplete && !docsComplete
+                ? "📄 Complétez vos documents justificatifs pour apparaître dans les recherches."
                 : entrepriseRegistered
-                ? "⚠️ Complétez les 3 étapes pour apparaître dans les recherches clients NOORIA."
+                ? "⚠️ Complétez les 3 étapes et vos documents pour apparaître dans les recherches clients NOORIA."
                 : "🔒 Inscription entreprise obligatoire avant d'accéder aux kits et à la tarification."}
             </p>
           </div>
