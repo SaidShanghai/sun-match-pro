@@ -53,6 +53,8 @@ const Partenaires = () => {
   const [phone, setPhone] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
 
+  // Track original values for change detection
+  const [originalValues, setOriginalValues] = useState<Record<string, any>>({});
   // Redirect admins to admin dashboard
   useEffect(() => {
     if (!adminLoading && isAdmin) {
@@ -99,6 +101,15 @@ const Partenaires = () => {
           setServiceAreas(data.service_areas || []);
           setPhone(data.phone);
           setCompanyEmail(data.email);
+          setOriginalValues({
+            companyName: data.name,
+            ice: data.ice,
+            certifications: (data.certifications || []).join(", "),
+            city: data.city,
+            serviceAreas: JSON.stringify(data.service_areas || []),
+            phone: data.phone,
+            companyEmail: data.email,
+          });
         }
       }
       setLoadingCompany(false);
@@ -173,6 +184,16 @@ const Partenaires = () => {
   }
 
   const formValid = companyName.trim() && /^\d{15}$/.test(ice) && city && phone.trim() && companyEmail.trim();
+
+  const hasChanges = !entrepriseRegistered || (
+    companyName !== originalValues.companyName ||
+    ice !== originalValues.ice ||
+    certifications !== originalValues.certifications ||
+    city !== originalValues.city ||
+    JSON.stringify(serviceAreas) !== originalValues.serviceAreas ||
+    phone !== originalValues.phone ||
+    companyEmail !== originalValues.companyEmail
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -340,7 +361,11 @@ const Partenaires = () => {
                     <Button type="button" variant="outline" onClick={() => setActiveSection("none")}>
                       Annuler
                     </Button>
-                    <Button type="submit" disabled={saving || !formValid}>
+                    <Button
+                      type="submit"
+                      disabled={saving || !formValid || (entrepriseRegistered && !hasChanges)}
+                      className={entrepriseRegistered && hasChanges ? "bg-[hsl(24_95%_53%)] hover:bg-[hsl(24_95%_45%)] text-white" : ""}
+                    >
                       {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
                       {entrepriseRegistered ? "Mettre à jour" : "Enregistrer"}
                     </Button>
