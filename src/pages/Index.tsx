@@ -573,12 +573,15 @@ const Index = () => {
                               "Finalisation du rapport...",
                             ];
                             let p = 0;
+                            const startTime = Date.now();
+                            const totalDuration = 8000;
                             const interval = setInterval(() => {
-                              p += Math.random() * 15 + 5;
-                              if (p >= 100) { p = 100; clearInterval(interval); }
+                              const elapsed = Date.now() - startTime;
+                              p = Math.min((elapsed / totalDuration) * 100, 100);
+                              if (p >= 100) { clearInterval(interval); }
                               setAnalyseProgress(Math.round(p));
                               setAnalyseLabel(labels[Math.min(Math.floor(p / 18), labels.length - 1)]);
-                            }, 600);
+                            }, 50);
                           }}
                           className="w-full bg-primary text-primary-foreground rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors"
                         >
