@@ -534,6 +534,7 @@ const Index = () => {
                               { icon: "🚗", label: "Véhicule élec." },
                               { icon: "🏊", label: "Piscine" },
                               { icon: "🍳", label: "Cuisine élec." },
+                              { icon: "🧺", label: "Lave-linge" },
                               { icon: "💻", label: "Informatique" },
                               { icon: "🧊", label: "Frigo/Congél." },
                               { icon: "❄️", label: "Chambre froide" },
