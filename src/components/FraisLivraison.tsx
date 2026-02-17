@@ -24,6 +24,7 @@ const FraisLivraison = ({ userId, companyId, companyCity, serviceAreas, onBack }
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [costs, setCosts] = useState<DeliveryCost[]>([]);
 
   useEffect(() => {
@@ -55,6 +56,7 @@ const FraisLivraison = ({ userId, companyId, companyCity, serviceAreas, onBack }
   }, [companyId, companyCity, serviceAreas]);
 
   const updateCost = (city: string, value: string) => {
+    setSaved(false);
     setCosts((prev) =>
       prev.map((c) => (c.city === city ? { ...c, cost: parseFloat(value) || 0 } : c))
     );
@@ -78,6 +80,7 @@ const FraisLivraison = ({ userId, companyId, companyCity, serviceAreas, onBack }
         if (error) throw error;
       }
 
+      setSaved(true);
       toast({ title: "Frais de livraison enregistrés" });
     } catch (error: any) {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
@@ -151,13 +154,17 @@ const FraisLivraison = ({ userId, companyId, companyCity, serviceAreas, onBack }
 
           {costs.length > 0 && (
             <div className="flex justify-end pt-4">
-              <Button onClick={handleSave} disabled={saving}>
+              <Button
+                onClick={handleSave}
+                disabled={saving || saved}
+                className={saved ? "bg-[hsl(24_95%_53%)]/50 text-white cursor-not-allowed" : "bg-[hsl(24_95%_53%)] hover:bg-[hsl(24_95%_45%)] text-white"}
+              >
                 {saving ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 ) : (
                   <Save className="w-4 h-4 mr-2" />
                 )}
-                Enregistrer
+                {saved ? "Enregistré ✓" : "Enregistrer"}
               </Button>
             </div>
           )}
