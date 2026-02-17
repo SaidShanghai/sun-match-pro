@@ -47,6 +47,9 @@ const Index = () => {
   const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form">("intro");
   const [objectif, setObjectif] = useState<"facture" | "autonomie" | null>(null);
   const [tension, setTension] = useState<"220" | "380" | null>(null);
+  const [conso, setConso] = useState("");
+  const [facture, setFacture] = useState("");
+  const [ville, setVille] = useState("Casablanca");
 
 
   return (
@@ -304,8 +307,14 @@ const Index = () => {
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-semibold text-foreground">Consommation mensuelle (kWh/mois)</label>
                           <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
-                            <Zap className="w-3.5 h-3.5 text-muted-foreground" />
-                            <span className="text-[10px] text-muted-foreground">Ex: 480</span>
+                            <Zap className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                            <input
+                              type="text"
+                              value={conso}
+                              onChange={(e) => setConso(e.target.value)}
+                              placeholder="Ex: 480"
+                              className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
+                            />
                           </div>
                         </div>
 
@@ -314,15 +323,27 @@ const Index = () => {
                           <div className="space-y-1">
                             <label className="text-[10px] font-semibold text-foreground">Facture (MAD)</label>
                             <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
-                              <FileText className="w-3.5 h-3.5 text-muted-foreground" />
-                              <span className="text-[10px] text-muted-foreground">Ex: 800</span>
+                              <FileText className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                              <input
+                                type="text"
+                                value={facture}
+                                onChange={(e) => setFacture(e.target.value)}
+                                placeholder="Ex: 800"
+                                className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
+                              />
                             </div>
                           </div>
                           <div className="space-y-1">
                             <label className="text-[10px] font-semibold text-foreground">Ville</label>
                             <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
-                              <MapPinned className="w-3.5 h-3.5 text-muted-foreground" />
-                              <span className="text-[10px] text-foreground">Casablanca</span>
+                              <MapPinned className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                              <input
+                                type="text"
+                                value={ville}
+                                onChange={(e) => setVille(e.target.value)}
+                                placeholder="Casablanca"
+                                className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
+                              />
                             </div>
                           </div>
                         </div>
