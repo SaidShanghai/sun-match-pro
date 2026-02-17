@@ -410,8 +410,9 @@ const Index = () => {
 
                         {/* CTA */}
                         <button
-                          onClick={() => setPhoneScreen("site")}
-                          className="w-full bg-primary text-primary-foreground rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors"
+                          onClick={() => conso.trim() && setPhoneScreen("site")}
+                          disabled={!conso.trim()}
+                          className={`w-full rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 transition-colors ${conso.trim() ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
                         >
                           Continuer <ArrowRight className="w-3.5 h-3.5" />
                         </button>
