@@ -285,8 +285,8 @@ const Partenaires = () => {
                 <span className="inline-flex items-center gap-1.5 bg-green-500/10 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full border border-green-500/20">
                   <FileText className="w-3.5 h-3.5" /> RC téléchargé
                 </span>
-                <span className="inline-flex items-center gap-1.5 bg-green-500/10 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full border border-green-500/20">
-                  <FileCheck className="w-3.5 h-3.5" /> Modèle J téléchargé
+                <span className="inline-flex items-center gap-1.5 bg-amber-500/10 text-amber-700 text-xs font-semibold px-3 py-1.5 rounded-full border border-amber-500/20">
+                  <FileCheck className="w-3.5 h-3.5" /> Modèle J non téléchargé
                 </span>
                 <span className="inline-flex items-center gap-1.5 bg-green-500/10 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full border border-green-500/20">
                   <CreditCard className="w-3.5 h-3.5" /> Cotisations à jour
