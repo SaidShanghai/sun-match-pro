@@ -62,9 +62,8 @@ const Diagnostic = () => {
               </h1>
 
               <p className="text-xl text-muted-foreground max-w-lg text-right ml-auto">
-                Particulier ou entreprise, on vous accompagne. Diagnostic personnalisé,
-                installateurs certifiés, et pour les pros : montage des dossiers SR500,
-                Tatwir Al Harariya, et bien plus encore.
+                Particulier ou entreprise, on vous accompagne de A à Z : diagnostic sur mesure, dimensionnement, installation par des partenaires certifiés.
+                <br />Pour les professionnels : montage des dossiers SR500 et TATWIR – Croissance Verte, avec appui financement (banques/garanties) et conformité technique si nécessaire.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
