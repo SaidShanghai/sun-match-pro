@@ -8,6 +8,7 @@ import Diagnostic from "./pages/Diagnostic";
 import Results from "./pages/Results";
 import Partenaires from "./pages/Partenaires";
 import AuthPartenaires from "./pages/AuthPartenaires";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/resultats" element={<Results />} />
           <Route path="/partenaires" element={<Partenaires />} />
           <Route path="/auth-partenaires" element={<AuthPartenaires />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
