@@ -90,7 +90,7 @@ const Diagnostic = () => {
       <Header />
 
       {/* Hero — same layout as Index */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-16">
+      <section className="relative min-h-[90vh] flex items-center overflow-visible pt-16">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5" />
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-2xl" />
@@ -101,14 +101,14 @@ const Diagnostic = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="space-y-8"
+              className="space-y-8 overflow-visible"
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                 <span className="text-sm font-medium">Gratuit • Sans engagement • Résultat instantané</span>
               </div>
 
-              <h1 className="font-black leading-[1.1]">
+              <h1 className="font-black leading-[1.1] overflow-visible">
                 <span className="block" style={{ fontSize: "60px" }}>Vous êtes à</span>
                 <span className="block text-gradient" style={{ fontSize: "112px" }}>3 minutes</span>
                 <span className="block" style={{ fontSize: "60px" }}>de grosses</span>
