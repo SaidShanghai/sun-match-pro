@@ -15,16 +15,28 @@ const AuthPartenaires = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [forgotPassword, setForgotPassword] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) return;
+    if (!email.trim()) return;
     setLoading(true);
 
     try {
-      if (isLogin) {
+      if (forgotPassword) {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        setResetSent(true);
+        toast({
+          title: "Email envoyé",
+          description: "Vérifiez votre boîte mail pour réinitialiser votre mot de passe.",
+        });
+      } else if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         navigate("/partenaires");
@@ -36,8 +48,8 @@ const AuthPartenaires = () => {
         });
         if (error) throw error;
         toast({
-          title: "Inscription réussie",
-          description: "Votre demande a été envoyée. Un administrateur validera votre compte sous 24 à 48h.",
+          title: "Vérifiez votre email",
+          description: "Un lien de confirmation vous a été envoyé. Cliquez dessus pour activer votre compte.",
         });
       }
     } catch (error: any) {
@@ -61,12 +73,18 @@ const AuthPartenaires = () => {
               <Sun className="w-8 h-8 text-primary-foreground" />
             </div>
             <CardTitle className="text-2xl">
-              {isLogin ? "Connexion Partenaire" : "Inscription Partenaire"}
+              {forgotPassword
+                ? "Mot de passe oublié"
+                : isLogin
+                  ? "Connexion Partenaire"
+                  : "Inscription Partenaire"}
             </CardTitle>
             <CardDescription>
-              {isLogin
-                ? "Accédez à votre espace partenaire NOORIA"
-                : "Créez votre compte pour rejoindre le réseau NOORIA"}
+              {forgotPassword
+                ? "Entrez votre email pour recevoir un lien de réinitialisation"
+                : isLogin
+                  ? "Accédez à votre espace partenaire NOORIA"
+                  : "Créez votre compte pour rejoindre le réseau NOORIA"}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -86,40 +104,61 @@ const AuthPartenaires = () => {
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Mot de passe</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10"
-                    required
-                    minLength={6}
-                  />
+              {!forgotPassword && (
+                <div className="space-y-2">
+                  <Label htmlFor="password">Mot de passe</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pl-10"
+                      required
+                      minLength={6}
+                    />
+                  </div>
                 </div>
-              </div>
-              <Button type="submit" className="w-full" disabled={loading}>
+              )}
+              <Button type="submit" className="w-full" disabled={loading || (forgotPassword && resetSent)}>
                 {loading ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 ) : (
                   <ArrowRight className="w-4 h-4 mr-2" />
                 )}
-                {isLogin ? "Se connecter" : "S'inscrire"}
+                {forgotPassword
+                  ? resetSent ? "Email envoyé ✓" : "Envoyer le lien"
+                  : isLogin ? "Se connecter" : "S'inscrire"}
               </Button>
             </form>
-            <div className="mt-6 text-center">
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                {isLogin
-                  ? "Pas encore de compte ? S'inscrire"
-                  : "Déjà un compte ? Se connecter"}
-              </button>
+            <div className="mt-6 text-center space-y-2">
+              {isLogin && !forgotPassword && (
+                <button
+                  onClick={() => setForgotPassword(true)}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors block w-full"
+                >
+                  Mot de passe oublié ?
+                </button>
+              )}
+              {forgotPassword ? (
+                <button
+                  onClick={() => { setForgotPassword(false); setResetSent(false); }}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  ← Retour à la connexion
+                </button>
+              ) : (
+                <button
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {isLogin
+                    ? "Pas encore de compte ? S'inscrire"
+                    : "Déjà un compte ? Se connecter"}
+                </button>
+              )}
             </div>
           </CardContent>
         </Card>
