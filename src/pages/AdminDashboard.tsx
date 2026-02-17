@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, CheckCircle2, XCircle, Clock, ShieldCheck, LogOut, Building2, Mail, Phone, MapPin } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Clock, ShieldCheck, LogOut, Building2, Mail, Phone, MapPin, FileText, FileCheck, CreditCard, Package, Truck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -15,6 +15,7 @@ interface PartnerRequest {
   id: string;
   user_id: string;
   status: string;
+  setup_complete: boolean;
   created_at: string;
   user_email?: string;
   company?: {
@@ -26,6 +27,9 @@ interface PartnerRequest {
     certifications: string[] | null;
     service_areas: string[] | null;
   } | null;
+  docs: { rc: boolean; modele_j: boolean; cotisations: boolean };
+  hasKits: boolean;
+  hasTarifs: boolean;
 }
 
 const AdminDashboard = () => {
@@ -57,7 +61,7 @@ const AdminDashboard = () => {
     setLoadingData(true);
     const { data: profiles, error } = await supabase
       .from("partner_profiles")
-      .select("id, user_id, status, created_at, email")
+      .select("id, user_id, status, created_at, email, setup_complete")
       .order("created_at", { ascending: false });
 
     if (error || !profiles) {
@@ -65,19 +69,30 @@ const AdminDashboard = () => {
       return;
     }
 
-    // Fetch companies for each partner
+    // Fetch companies, docs, kits, tarifs for each partner
     const enriched: PartnerRequest[] = await Promise.all(
       profiles.map(async (p) => {
-        const { data: company } = await supabase
-          .from("companies")
-          .select("name, ice, city, phone, email, certifications, service_areas")
-          .eq("user_id", p.user_id)
-          .maybeSingle();
+        const [companyRes, docsRes, kitsRes, tarifsRes] = await Promise.all([
+          supabase.from("companies").select("name, ice, city, phone, email, certifications, service_areas").eq("user_id", p.user_id).maybeSingle(),
+          supabase.from("partner_documents").select("doc_type").eq("user_id", p.user_id),
+          supabase.from("kits").select("id", { count: "exact", head: true }).eq("user_id", p.user_id).eq("is_active", true),
+          supabase.from("delivery_costs").select("id", { count: "exact", head: true }).eq("user_id", p.user_id),
+        ]);
+
+        const docTypes = (docsRes.data || []).map((d: any) => d.doc_type);
 
         return {
           ...p,
+          setup_complete: (p as any).setup_complete ?? false,
           user_email: (p as any).email,
-          company,
+          company: companyRes.data,
+          docs: {
+            rc: docTypes.includes("rc"),
+            modele_j: docTypes.includes("modele_j"),
+            cotisations: docTypes.includes("cotisations"),
+          },
+          hasKits: (kitsRes.count ?? 0) > 0,
+          hasTarifs: (tarifsRes.count ?? 0) > 0,
         };
       })
     );
@@ -314,6 +329,30 @@ const PartnerCard = ({
                 )}
               </div>
             )}
+
+            {/* Validation indicators */}
+            {partner.status === "approved" && (
+              <div className="mt-3 space-y-2">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Clefs de validation</p>
+                <div className="flex flex-wrap gap-2">
+                  <ValidationBadge done={!!partner.company} label="Entreprise" icon={<Building2 className="w-3 h-3" />} />
+                  <ValidationBadge done={partner.hasKits} label="Kits" icon={<Package className="w-3 h-3" />} />
+                  <ValidationBadge done={partner.hasTarifs} label="Tarifs" icon={<Truck className="w-3 h-3" />} />
+                  <ValidationBadge done={partner.docs.rc} label="RC" icon={<FileText className="w-3 h-3" />} />
+                  <ValidationBadge done={partner.docs.modele_j} label="Modèle J" icon={<FileCheck className="w-3 h-3" />} />
+                  <ValidationBadge done={partner.docs.cotisations} label="Cotisations" icon={<CreditCard className="w-3 h-3" />} />
+                </div>
+                {partner.setup_complete && partner.docs.rc && partner.docs.modele_j && partner.docs.cotisations ? (
+                  <p className="text-xs text-green-600 font-medium flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> Visible dans les recherches clients
+                  </p>
+                ) : (
+                  <p className="text-xs text-amber-600 font-medium flex items-center gap-1">
+                    <Clock className="w-3 h-3" /> Profil incomplet — non visible
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2 shrink-0">
@@ -352,5 +391,17 @@ const PartnerCard = ({
     </Card>
   );
 };
+
+const ValidationBadge = ({ done, label, icon }: { done: boolean; label: string; icon: React.ReactNode }) => (
+  <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full border ${
+    done
+      ? "bg-green-500/10 text-green-700 border-green-500/20"
+      : "bg-red-500/10 text-red-600 border-red-500/20"
+  }`}>
+    {icon}
+    {label}
+    {done ? <CheckCircle2 className="w-2.5 h-2.5" /> : <XCircle className="w-2.5 h-2.5" />}
+  </span>
+);
 
 export default AdminDashboard;
