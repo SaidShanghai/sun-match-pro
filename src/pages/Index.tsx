@@ -226,6 +226,13 @@ const Index = () => {
                             <span className="text-3xl">🏢</span>
                             <span className="text-sm font-semibold">Entreprise</span>
                           </button>
+                          <button
+                            onClick={() => setPhoneScreen("form")}
+                            className="w-full flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-border bg-card hover:border-primary hover:bg-primary/5 transition-all active:scale-[0.97]"
+                          >
+                            <span className="text-3xl">🌾</span>
+                            <span className="text-sm font-semibold">Ferme</span>
+                          </button>
                         </div>
                       </motion.div>
                     ) : (
