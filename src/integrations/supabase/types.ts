@@ -97,6 +97,71 @@ export type Database = {
         }
         Relationships: []
       }
+      kits: {
+        Row: {
+          batteries: string | null
+          company_id: string
+          created_at: string
+          estimated_production_kwh: number | null
+          id: string
+          inverter: string
+          is_active: boolean
+          name: string
+          panel_brand: string
+          panel_count: number
+          power_kwc: number
+          price_ttc: number
+          structure: string | null
+          updated_at: string
+          user_id: string
+          warranty_years: number
+        }
+        Insert: {
+          batteries?: string | null
+          company_id: string
+          created_at?: string
+          estimated_production_kwh?: number | null
+          id?: string
+          inverter: string
+          is_active?: boolean
+          name: string
+          panel_brand: string
+          panel_count: number
+          power_kwc: number
+          price_ttc: number
+          structure?: string | null
+          updated_at?: string
+          user_id: string
+          warranty_years?: number
+        }
+        Update: {
+          batteries?: string | null
+          company_id?: string
+          created_at?: string
+          estimated_production_kwh?: number | null
+          id?: string
+          inverter?: string
+          is_active?: boolean
+          name?: string
+          panel_brand?: string
+          panel_count?: number
+          power_kwc?: number
+          price_ttc?: number
+          structure?: string | null
+          updated_at?: string
+          user_id?: string
+          warranty_years?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kits_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       partner_profiles: {
         Row: {
           created_at: string
