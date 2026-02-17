@@ -82,7 +82,7 @@ const HeroRotatingTitle = () => {
 };
 
 const Index = () => {
-  const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form">("intro");
+  const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form" | "site">("intro");
   const [objectif, setObjectif] = useState<"facture" | "autonomie" | null>(null);
   const [tension, setTension] = useState<"220" | "380" | null>(null);
   const [conso, setConso] = useState("");
@@ -90,6 +90,8 @@ const Index = () => {
   const [ville, setVille] = useState("Casablanca");
   const [villeOpen, setVilleOpen] = useState(false);
   const [villeSearch, setVilleSearch] = useState("");
+  const [roofAccess, setRoofAccess] = useState<"oui" | "non" | null>(null);
+  const [selectedSurface, setSelectedSurface] = useState<string | null>(null);
   const villeRef = useRef<HTMLDivElement>(null);
 
   const villes = ["Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", "Oujda", "Kénitra", "Tétouan", "Safi", "El Jadida", "Nador", "Béni Mellal", "Mohammedia"];
@@ -191,7 +193,7 @@ const Index = () => {
                   <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
                     <div className="flex items-center gap-2">
                       {phoneScreen !== "intro" && (
-                        <button onClick={() => setPhoneScreen(phoneScreen === "form" ? "type" : "intro")} className="p-0.5">
+                        <button onClick={() => setPhoneScreen(phoneScreen === "site" ? "form" : phoneScreen === "form" ? "type" : "intro")} className="p-0.5">
                           <ChevronLeft className="w-4 h-4 text-foreground" />
                         </button>
                       )}
@@ -284,7 +286,7 @@ const Index = () => {
                           ))}
                         </div>
                       </motion.div>
-                    ) : (
+                    ) : phoneScreen === "form" ? (
                       <motion.div
                         key="form"
                         initial={{ opacity: 0, x: 20 }}
@@ -295,14 +297,18 @@ const Index = () => {
                       >
                         {/* Stepper */}
                         <div className="flex items-center justify-between px-1">
-                          {["Profil", "Site", "Analyse", "Solutions", "Contact"].map((step, i) => (
-                            <div key={step} className="flex flex-col items-center gap-0.5">
-                              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${i === 0 ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
-                                {i + 1}
+                          {["Profil", "Site", "Analyse", "Solutions", "Contact"].map((step, i) => {
+                            const isActive = i === 0;
+                            const isDone = false;
+                            return (
+                              <div key={step} className="flex flex-col items-center gap-0.5">
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
+                                  {i + 1}
+                                </div>
+                                <span className={`text-[8px] ${isActive ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
                               </div>
-                              <span className={`text-[8px] ${i === 0 ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
 
                         {/* Form title */}
@@ -398,13 +404,115 @@ const Index = () => {
                         </div>
 
                         {/* CTA */}
+                        <button
+                          onClick={() => setPhoneScreen("site")}
+                          className="w-full bg-primary text-primary-foreground rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors"
+                        >
+                          Continuer <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </motion.div>
+                    ) : (
+                      /* Site screen */
+                      <motion.div
+                        key="site"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.25 }}
+                        className="px-4 py-3 flex flex-col gap-3 overflow-y-auto flex-1"
+                      >
+                        {/* Stepper - Site active */}
+                        <div className="flex items-center justify-between px-1">
+                          {["Profil", "Site", "Analyse", "Solutions", "Contact"].map((step, i) => {
+                            const isDone = i === 0;
+                            const isActive = i === 1;
+                            return (
+                              <div key={step} className="flex flex-col items-center gap-0.5">
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${isDone ? "bg-success text-success-foreground" : isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
+                                  {isDone ? "✓" : i + 1}
+                                </div>
+                                <span className={`text-[8px] ${isActive ? "font-semibold text-foreground" : isDone ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Title */}
+                        <div className="flex items-center gap-1.5 pt-1">
+                          <ChevronLeft className="w-3.5 h-3.5 text-foreground" />
+                          <h4 className="text-sm font-bold">Votre site</h4>
+                        </div>
+
+                        {/* Accès au toit */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Accès au toit</label>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => setRoofAccess("oui")}
+                              className={`flex-1 py-2 rounded-full text-[10px] font-medium border transition-colors ${roofAccess === "oui" ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
+                            >
+                              Oui
+                            </button>
+                            <button
+                              onClick={() => setRoofAccess("non")}
+                              className={`flex-1 py-2 rounded-full text-[10px] font-medium border transition-colors ${roofAccess === "non" ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
+                            >
+                              Non
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Surface disponible */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Surface disponible (m²)</label>
+                          <div className="grid grid-cols-4 gap-1.5">
+                            {[
+                              { m2: "22 m²", pan: "8 pan.", label: "M1" },
+                              { m2: "44 m²", pan: "16 pan.", label: "M2" },
+                              { m2: "66 m²", pan: "24 pan.", label: "M3 / T1" },
+                              { m2: "132 m²", pan: "48 pan.", label: "T2" },
+                              { m2: "198 m²", pan: "72 pan.", label: "T3" },
+                              { m2: "264 m²", pan: "96 pan.", label: "T4" },
+                              { m2: "330 m²", pan: "120 pan.", label: "T5" },
+                              { m2: "396 m²", pan: "144 pan.", label: "T5+" },
+                            ].map((s) => (
+                              <button
+                                key={s.label}
+                                onClick={() => setSelectedSurface(s.label)}
+                                className={`flex flex-col items-center p-2 rounded-xl border text-center transition-colors ${selectedSurface === s.label ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}
+                              >
+                                <span className="text-[10px] font-bold text-foreground">{s.m2}</span>
+                                <span className="text-[8px] text-muted-foreground">{s.pan}</span>
+                                <span className="text-[8px] font-medium text-primary">{s.label}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Usages spécifiques */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Usages spécifiques</label>
+                          <div className="flex gap-2">
+                            {[
+                              { icon: "❄️", label: "Clim" },
+                              { icon: "⚡", label: "Chauffage" },
+                              { icon: "🔧", label: "Industrie" },
+                            ].map((u) => (
+                              <button key={u.label} className="flex-1 flex flex-col items-center gap-0.5 p-2 rounded-xl border border-border hover:border-primary/40 transition-colors">
+                                <span className="text-sm">{u.icon}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* CTA Analyser */}
                         <Button
                           asChild
                           size="sm"
                           className="w-full rounded-full mt-1 text-[11px] h-10"
                         >
                           <Link to="/diagnostic">
-                            Continuer <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                            Analyser <ArrowRight className="w-3.5 h-3.5 ml-1" />
                           </Link>
                         </Button>
                       </motion.div>
