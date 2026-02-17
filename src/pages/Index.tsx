@@ -82,7 +82,7 @@ const HeroRotatingTitle = () => {
 };
 
 const Index = () => {
-  const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form" | "site" | "analyse">("intro");
+  const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form" | "site" | "analyse" | "solutions">("intro");
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [objectif, setObjectif] = useState<"facture" | "autonomie" | null>(null);
   const [tension, setTension] = useState<"220" | "380" | null>(null);
@@ -197,7 +197,7 @@ const Index = () => {
                   <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
                     <div className="flex items-center gap-2">
                       {phoneScreen !== "intro" && (
-                        <button onClick={() => setPhoneScreen(phoneScreen === "analyse" ? "site" : phoneScreen === "site" ? "form" : phoneScreen === "form" ? "type" : "intro")} className="p-0.5">
+                        <button onClick={() => setPhoneScreen(phoneScreen === "solutions" ? "analyse" : phoneScreen === "analyse" ? "site" : phoneScreen === "site" ? "form" : phoneScreen === "form" ? "type" : "intro")} className="p-0.5">
                           <ChevronLeft className="w-4 h-4 text-foreground" />
                         </button>
                       )}
@@ -578,7 +578,10 @@ const Index = () => {
                             const interval = setInterval(() => {
                               const elapsed = Date.now() - startTime;
                               p = Math.min((elapsed / totalDuration) * 100, 100);
-                              if (p >= 100) { clearInterval(interval); }
+                              if (p >= 100) {
+                                clearInterval(interval);
+                                setTimeout(() => setPhoneScreen("solutions"), 600);
+                              }
                               setAnalyseProgress(Math.round(p));
                               setAnalyseLabel(labels[Math.min(Math.floor(p / 18), labels.length - 1)]);
                             }, 50);
@@ -588,7 +591,7 @@ const Index = () => {
                           Analyser <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </motion.div>
-                    ) : (
+                    ) : phoneScreen === "analyse" ? (
                       /* Analyse screen */
                       <motion.div
                         key="analyse"
@@ -614,7 +617,7 @@ const Index = () => {
                           })}
                         </div>
 
-                        {/* Analyse animation - sun random movement full screen */}
+                        {/* Analyse animation */}
                         <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center relative">
                           <motion.div
                             animate={{
@@ -645,6 +648,97 @@ const Index = () => {
                             </div>
                           </div>
                         </div>
+                      </motion.div>
+                    ) : (
+                      /* Solutions screen */
+                      <motion.div
+                        key="solutions"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.25 }}
+                        className="px-4 py-3 flex flex-col gap-3 flex-1 overflow-y-auto"
+                      >
+                        {/* Stepper - Solutions active */}
+                        <div className="flex items-center justify-between px-1">
+                          {["Profil", "Site", "Analyse", "Solutions", "Contact"].map((step, i) => {
+                            const isDone = i <= 2;
+                            const isActive = i === 3;
+                            return (
+                              <div key={step} className="flex flex-col items-center gap-0.5">
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${isDone ? "bg-success text-success-foreground" : isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
+                                  {isDone ? "✓" : i + 1}
+                                </div>
+                                <span className={`text-[8px] ${isActive || isDone ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          <Sun className="w-4 h-4 text-primary" />
+                          <h4 className="text-sm font-bold">Solutions recommandées</h4>
+                        </div>
+
+                        <p className="text-[9px] text-muted-foreground -mt-1">
+                          Basé sur votre consommation et votre {selectedType?.toLowerCase() || "logement"}
+                        </p>
+
+                        {/* Toiture solutions */}
+                        <div className="space-y-1.5">
+                          <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide">🏠 Toiture</span>
+                          {[
+                            { id: "T1", panels: 4, power: "1.6 kWc", savings: "30%", price: "25 000 MAD" },
+                            { id: "T2", panels: 8, power: "3.2 kWc", savings: "55%", price: "45 000 MAD" },
+                            { id: "T3", panels: 12, power: "4.8 kWc", savings: "75%", price: "62 000 MAD" },
+                          ].map((sol) => (
+                            <button
+                              key={sol.id}
+                              className="w-full flex items-center gap-2.5 p-2.5 rounded-xl border border-border bg-card hover:border-primary hover:bg-primary/5 transition-all text-left"
+                            >
+                              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                                <span className="text-[10px] font-bold text-primary">{sol.id}</span>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] font-semibold">{sol.panels} panneaux • {sol.power}</span>
+                                  <span className="text-[9px] font-bold text-primary">{sol.price}</span>
+                                </div>
+                                <span className="text-[8px] text-muted-foreground">Économie estimée : {sol.savings} sur la facture</span>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Sol solutions */}
+                        <div className="space-y-1.5">
+                          <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide">🌍 Au sol</span>
+                          {[
+                            { id: "M1", panels: 6, power: "2.4 kWc", savings: "40%", price: "32 000 MAD" },
+                            { id: "M2", panels: 10, power: "4.0 kWc", savings: "65%", price: "52 000 MAD" },
+                            { id: "M3", panels: 16, power: "6.4 kWc", savings: "85%", price: "78 000 MAD" },
+                          ].map((sol) => (
+                            <button
+                              key={sol.id}
+                              className="w-full flex items-center gap-2.5 p-2.5 rounded-xl border border-border bg-card hover:border-primary hover:bg-primary/5 transition-all text-left"
+                            >
+                              <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center shrink-0">
+                                <span className="text-[10px] font-bold text-accent-foreground">{sol.id}</span>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] font-semibold">{sol.panels} panneaux • {sol.power}</span>
+                                  <span className="text-[9px] font-bold text-primary">{sol.price}</span>
+                                </div>
+                                <span className="text-[8px] text-muted-foreground">Économie estimée : {sol.savings} sur la facture</span>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+
+                        <button className="w-full bg-primary text-primary-foreground rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors">
+                          Demander un devis <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
                       </motion.div>
                     )}
                   </AnimatePresence>
