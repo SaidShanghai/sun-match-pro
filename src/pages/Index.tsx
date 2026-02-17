@@ -91,7 +91,7 @@ const Index = () => {
   const [ville, setVille] = useState("Casablanca");
   const [villeOpen, setVilleOpen] = useState(false);
   const [villeSearch, setVilleSearch] = useState("");
-  const [panelAccess, setPanelAccess] = useState<"toit" | "sol" | null>(null);
+  const [panelAccess, setPanelAccess] = useState<string[]>([]);
   const [selectedSurface, setSelectedSurface] = useState<string | null>(null);
   const [selectedUsages, setSelectedUsages] = useState<string[]>([]);
   const [analyseProgress, setAnalyseProgress] = useState(0);
@@ -458,8 +458,8 @@ const Index = () => {
                             ] as const).map((opt) => (
                               <button
                                 key={opt.value}
-                                onClick={() => setPanelAccess(opt.value)}
-                                className={`flex-1 py-2 rounded-full text-[10px] font-medium border transition-colors ${panelAccess === opt.value ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
+                                onClick={() => setPanelAccess(prev => prev.includes(opt.value) ? prev.filter(v => v !== opt.value) : [...prev, opt.value])}
+                                className={`flex-1 py-2 rounded-full text-[10px] font-medium border transition-colors ${panelAccess.includes(opt.value) ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
                               >
                                 {opt.label}
                               </button>
