@@ -45,6 +45,9 @@ const Partenaires = () => {
   const [loadingCompany, setLoadingCompany] = useState(true);
   const [saving, setSaving] = useState(false);
   const [partnerStatus, setPartnerStatus] = useState<"pending" | "approved" | "rejected">("pending");
+  const [hasKits, setHasKits] = useState(false);
+  const [hasTarifs, setHasTarifs] = useState(false);
+  const [setupComplete, setSetupComplete] = useState(false);
 
   // Form state
   const [companyName, setCompanyName] = useState("");
@@ -115,11 +118,42 @@ const Partenaires = () => {
             companyEmail: data.email,
           });
         }
+
+        // Check kits
+        const { count: kitsCount } = await supabase
+          .from("kits")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .eq("is_active", true);
+        setHasKits((kitsCount ?? 0) > 0);
+
+        // Check delivery costs
+        const { count: tarifsCount } = await supabase
+          .from("delivery_costs")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id);
+        setHasTarifs((tarifsCount ?? 0) > 0);
+
+        // Check setup_complete
+        const allDone = !!data && (kitsCount ?? 0) > 0 && (tarifsCount ?? 0) > 0;
+        setSetupComplete(allDone);
       }
       setLoadingCompany(false);
     };
     fetchData();
   }, [user]);
+
+  const refreshSetupComplete = async () => {
+    if (!user) return;
+    const { data } = await supabase.rpc("check_partner_setup_complete", { _user_id: user.id });
+    const complete = !!data;
+    setSetupComplete(complete);
+    // Update partner_profiles
+    await supabase
+      .from("partner_profiles")
+      .update({ setup_complete: complete })
+      .eq("user_id", user.id);
+  };
 
   const handleCardClick = (section: "entreprise" | "kits" | "tarifs") => {
     if (section !== "entreprise" && !entrepriseRegistered) {
@@ -169,6 +203,7 @@ const Partenaires = () => {
 
       setEntrepriseRegistered(true);
       setActiveSection("none");
+      await refreshSetupComplete();
       toast({ title: "Entreprise enregistrée", description: "Vos informations ont été sauvegardées." });
     } catch (error: any) {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
@@ -227,14 +262,25 @@ const Partenaires = () => {
               1. Mon Entreprise
             </span>
             <ArrowRight className="w-3.5 h-3.5" />
-            <span className={`flex items-center gap-1 px-3 py-1.5 rounded-full font-medium ${entrepriseRegistered ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+            <span className={`flex items-center gap-1 px-3 py-1.5 rounded-full font-medium ${hasKits ? "bg-green-500/10 text-green-600" : entrepriseRegistered ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+              {hasKits && <CheckCircle2 className="w-3 h-3" />}
               2. Kits Solaires
             </span>
             <ArrowRight className="w-3.5 h-3.5" />
-            <span className="flex items-center gap-1 px-3 py-1.5 rounded-full font-medium bg-muted">
+            <span className={`flex items-center gap-1 px-3 py-1.5 rounded-full font-medium ${hasTarifs ? "bg-green-500/10 text-green-600" : entrepriseRegistered ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+              {hasTarifs && <CheckCircle2 className="w-3 h-3" />}
               3. Tarification
             </span>
           </div>
+
+          {setupComplete && (
+            <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-center">
+              <p className="text-sm font-medium text-green-700 flex items-center justify-center gap-2">
+                <CheckCircle2 className="w-4 h-4" />
+                Votre profil est complet ! Vous apparaissez dans les résultats de recherche des clients NOORIA.
+              </p>
+            </div>
+          )}
 
           {partnerStatus === "pending" ? (
             <Card className="border-2 border-amber-500/30 bg-amber-500/5">
@@ -379,9 +425,9 @@ const Partenaires = () => {
               </CardContent>
             </Card>
           ) : activeSection === "kits" && user && companyId ? (
-            <KitsSolaires userId={user.id} companyId={companyId} onBack={() => setActiveSection("none")} />
+            <KitsSolaires userId={user.id} companyId={companyId} onBack={() => setActiveSection("none")} onSaved={refreshSetupComplete} />
           ) : activeSection === "tarifs" && user && companyId ? (
-            <FraisLivraison userId={user.id} companyId={companyId} companyCity={city} serviceAreas={serviceAreas} onBack={() => setActiveSection("none")} />
+            <FraisLivraison userId={user.id} companyId={companyId} companyCity={city} serviceAreas={serviceAreas} onBack={() => setActiveSection("none")} onSaved={refreshSetupComplete} />
           ) : (
             /* Cards */
             <div className="grid md:grid-cols-3 gap-6">
@@ -453,7 +499,11 @@ const Partenaires = () => {
 
           <div className="text-center pt-4">
             <p className="text-sm text-muted-foreground">
-              🔒 {entrepriseRegistered ? "Votre entreprise est enregistrée. Vous pouvez maintenant gérer vos kits et tarifs." : "Inscription entreprise obligatoire avant d'accéder aux kits et à la tarification."}
+              {setupComplete
+                ? "✅ Profil complet — visible dans les recherches clients."
+                : entrepriseRegistered
+                ? "⚠️ Complétez les 3 étapes pour apparaître dans les recherches clients NOORIA."
+                : "🔒 Inscription entreprise obligatoire avant d'accéder aux kits et à la tarification."}
             </p>
           </div>
         </div>

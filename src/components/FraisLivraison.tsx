@@ -18,9 +18,10 @@ interface FraisLivraisonProps {
   companyCity: string;
   serviceAreas: string[];
   onBack: () => void;
+  onSaved?: () => void;
 }
 
-const FraisLivraison = ({ userId, companyId, companyCity, serviceAreas, onBack }: FraisLivraisonProps) => {
+const FraisLivraison = ({ userId, companyId, companyCity, serviceAreas, onBack, onSaved }: FraisLivraisonProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -81,6 +82,7 @@ const FraisLivraison = ({ userId, companyId, companyCity, serviceAreas, onBack }
       }
 
       setSaved(true);
+      onSaved?.();
       toast({ title: "Frais de livraison enregistrés" });
     } catch (error: any) {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
