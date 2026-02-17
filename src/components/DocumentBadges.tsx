@@ -106,7 +106,7 @@ const DocumentBadges = ({ userId, companyId, onStatusChange }: DocumentBadgesPro
             className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-all ${
               done
                 ? "bg-green-500/10 text-green-700 border-green-500/20"
-                : "bg-amber-500/10 text-amber-700 border-amber-500/20 hover:bg-amber-500/20 cursor-pointer"
+                : "bg-blue-500/10 text-blue-700 border-blue-500/20 hover:bg-blue-500/20 cursor-pointer"
             } ${isUploading ? "opacity-70 cursor-wait" : ""}`}
             disabled={isUploading}
           >
