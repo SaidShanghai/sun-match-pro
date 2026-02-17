@@ -206,6 +206,44 @@ export type Database = {
           },
         ]
       }
+      partner_documents: {
+        Row: {
+          company_id: string
+          doc_type: string
+          file_name: string
+          file_path: string
+          id: string
+          uploaded_at: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          doc_type: string
+          file_name: string
+          file_path: string
+          id?: string
+          uploaded_at?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          doc_type?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          uploaded_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       partner_profiles: {
         Row: {
           created_at: string
