@@ -531,7 +531,7 @@ const PartnerCard = ({
                   <div className="flex items-center gap-2">
                     <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full border ${
                       partner.cotisations_a_jour
-                        ? "bg-blue-500/10 text-blue-700 border-blue-500/20"
+                        ? "bg-green-500/10 text-green-700 border-green-500/20"
                         : "bg-amber-500/10 text-amber-600 border-amber-500/20"
                     }`}>
                       <CreditCard className="w-3.5 h-3.5" />
