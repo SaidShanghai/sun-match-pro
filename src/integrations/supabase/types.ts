@@ -215,6 +215,7 @@ export type Database = {
           id: string
           uploaded_at: string
           user_id: string
+          validated: boolean
         }
         Insert: {
           company_id: string
@@ -224,6 +225,7 @@ export type Database = {
           id?: string
           uploaded_at?: string
           user_id: string
+          validated?: boolean
         }
         Update: {
           company_id?: string
@@ -233,6 +235,7 @@ export type Database = {
           id?: string
           uploaded_at?: string
           user_id?: string
+          validated?: boolean
         }
         Relationships: [
           {
