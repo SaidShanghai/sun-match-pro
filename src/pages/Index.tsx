@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Sun,
   PiggyBank,
@@ -10,6 +11,10 @@ import {
   Star,
   MapPin,
   FileText,
+  ChevronLeft,
+  TrendingDown,
+  Battery,
+  MapPinned,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -39,6 +44,9 @@ const features = [
 ];
 
 const Index = () => {
+  const [phoneScreen, setPhoneScreen] = useState<"intro" | "form">("intro");
+  const [objectif, setObjectif] = useState<"facture" | "autonomie" | null>(null);
+  const [tension, setTension] = useState<"220" | "380" | null>(null);
 
 
   return (
@@ -127,56 +135,177 @@ const Index = () => {
                   {/* Header */}
                   <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
                     <div className="flex items-center gap-2">
+                      {phoneScreen === "form" && (
+                        <button onClick={() => setPhoneScreen("intro")} className="p-0.5">
+                          <ChevronLeft className="w-4 h-4 text-foreground" />
+                        </button>
+                      )}
                       <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
                         <Sun className="w-4 h-4 text-primary-foreground" />
                       </div>
-                      <span className="text-xs font-bold">SUN_GPT</span>
+                      <span className="text-xs font-bold">NOOR<span className="text-primary">IA</span></span>
                     </div>
                     <span className="text-[9px] text-muted-foreground">SunStone Finance</span>
                   </div>
 
-                  {/* Content */}
-                  <div className="px-5 py-6 flex flex-col items-center text-center gap-4">
-                    <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
-                      <Sun className="w-7 h-7 text-primary-foreground" />
-                    </div>
-                    <div>
-                      <h3 className="text-base font-bold">SUN_GPT</h3>
-                      <p className="text-[10px] text-muted-foreground">par SunStone Finance</p>
-                      <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
-                        Analysez votre consommation, découvrez<br />la solution solaire optimale
-                      </p>
-                    </div>
-
-                    <div className="w-full space-y-2">
-                      <div className="flex items-center gap-2.5 p-3 bg-background border border-border/80 rounded-xl text-left shadow-sm">
-                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-                          <Zap className="w-4 h-4 text-primary" />
+                  <AnimatePresence mode="wait">
+                    {phoneScreen === "intro" ? (
+                      <motion.div
+                        key="intro"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.25 }}
+                        className="px-5 py-6 flex flex-col items-center text-center gap-4"
+                      >
+                        <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
+                          <Sun className="w-7 h-7 text-primary-foreground" />
                         </div>
-                        <span className="text-[10px] leading-snug">Dimensionnement intelligent basé sur votre consommation</span>
-                      </div>
-                      <div className="flex items-center gap-2.5 p-3 bg-background border border-border/80 rounded-xl text-left shadow-sm">
-                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-                          <Shield className="w-4 h-4 text-primary" />
+                        <div>
+                          <h3 className="text-base font-bold">SUN_GPT</h3>
+                          <p className="text-[10px] text-muted-foreground">par SunStone Finance</p>
+                          <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+                            Analysez votre consommation, découvrez<br />la solution solaire optimale
+                          </p>
                         </div>
-                        <span className="text-[10px] leading-snug">Catalogue complet 220V & 380V adapté au Maroc</span>
-                      </div>
-                      <div className="flex items-center gap-2.5 p-3 bg-background border border-border/80 rounded-xl text-left shadow-sm">
-                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-                          <Sun className="w-4 h-4 text-primary" />
+
+                        <div className="w-full space-y-2">
+                          <div className="flex items-center gap-2.5 p-3 bg-background border border-border/80 rounded-xl text-left shadow-sm">
+                            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                              <Zap className="w-4 h-4 text-primary" />
+                            </div>
+                            <span className="text-[10px] leading-snug">Dimensionnement intelligent basé sur votre consommation</span>
+                          </div>
+                          <div className="flex items-center gap-2.5 p-3 bg-background border border-border/80 rounded-xl text-left shadow-sm">
+                            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                              <Shield className="w-4 h-4 text-primary" />
+                            </div>
+                            <span className="text-[10px] leading-snug">Catalogue complet 220V & 380V adapté au Maroc</span>
+                          </div>
+                          <div className="flex items-center gap-2.5 p-3 bg-background border border-border/80 rounded-xl text-left shadow-sm">
+                            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                              <Sun className="w-4 h-4 text-primary" />
+                            </div>
+                            <span className="text-[10px] leading-snug">Devis personnalisé en quelques minutes</span>
+                          </div>
                         </div>
-                        <span className="text-[10px] leading-snug">Devis personnalisé en quelques minutes</span>
-                      </div>
-                    </div>
 
-                    <div className="w-full bg-primary text-primary-foreground rounded-full py-3 text-xs font-semibold flex items-center justify-center gap-1.5 mt-1">
-                      Lancer l'analyse solaire <ArrowRight className="w-3.5 h-3.5" />
-                    </div>
+                        <button
+                          onClick={() => setPhoneScreen("form")}
+                          className="w-full bg-primary text-primary-foreground rounded-full py-3 text-xs font-semibold flex items-center justify-center gap-1.5 mt-1 hover:bg-primary/90 transition-colors"
+                        >
+                          Lancer l'analyse solaire <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
 
-                    <p className="text-[9px] text-muted-foreground">
-                      Gratuit • Sans engagement • Résultat instantané
-                    </p>
-                  </div>
+                        <p className="text-[9px] text-muted-foreground">
+                          Gratuit • Sans engagement • Résultat instantané
+                        </p>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="form"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.25 }}
+                        className="px-4 py-3 flex flex-col gap-3"
+                      >
+                        {/* Stepper */}
+                        <div className="flex items-center justify-between px-1">
+                          {["Profil", "Site", "Analyse", "Solutions", "Contact"].map((step, i) => (
+                            <div key={step} className="flex flex-col items-center gap-0.5">
+                              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${i === 0 ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
+                                {i + 1}
+                              </div>
+                              <span className={`text-[8px] ${i === 0 ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Form title */}
+                        <div className="flex items-center gap-1.5 pt-1">
+                          <ChevronLeft className="w-3.5 h-3.5 text-foreground" />
+                          <h4 className="text-sm font-bold">Votre profil énergie</h4>
+                        </div>
+
+                        {/* Objectif principal */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Objectif principal</label>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => setObjectif("facture")}
+                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[9px] font-medium border transition-colors ${objectif === "facture" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
+                            >
+                              <TrendingDown className="w-3 h-3" /> Réduire la facture
+                            </button>
+                            <button
+                              onClick={() => setObjectif("autonomie")}
+                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[9px] font-medium border transition-colors ${objectif === "autonomie" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
+                            >
+                              <Battery className="w-3 h-3" /> Autonomie totale
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Tension réseau */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Tension réseau</label>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => setTension("220")}
+                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[9px] font-medium border transition-colors ${tension === "220" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
+                            >
+                              <Zap className="w-3 h-3" /> 220V
+                            </button>
+                            <button
+                              onClick={() => setTension("380")}
+                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[9px] font-medium border transition-colors ${tension === "380" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
+                            >
+                              <Zap className="w-3 h-3" /> 380V
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Consommation */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Consommation mensuelle (kWh/mois)</label>
+                          <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
+                            <Zap className="w-3.5 h-3.5 text-muted-foreground" />
+                            <span className="text-[10px] text-muted-foreground">Ex: 480</span>
+                          </div>
+                        </div>
+
+                        {/* Facture + Ville */}
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-semibold text-foreground">Facture (MAD)</label>
+                            <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
+                              <FileText className="w-3.5 h-3.5 text-muted-foreground" />
+                              <span className="text-[10px] text-muted-foreground">Ex: 800</span>
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-semibold text-foreground">Ville</label>
+                            <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
+                              <MapPinned className="w-3.5 h-3.5 text-muted-foreground" />
+                              <span className="text-[10px] text-foreground">Casablanca</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* CTA */}
+                        <Button
+                          asChild
+                          size="sm"
+                          className="w-full rounded-full mt-1 text-[11px] h-10"
+                        >
+                          <Link to="/diagnostic">
+                            Continuer <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                          </Link>
+                        </Button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                   {/* Home indicator */}
                   <div className="flex justify-center py-2">
