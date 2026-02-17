@@ -99,7 +99,7 @@ const Index = () => {
               </h1>
 
               <p className="text-xl text-muted-foreground max-w-lg">
-                SolairePro connecte particuliers et installateurs certifiés.
+                NOORIA connecte particuliers et installateurs certifiés.
                 Diagnostic gratuit, devis personnalisés, installation garantie.
               </p>
 
@@ -303,7 +303,7 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl font-bold mb-4">Pourquoi SolairePro ?</h2>
+            <h2 className="text-4xl font-bold mb-4">Pourquoi NOORIA ?</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Le comparateur solaire pensé pour simplifier votre transition énergétique.
             </p>
@@ -377,7 +377,7 @@ const Index = () => {
               </h2>
               <p className="text-xl text-background/70 max-w-lg">
                 Rejoignez des milliers de Français qui ont réduit leur facture
-                d'énergie grâce à SolairePro.
+                d'énergie grâce à NOORIA.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 h-14 px-8 text-base">
