@@ -48,6 +48,37 @@ const features = [
   },
 ];
 
+const heroWords = ["Le solaire,", "Le financement,", "Le diagnostic,", "L'installation,", "La maintenance,"];
+
+const HeroRotatingTitle = () => {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % heroWords.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={heroWords[index]}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.4 }}
+          className="inline-block"
+        >
+          {heroWords[index]}
+        </motion.span>
+      </AnimatePresence>{" "}
+      <span className="text-gradient">simplifié</span>
+    </h1>
+  );
+};
+
 const Index = () => {
   const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form">("intro");
   const [objectif, setObjectif] = useState<"facture" | "autonomie" | null>(null);
@@ -97,10 +128,7 @@ const Index = () => {
                 <span className="text-sm font-medium">500+ installateurs certifiés au Maroc</span>
               </div>
 
-              <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
-                Le solaire,{" "}
-                <span className="text-gradient">simplifié</span>
-              </h1>
+              <HeroRotatingTitle />
 
               <p className="text-xl text-muted-foreground max-w-lg">
                 NOORIA connecte particuliers et installateurs certifiés.
