@@ -611,20 +611,20 @@ const Index = () => {
                           })}
                         </div>
 
-                        {/* Analyse animation - sun arc */}
+                        {/* Analyse animation - sun circle */}
                         <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
-                          {/* Sun arc container */}
-                          <div className="relative w-full h-24">
-                            {/* Arc path (dashed) */}
-                            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 100">
-                              <path d="M 10 90 Q 100 -10 190 90" fill="none" stroke="hsl(var(--primary) / 0.15)" strokeWidth="1.5" strokeDasharray="4 3" />
+                          {/* Sun circular orbit */}
+                          <div className="relative w-28 h-28">
+                            {/* Dashed circle path */}
+                            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 112 112">
+                              <circle cx="56" cy="56" r="44" fill="none" stroke="hsl(var(--primary) / 0.15)" strokeWidth="1.5" strokeDasharray="4 3" />
                             </svg>
-                            {/* Sun following the exact arc path */}
+                            {/* Sun following the circle */}
                             <motion.div
                               animate={{ offsetDistance: ["0%", "100%"] }}
-                              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", repeatDelay: 0.3 }}
+                              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                               style={{
-                                offsetPath: "path('M 10 90 Q 100 -10 190 90')",
+                                offsetPath: "path('M 56 12 A 44 44 0 1 1 55.99 12 Z')",
                                 offsetRotate: "0deg",
                                 position: "absolute",
                                 top: 0,
@@ -633,12 +633,10 @@ const Index = () => {
                                 height: 0,
                               }}
                             >
-                              <div className="w-12 h-12 -ml-6 -mt-6 bg-primary/20 rounded-full flex items-center justify-center" style={{ boxShadow: "0 0 20px hsl(var(--primary) / 0.4)" }}>
-                                <Sun className="w-7 h-7 text-primary" />
+                              <div className="w-10 h-10 -ml-5 -mt-5 bg-primary/20 rounded-full flex items-center justify-center" style={{ boxShadow: "0 0 20px hsl(var(--primary) / 0.4)" }}>
+                                <Sun className="w-6 h-6 text-primary" />
                               </div>
                             </motion.div>
-                            {/* Horizon line */}
-                            <div className="absolute bottom-[10px] left-[5%] right-[5%] h-px bg-primary/20" />
                           </div>
                           <div>
                             <h4 className="text-sm font-bold">Analyse en cours…</h4>
