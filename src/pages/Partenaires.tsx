@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Building2, Package, Zap, ShieldAlert, Lock, ArrowRight, AlertTriangle, Loader2, LogOut, CheckCircle2 } from "lucide-react";
+import { Building2, Package, Zap, ShieldAlert, Lock, ArrowRight, AlertTriangle, Loader2, LogOut, CheckCircle2, Clock, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,6 +28,7 @@ const Partenaires = () => {
   const [entrepriseRegistered, setEntrepriseRegistered] = useState(false);
   const [loadingCompany, setLoadingCompany] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [partnerStatus, setPartnerStatus] = useState<"pending" | "approved" | "rejected">("pending");
 
   // Form state
   const [companyName, setCompanyName] = useState("");
@@ -45,29 +46,43 @@ const Partenaires = () => {
     }
   }, [authLoading, user, navigate]);
 
-  // Check if company exists
+  // Check partner status and company
   useEffect(() => {
     if (!user) return;
-    const fetchCompany = async () => {
-      const { data } = await supabase
-        .from("companies")
-        .select("*")
+    const fetchData = async () => {
+      // Check approval status
+      const { data: profile } = await supabase
+        .from("partner_profiles")
+        .select("status")
         .eq("user_id", user.id)
         .maybeSingle();
 
-      if (data) {
-        setEntrepriseRegistered(true);
-        setCompanyName(data.name);
-        setIce(data.ice);
-        setCertifications((data.certifications || []).join(", "));
-        setCity(data.city);
-        setServiceAreas((data.service_areas || []).join(", "));
-        setPhone(data.phone);
-        setCompanyEmail(data.email);
+      if (profile?.status) {
+        setPartnerStatus(profile.status as "pending" | "approved" | "rejected");
+      }
+
+      // Check company only if approved
+      if (profile?.status === "approved") {
+        const { data } = await supabase
+          .from("companies")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (data) {
+          setEntrepriseRegistered(true);
+          setCompanyName(data.name);
+          setIce(data.ice);
+          setCertifications((data.certifications || []).join(", "));
+          setCity(data.city);
+          setServiceAreas((data.service_areas || []).join(", "));
+          setPhone(data.phone);
+          setCompanyEmail(data.email);
+        }
       }
       setLoadingCompany(false);
     };
-    fetchCompany();
+    fetchData();
   }, [user]);
 
   const handleCardClick = (section: "entreprise" | "kits" | "tarifs") => {
@@ -177,8 +192,34 @@ const Partenaires = () => {
             </span>
           </div>
 
-          {activeSection === "entreprise" ? (
-            /* Formulaire Mon Entreprise */
+          {partnerStatus === "pending" ? (
+            <Card className="border-2 border-amber-500/30 bg-amber-500/5">
+              <CardContent className="py-12 text-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto">
+                  <Clock className="w-8 h-8 text-amber-500" />
+                </div>
+                <h2 className="text-2xl font-bold">Inscription en attente de validation</h2>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Votre demande d'inscription a bien été reçue. Un administrateur NOORIA va examiner votre candidature et vous recevrez un email de confirmation une fois approuvé.
+                </p>
+                <div className="bg-muted/50 rounded-xl p-4 max-w-sm mx-auto">
+                  <p className="text-xs text-muted-foreground">Délai de traitement habituel : <strong>24 à 48h</strong></p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : partnerStatus === "rejected" ? (
+            <Card className="border-2 border-destructive/30 bg-destructive/5">
+              <CardContent className="py-12 text-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
+                  <XCircle className="w-8 h-8 text-destructive" />
+                </div>
+                <h2 className="text-2xl font-bold">Inscription refusée</h2>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Votre demande d'inscription n'a pas été approuvée. Veuillez contacter l'équipe NOORIA pour plus d'informations.
+                </p>
+              </CardContent>
+            </Card>
+          ) : activeSection === "entreprise" ? (
             <Card>
               <CardContent className="pt-6">
                 <form onSubmit={handleSaveCompany} className="space-y-5">

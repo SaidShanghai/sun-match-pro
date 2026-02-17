@@ -37,7 +37,7 @@ const AuthPartenaires = () => {
         if (error) throw error;
         toast({
           title: "Inscription réussie",
-          description: "Vérifiez votre email pour confirmer votre compte.",
+          description: "Votre demande a été envoyée. Un administrateur validera votre compte sous 24 à 48h.",
         });
       }
     } catch (error: any) {
