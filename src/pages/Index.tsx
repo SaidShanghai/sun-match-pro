@@ -44,7 +44,7 @@ const features = [
 ];
 
 const Index = () => {
-  const [phoneScreen, setPhoneScreen] = useState<"intro" | "form">("intro");
+  const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form">("intro");
   const [objectif, setObjectif] = useState<"facture" | "autonomie" | null>(null);
   const [tension, setTension] = useState<"220" | "380" | null>(null);
 
@@ -135,8 +135,8 @@ const Index = () => {
                   {/* Header */}
                   <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
                     <div className="flex items-center gap-2">
-                      {phoneScreen === "form" && (
-                        <button onClick={() => setPhoneScreen("intro")} className="p-0.5">
+                      {phoneScreen !== "intro" && (
+                        <button onClick={() => setPhoneScreen(phoneScreen === "form" ? "type" : "intro")} className="p-0.5">
                           <ChevronLeft className="w-4 h-4 text-foreground" />
                         </button>
                       )}
@@ -191,7 +191,7 @@ const Index = () => {
                         </div>
 
                         <button
-                          onClick={() => setPhoneScreen("form")}
+                          onClick={() => setPhoneScreen("type")}
                           className="w-full bg-primary text-primary-foreground rounded-full py-3 text-xs font-semibold flex items-center justify-center gap-1.5 mt-1 hover:bg-primary/90 transition-colors"
                         >
                           Lancer l'analyse solaire <ArrowRight className="w-3.5 h-3.5" />
@@ -200,6 +200,33 @@ const Index = () => {
                         <p className="text-[9px] text-muted-foreground">
                           Gratuit • Sans engagement • Résultat instantané
                         </p>
+                      </motion.div>
+                    ) : phoneScreen === "type" ? (
+                      <motion.div
+                        key="type"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.25 }}
+                        className="px-5 py-8 flex flex-col items-center text-center gap-6"
+                      >
+                        <h3 className="text-sm font-bold">Vous êtes…</h3>
+                        <div className="w-full flex flex-col gap-3">
+                          <button
+                            onClick={() => setPhoneScreen("form")}
+                            className="w-full flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-border bg-card hover:border-primary hover:bg-primary/5 transition-all active:scale-[0.97]"
+                          >
+                            <span className="text-3xl">🏠</span>
+                            <span className="text-sm font-semibold">Particulier</span>
+                          </button>
+                          <button
+                            onClick={() => setPhoneScreen("form")}
+                            className="w-full flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-border bg-card hover:border-primary hover:bg-primary/5 transition-all active:scale-[0.97]"
+                          >
+                            <span className="text-3xl">🏢</span>
+                            <span className="text-sm font-semibold">Entreprise</span>
+                          </button>
+                        </div>
                       </motion.div>
                     ) : (
                       <motion.div
