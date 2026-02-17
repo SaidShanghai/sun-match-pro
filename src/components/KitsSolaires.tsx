@@ -29,6 +29,7 @@ interface KitsSolairesProps {
   userId: string;
   companyId: string;
   onBack: () => void;
+  onSaved?: () => void;
 }
 
 const emptyKit = {
@@ -46,7 +47,7 @@ const emptyKit = {
   warranty_years: "10",
 };
 
-const KitsSolaires = ({ userId, companyId, onBack }: KitsSolairesProps) => {
+const KitsSolaires = ({ userId, companyId, onBack, onSaved }: KitsSolairesProps) => {
   const { toast } = useToast();
   const [kits, setKits] = useState<Kit[]>([]);
   const [loading, setLoading] = useState(true);
@@ -136,6 +137,7 @@ const KitsSolaires = ({ userId, companyId, onBack }: KitsSolairesProps) => {
       }
       setShowForm(false);
       fetchKits();
+      onSaved?.();
     } catch (error: any) {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
     } finally {
