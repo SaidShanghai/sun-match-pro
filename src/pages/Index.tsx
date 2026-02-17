@@ -15,6 +15,7 @@ import {
   TrendingDown,
   Battery,
   MapPinned,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -335,15 +336,31 @@ const Index = () => {
                           </div>
                           <div className="space-y-1">
                             <label className="text-[10px] font-semibold text-foreground">Ville</label>
-                            <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
-                              <MapPinned className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                              <input
-                                type="text"
-                                value={ville}
-                                onChange={(e) => setVille(e.target.value)}
-                                placeholder="Casablanca"
-                                className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
-                              />
+                            <div className="relative">
+                              <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl cursor-pointer"
+                                onClick={() => {
+                                  const el = document.getElementById('ville-dropdown');
+                                  if (el) el.classList.toggle('hidden');
+                                }}>
+                                <MapPinned className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                                <span className="text-[10px] text-foreground flex-1">{ville}</span>
+                                <ChevronDown className="w-3 h-3 text-muted-foreground shrink-0" />
+                              </div>
+                              <div id="ville-dropdown" className="hidden absolute z-50 top-full left-0 right-0 mt-1 bg-background border border-border rounded-xl shadow-lg max-h-32 overflow-y-auto">
+                                {["Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", "Oujda", "Kénitra", "Tétouan", "Safi", "El Jadida", "Nador", "Béni Mellal", "Mohammedia"].map((v) => (
+                                  <div
+                                    key={v}
+                                    className="px-3 py-1.5 text-[10px] text-foreground hover:bg-accent cursor-pointer first:rounded-t-xl last:rounded-b-xl"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setVille(v);
+                                      document.getElementById('ville-dropdown')?.classList.add('hidden');
+                                    }}
+                                  >
+                                    {v}
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           </div>
                         </div>
