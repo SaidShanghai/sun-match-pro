@@ -200,59 +200,48 @@ const KitsSolaires = ({ userId, companyId, onBack }: KitsSolairesProps) => {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {kits.map((kit) => (
-            <Card key={kit.id} className="relative group hover:shadow-md transition-shadow">
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-bold text-base">{kit.name}</h3>
-                    <p className="text-sm text-muted-foreground">{kit.power_kwc} kWc · {kit.panel_count} panneaux</p>
-                  </div>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(kit)}>
-                      <Pencil className="w-3.5 h-3.5" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => setDeleteConfirm(kit.id)}>
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="flex items-center gap-1.5 text-muted-foreground">
-                    <PanelTop className="w-3.5 h-3.5" />
-                    <span>{kit.panel_brand}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-muted-foreground">
-                    <Cpu className="w-3.5 h-3.5" />
-                    <span>{kit.inverter}</span>
-                  </div>
-                  {kit.batteries && (
-                    <div className="flex items-center gap-1.5 text-muted-foreground">
-                      <Battery className="w-3.5 h-3.5" />
-                      <span>{kit.batteries}</span>
+        <div className="overflow-x-auto rounded-lg border">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-muted/50">
+                <th className="text-left px-3 py-2.5 font-medium">Nom</th>
+                <th className="text-left px-3 py-2.5 font-medium">kWc</th>
+                <th className="text-left px-3 py-2.5 font-medium">Panneaux</th>
+                <th className="text-left px-3 py-2.5 font-medium">Marque</th>
+                <th className="text-left px-3 py-2.5 font-medium">Inverteur</th>
+                <th className="text-left px-3 py-2.5 font-medium">Batteries</th>
+                <th className="text-left px-3 py-2.5 font-medium">Prod. kWh/an</th>
+                <th className="text-right px-3 py-2.5 font-medium">Prix TTC</th>
+                <th className="text-center px-3 py-2.5 font-medium">Garantie</th>
+                <th className="text-right px-3 py-2.5 font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {kits.map((kit) => (
+                <tr key={kit.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                  <td className="px-3 py-2.5 font-medium">{kit.name}</td>
+                  <td className="px-3 py-2.5">{kit.power_kwc}</td>
+                  <td className="px-3 py-2.5">{kit.panel_count}</td>
+                  <td className="px-3 py-2.5">{kit.panel_brand}</td>
+                  <td className="px-3 py-2.5">{kit.inverter}</td>
+                  <td className="px-3 py-2.5 text-muted-foreground">{kit.batteries || "—"}</td>
+                  <td className="px-3 py-2.5">{kit.estimated_production_kwh?.toLocaleString() || "—"}</td>
+                  <td className="px-3 py-2.5 text-right font-semibold text-primary">{kit.price_ttc.toLocaleString("fr-MA")} MAD</td>
+                  <td className="px-3 py-2.5 text-center">{kit.warranty_years} ans</td>
+                  <td className="px-3 py-2.5 text-right">
+                    <div className="flex gap-1 justify-end">
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(kit)}>
+                        <Pencil className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => setDeleteConfirm(kit.id)}>
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
                     </div>
-                  )}
-                  {kit.estimated_production_kwh && (
-                    <div className="flex items-center gap-1.5 text-muted-foreground">
-                      <Sun className="w-3.5 h-3.5" />
-                      <span>{kit.estimated_production_kwh.toLocaleString()} kWh/an</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-3 pt-3 border-t flex items-center justify-between">
-                  <span className="text-lg font-bold text-primary">
-                    {kit.price_ttc.toLocaleString("fr-MA")} MAD
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    Garantie {kit.warranty_years} ans
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
