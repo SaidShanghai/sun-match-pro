@@ -6,25 +6,40 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent } from "@/components/ui/card";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const steps = [
-  { icon: MapPin, title: "Localisation", description: "Où se situe votre logement ?" },
-  { icon: Home, title: "Type de logement", description: "Quel est votre type de logement ?" },
-  { icon: Layers, title: "Type de toiture", description: "Quel type de toiture avez-vous ?" },
-  { icon: Compass, title: "Orientation", description: "Quelle est l'orientation de votre toit ?" },
-  { icon: Ruler, title: "Surface", description: "Quelle surface de toiture est disponible ?" },
-  { icon: Zap, title: "Consommation", description: "Quelle est votre consommation électrique ?" },
-  { icon: Wallet, title: "Budget", description: "Quel budget envisagez-vous ?" },
-  { icon: User, title: "Coordonnées", description: "Vos informations pour recevoir les devis" },
+  { icon: MapPin, emoji: "📍", title: "Localisation", description: "Où habitez-vous ?" },
+  { icon: Home, emoji: "🏠", title: "Logement", description: "Quel type de logement ?" },
+  { icon: Layers, emoji: "🏗️", title: "Toiture", description: "Quel type de toit ?" },
+  { icon: Compass, emoji: "🧭", title: "Orientation", description: "Comment est orienté votre toit ?" },
+  { icon: Ruler, emoji: "📐", title: "Surface", description: "Quelle surface disponible ?" },
+  { icon: Zap, emoji: "⚡", title: "Consommation", description: "Combien consommez-vous ?" },
+  { icon: Wallet, emoji: "💰", title: "Budget", description: "Quel budget avez-vous en tête ?" },
+  { icon: User, emoji: "👤", title: "Coordonnées", description: "Pour recevoir vos devis" },
 ];
 
-const housingTypes = ["Maison individuelle", "Appartement", "Immeuble"];
-const roofTypes = ["Tuiles", "Ardoises", "Bac acier", "Toit plat"];
-const orientations = ["Sud", "Sud-Est", "Sud-Ouest", "Est", "Ouest", "Nord"];
+const housingTypes = [
+  { value: "Maison individuelle", emoji: "🏡" },
+  { value: "Appartement", emoji: "🏢" },
+  { value: "Immeuble", emoji: "🏘️" },
+];
+const roofTypes = [
+  { value: "Tuiles", emoji: "🧱" },
+  { value: "Ardoises", emoji: "🪨" },
+  { value: "Bac acier", emoji: "🔩" },
+  { value: "Toit plat", emoji: "⬜" },
+];
+const orientations = [
+  { value: "Sud", emoji: "⬇️" },
+  { value: "Sud-Est", emoji: "↙️" },
+  { value: "Sud-Ouest", emoji: "↘️" },
+  { value: "Est", emoji: "⬅️" },
+  { value: "Ouest", emoji: "➡️" },
+  { value: "Nord", emoji: "⬆️" },
+];
 const surfaces = ["< 20 m²", "20 - 40 m²", "40 - 60 m²", "60 - 100 m²", "> 100 m²"];
 const consumptions = ["< 5 000 kWh", "5 000 - 10 000 kWh", "10 000 - 15 000 kWh", "15 000 - 20 000 kWh", "> 20 000 kWh"];
 const budgets = ["< 5 000 €", "5 000 - 10 000 €", "10 000 - 15 000 €", "15 000 - 20 000 €", "> 20 000 €"];
@@ -42,17 +57,20 @@ interface DiagnosticData {
   phone: string;
 }
 
-const OptionCard = ({ value, label, selected, onClick }: { value: string; label: string; selected: boolean; onClick: () => void }) => (
+const OptionCard = ({
+  label, emoji, selected, onClick,
+}: { label: string; emoji?: string; selected: boolean; onClick: () => void }) => (
   <button
     type="button"
     onClick={onClick}
-    className={`rounded-xl border-2 p-4 text-left text-sm font-medium transition-all ${
+    className={`rounded-2xl border-2 p-5 text-left font-medium transition-all hover:scale-[1.02] active:scale-[0.98] ${
       selected
-        ? "border-primary bg-primary/5 text-foreground"
-        : "border-border bg-background text-muted-foreground hover:border-primary/40"
+        ? "border-primary bg-primary/10 text-foreground shadow-md"
+        : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:bg-muted/50"
     }`}
   >
-    {label}
+    {emoji && <span className="text-2xl mb-2 block">{emoji}</span>}
+    <span className="text-sm">{label}</span>
   </button>
 );
 
@@ -65,7 +83,6 @@ const Diagnostic = () => {
   });
 
   const progress = ((step + 1) / steps.length) * 100;
-  const StepIcon = steps[step].icon;
 
   const updateField = (field: keyof DiagnosticData, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
@@ -87,10 +104,7 @@ const Diagnostic = () => {
 
   const handleNext = () => {
     if (step < steps.length - 1) setStep(step + 1);
-    else {
-      // Navigate to results with diagnostic data
-      navigate("/resultats", { state: { diagnostic: data } });
-    }
+    else navigate("/resultats", { state: { diagnostic: data } });
   };
 
   const renderStep = () => {
@@ -98,37 +112,37 @@ const Diagnostic = () => {
       case 0:
         return (
           <div className="space-y-4">
-            <Label htmlFor="postal">Code postal</Label>
+            <Label htmlFor="postal" className="text-base">Votre code postal</Label>
             <Input
               id="postal"
               placeholder="Ex : 75001"
               value={data.postalCode}
               onChange={(e) => updateField("postalCode", e.target.value.replace(/\D/g, "").slice(0, 5))}
-              className="text-lg"
+              className="text-2xl h-16 text-center font-bold rounded-xl tracking-widest"
             />
           </div>
         );
       case 1:
         return (
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-3">
             {housingTypes.map((t) => (
-              <OptionCard key={t} value={t} label={t} selected={data.housingType === t} onClick={() => updateField("housingType", t)} />
+              <OptionCard key={t.value} label={t.value} emoji={t.emoji} selected={data.housingType === t.value} onClick={() => updateField("housingType", t.value)} />
             ))}
           </div>
         );
       case 2:
         return (
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             {roofTypes.map((t) => (
-              <OptionCard key={t} value={t} label={t} selected={data.roofType === t} onClick={() => updateField("roofType", t)} />
+              <OptionCard key={t.value} label={t.value} emoji={t.emoji} selected={data.roofType === t.value} onClick={() => updateField("roofType", t.value)} />
             ))}
           </div>
         );
       case 3:
         return (
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-3">
             {orientations.map((o) => (
-              <OptionCard key={o} value={o} label={o} selected={data.orientation === o} onClick={() => updateField("orientation", o)} />
+              <OptionCard key={o.value} label={o.value} emoji={o.emoji} selected={data.orientation === o.value} onClick={() => updateField("orientation", o.value)} />
             ))}
           </div>
         );
@@ -136,7 +150,7 @@ const Diagnostic = () => {
         return (
           <div className="grid gap-3 sm:grid-cols-3">
             {surfaces.map((s) => (
-              <OptionCard key={s} value={s} label={s} selected={data.surface === s} onClick={() => updateField("surface", s)} />
+              <OptionCard key={s} label={s} selected={data.surface === s} onClick={() => updateField("surface", s)} />
             ))}
           </div>
         );
@@ -144,7 +158,7 @@ const Diagnostic = () => {
         return (
           <div className="grid gap-3 sm:grid-cols-3">
             {consumptions.map((c) => (
-              <OptionCard key={c} value={c} label={c} selected={data.consumption === c} onClick={() => updateField("consumption", c)} />
+              <OptionCard key={c} label={c} selected={data.consumption === c} onClick={() => updateField("consumption", c)} />
             ))}
           </div>
         );
@@ -152,24 +166,24 @@ const Diagnostic = () => {
         return (
           <div className="grid gap-3 sm:grid-cols-3">
             {budgets.map((b) => (
-              <OptionCard key={b} value={b} label={b} selected={data.budget === b} onClick={() => updateField("budget", b)} />
+              <OptionCard key={b} label={b} selected={data.budget === b} onClick={() => updateField("budget", b)} />
             ))}
           </div>
         );
       case 7:
         return (
-          <div className="space-y-4">
+          <div className="space-y-5">
             <div>
-              <Label htmlFor="name">Nom complet</Label>
-              <Input id="name" placeholder="Jean Dupont" value={data.name} onChange={(e) => updateField("name", e.target.value)} />
+              <Label htmlFor="name" className="text-base">Nom complet</Label>
+              <Input id="name" placeholder="Jean Dupont" value={data.name} onChange={(e) => updateField("name", e.target.value)} className="h-12 rounded-xl text-base" />
             </div>
             <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="jean@exemple.fr" value={data.email} onChange={(e) => updateField("email", e.target.value)} />
+              <Label htmlFor="email" className="text-base">Email</Label>
+              <Input id="email" type="email" placeholder="jean@exemple.fr" value={data.email} onChange={(e) => updateField("email", e.target.value)} className="h-12 rounded-xl text-base" />
             </div>
             <div>
-              <Label htmlFor="phone">Téléphone</Label>
-              <Input id="phone" type="tel" placeholder="06 12 34 56 78" value={data.phone} onChange={(e) => updateField("phone", e.target.value)} />
+              <Label htmlFor="phone" className="text-base">Téléphone</Label>
+              <Input id="phone" type="tel" placeholder="06 12 34 56 78" value={data.phone} onChange={(e) => updateField("phone", e.target.value)} className="h-12 rounded-xl text-base" />
             </div>
           </div>
         );
@@ -179,36 +193,38 @@ const Diagnostic = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 bg-muted/30">
-        <div className="container max-w-2xl py-12">
+      <main className="flex-1 relative">
+        {/* Fun background blobs */}
+        <div className="absolute top-20 -left-32 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute bottom-20 -right-32 h-64 w-64 rounded-full bg-solar-purple/5 blur-3xl" />
+
+        <div className="container max-w-2xl py-12 relative z-10">
           {/* Progress */}
           <div className="mb-8">
-            <div className="mb-2 flex items-center justify-between text-sm text-muted-foreground">
-              <span>Étape {step + 1} sur {steps.length}</span>
-              <span>{Math.round(progress)}%</span>
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-sm font-semibold text-foreground">
+                {steps[step].emoji} {steps[step].title}
+              </span>
+              <span className="text-sm font-medium text-muted-foreground">
+                {step + 1}/{steps.length}
+              </span>
             </div>
-            <Progress value={progress} className="h-2" />
+            <Progress value={progress} className="h-3 rounded-full" />
           </div>
 
           {/* Step content */}
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
-              initial={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
+              exit={{ opacity: 0, x: -30 }}
+              transition={{ duration: 0.25 }}
             >
-              <Card className="border-0 shadow-lg">
-                <CardContent className="p-8">
-                  <div className="mb-6 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <StepIcon className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-semibold">{steps[step].title}</h2>
-                      <p className="text-sm text-muted-foreground">{steps[step].description}</p>
-                    </div>
+              <Card className="border-0 shadow-xl rounded-3xl">
+                <CardContent className="p-8 md:p-10">
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-bold font-display mb-1">{steps[step].description}</h2>
                   </div>
                   {renderStep()}
                 </CardContent>
@@ -217,13 +233,22 @@ const Diagnostic = () => {
           </AnimatePresence>
 
           {/* Navigation */}
-          <div className="mt-6 flex justify-between">
-            <Button variant="outline" onClick={() => setStep(Math.max(0, step - 1))} disabled={step === 0}>
-              <ArrowLeft className="mr-2 h-4 w-4" /> Précédent
+          <div className="mt-8 flex justify-between">
+            <Button
+              variant="ghost"
+              onClick={() => setStep(Math.max(0, step - 1))}
+              disabled={step === 0}
+              className="rounded-full gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" /> Retour
             </Button>
-            <Button onClick={handleNext} disabled={!canContinue()}>
-              {step === steps.length - 1 ? "Voir les résultats" : "Suivant"}
-              <ArrowRight className="ml-2 h-4 w-4" />
+            <Button
+              onClick={handleNext}
+              disabled={!canContinue()}
+              className="rounded-full gap-2 px-8 h-12 text-base shadow-lg hover:shadow-xl transition-all hover:scale-105"
+            >
+              {step === steps.length - 1 ? "Voir mes résultats 🎉" : "Suivant"}
+              <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
         </div>
