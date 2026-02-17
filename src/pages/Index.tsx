@@ -91,7 +91,7 @@ const Index = () => {
   const [ville, setVille] = useState("Casablanca");
   const [villeOpen, setVilleOpen] = useState(false);
   const [villeSearch, setVilleSearch] = useState("");
-  const [panelAccess, setPanelAccess] = useState<"toit" | "sol" | "toit_sol" | null>(null);
+  const [panelAccess, setPanelAccess] = useState<"toit" | "sol" | null>(null);
   const [selectedSurface, setSelectedSurface] = useState<string | null>(null);
   const [selectedUsages, setSelectedUsages] = useState<string[]>([]);
   const [analyseProgress, setAnalyseProgress] = useState(0);
@@ -455,7 +455,6 @@ const Index = () => {
                             {([
                               { value: "toit", label: "Toit" },
                               { value: "sol", label: "Sol" },
-                              { value: "toit_sol", label: "Toit et Sol" },
                             ] as const).map((opt) => (
                               <button
                                 key={opt.value}
