@@ -13,6 +13,8 @@ interface Kit {
   name: string;
   power_kwc: number;
   panel_count: number;
+  panel_wattage: number | null;
+  panel_dimensions: string | null;
   panel_brand: string;
   inverter: string;
   structure: string | null;
@@ -33,6 +35,8 @@ const emptyKit = {
   name: "",
   power_kwc: "",
   panel_count: "",
+  panel_wattage: "",
+  panel_dimensions: "",
   panel_brand: "",
   inverter: "",
   structure: "",
@@ -83,6 +87,8 @@ const KitsSolaires = ({ userId, companyId, onBack }: KitsSolairesProps) => {
       name: kit.name,
       power_kwc: String(kit.power_kwc),
       panel_count: String(kit.panel_count),
+      panel_wattage: kit.panel_wattage ? String(kit.panel_wattage) : "",
+      panel_dimensions: kit.panel_dimensions || "",
       panel_brand: kit.panel_brand,
       inverter: kit.inverter,
       structure: kit.structure || "",
@@ -104,6 +110,8 @@ const KitsSolaires = ({ userId, companyId, onBack }: KitsSolairesProps) => {
       name: form.name.trim(),
       power_kwc: parseFloat(form.power_kwc),
       panel_count: parseInt(form.panel_count),
+      panel_wattage: form.panel_wattage ? parseInt(form.panel_wattage) : null,
+      panel_dimensions: form.panel_dimensions.trim() || null,
       panel_brand: form.panel_brand.trim(),
       inverter: form.inverter.trim(),
       structure: form.structure.trim() || null,
@@ -207,6 +215,8 @@ const KitsSolaires = ({ userId, companyId, onBack }: KitsSolairesProps) => {
                 <th className="text-left px-3 py-2.5 font-medium">Nom</th>
                 <th className="text-left px-3 py-2.5 font-medium">kWc</th>
                 <th className="text-left px-3 py-2.5 font-medium">Panneaux</th>
+                <th className="text-left px-3 py-2.5 font-medium">W/panneau</th>
+                <th className="text-left px-3 py-2.5 font-medium">Dimensions</th>
                 <th className="text-left px-3 py-2.5 font-medium">Marque</th>
                 <th className="text-left px-3 py-2.5 font-medium">Inverteur</th>
                 <th className="text-left px-3 py-2.5 font-medium">Batteries</th>
@@ -222,6 +232,8 @@ const KitsSolaires = ({ userId, companyId, onBack }: KitsSolairesProps) => {
                   <td className="px-3 py-2.5 font-medium">{kit.name}</td>
                   <td className="px-3 py-2.5">{kit.power_kwc}</td>
                   <td className="px-3 py-2.5">{kit.panel_count}</td>
+                  <td className="px-3 py-2.5">{kit.panel_wattage ? `${kit.panel_wattage}W` : "—"}</td>
+                  <td className="px-3 py-2.5 text-muted-foreground">{kit.panel_dimensions || "—"}</td>
                   <td className="px-3 py-2.5">{kit.panel_brand}</td>
                   <td className="px-3 py-2.5">{kit.inverter}</td>
                   <td className="px-3 py-2.5 text-muted-foreground">{kit.batteries || "—"}</td>
@@ -266,6 +278,14 @@ const KitsSolaires = ({ userId, companyId, onBack }: KitsSolairesProps) => {
                 <div className="space-y-2">
                   <Label>Nombre de panneaux *</Label>
                   <Input type="number" min="1" value={form.panel_count} onChange={(e) => updateField("panel_count", e.target.value)} placeholder="12" required />
+                </div>
+                <div className="space-y-2">
+                  <Label>Puissance par panneau (W)</Label>
+                  <Input type="number" min="0" value={form.panel_wattage} onChange={(e) => updateField("panel_wattage", e.target.value)} placeholder="500" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Dimensions panneau (mm)</Label>
+                  <Input value={form.panel_dimensions} onChange={(e) => updateField("panel_dimensions", e.target.value)} placeholder="2094 x 1038 x 35" />
                 </div>
                 <div className="space-y-2">
                   <Label>Marque panneaux *</Label>
