@@ -278,6 +278,9 @@ const Partenaires = () => {
                     <div className="space-y-2">
                       <Label htmlFor="ice">ICE (Identifiant Commun de l'Entreprise) *</Label>
                       <Input id="ice" value={ice} onChange={(e) => { const v = e.target.value.replace(/\D/g, "").slice(0, 15); setIce(v); }} placeholder="001234567000089" required minLength={15} maxLength={15} pattern="\d{15}" title="L'ICE doit contenir exactement 15 chiffres" />
+                      {ice.length > 0 && ice.length < 15 && (
+                        <p className="text-xs text-destructive">L'ICE doit contenir exactement 15 chiffres ({ice.length}/15)</p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="certifications">Certifications (séparées par des virgules)</Label>
