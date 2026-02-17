@@ -158,7 +158,7 @@ const Diagnostic = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl md:text-7xl font-black font-display mb-8 text-foreground leading-tight"
+            className="text-6xl md:text-8xl lg:text-9xl font-black font-display mb-10 text-foreground leading-[1.1]"
           >
             Vous êtes à 3 minutes
             <br />
