@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdmin } from "@/hooks/useAdmin";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -29,19 +30,23 @@ interface PartnerRequest {
 
 const AdminDashboard = () => {
   const { isAdmin, loading: adminLoading, user } = useAdmin();
+  const { signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { signOut } = useAdmin() as any;
 
   const [partners, setPartners] = useState<PartnerRequest[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!adminLoading && !isAdmin) {
+    if (adminLoading) return;
+    console.log("[AdminDashboard] adminLoading:", adminLoading, "isAdmin:", isAdmin, "user:", user?.id);
+    if (!user) {
+      navigate("/auth-partenaires");
+    } else if (!isAdmin) {
       navigate("/");
     }
-  }, [adminLoading, isAdmin, navigate]);
+  }, [adminLoading, isAdmin, user, navigate]);
 
   useEffect(() => {
     if (!isAdmin) return;
