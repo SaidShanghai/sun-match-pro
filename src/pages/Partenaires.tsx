@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdmin } from "@/hooks/useAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -20,6 +21,7 @@ const moroccoCities = [
 
 const Partenaires = () => {
   const { user, loading: authLoading, signOut } = useAuth();
+  const { isAdmin, loading: adminLoading } = useAdmin();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -38,6 +40,13 @@ const Partenaires = () => {
   const [serviceAreas, setServiceAreas] = useState("");
   const [phone, setPhone] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
+
+  // Redirect admins to admin dashboard
+  useEffect(() => {
+    if (!adminLoading && isAdmin) {
+      navigate("/admin");
+    }
+  }, [adminLoading, isAdmin, navigate]);
 
   // Redirect if not authenticated
   useEffect(() => {
