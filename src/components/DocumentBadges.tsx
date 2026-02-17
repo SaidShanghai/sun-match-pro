@@ -16,9 +16,9 @@ interface DocumentBadgesProps {
 }
 
 const DOC_CONFIG = [
-  { key: "rc" as const, label: "RC", icon: FileText, uploadLabel: "RC non téléchargé", doneLabel: "RC téléchargé" },
-  { key: "modele_j" as const, label: "Modèle J", icon: FileCheck, uploadLabel: "Modèle J non téléchargé", doneLabel: "Modèle J téléchargé" },
-  { key: "cotisations" as const, label: "Cotisations", icon: CreditCard, uploadLabel: "Cotisations non fournies", doneLabel: "Cotisations à jour" },
+  { key: "rc" as const, label: "RC", icon: FileText, uploadLabel: "RC non envoyé", doneLabel: "RC envoyé" },
+  { key: "modele_j" as const, label: "Modèle J", icon: FileCheck, uploadLabel: "Modèle J non envoyé", doneLabel: "Modèle J envoyé" },
+  { key: "cotisations" as const, label: "Cotisations", icon: CreditCard, uploadLabel: "Cotisations non envoyées", doneLabel: "Cotisations envoyées" },
 ];
 
 const DocumentBadges = ({ userId, companyId, onStatusChange }: DocumentBadgesProps) => {
