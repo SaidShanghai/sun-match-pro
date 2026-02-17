@@ -150,6 +150,52 @@ const AdminDashboard = () => {
     URL.revokeObjectURL(url);
   };
 
+  const handleToggleCotisations = async (partnerUserId: string, docDetails: DocDetail[]) => {
+    const existingDoc = docDetails.find((d) => d.doc_type === "cotisations");
+    if (existingDoc) {
+      await handleValidateDoc(existingDoc.id, true);
+    } else {
+      // Create a cotisations record directly (no file needed)
+      const { data: company } = await supabase
+        .from("companies")
+        .select("id")
+        .eq("user_id", partnerUserId)
+        .maybeSingle();
+
+      if (!company) {
+        toast({ title: "Erreur", description: "Entreprise introuvable.", variant: "destructive" });
+        return;
+      }
+
+      const { data: newDoc, error } = await supabase
+        .from("partner_documents")
+        .insert({
+          user_id: partnerUserId,
+          company_id: company.id,
+          doc_type: "cotisations",
+          file_path: "",
+          file_name: "cotisations-admin",
+          validated: true,
+        })
+        .select("id, doc_type, file_path, file_name, validated")
+        .single();
+
+      if (error) {
+        toast({ title: "Erreur", description: error.message, variant: "destructive" });
+        return;
+      }
+
+      toast({ title: "Cotisations marquées à jour" });
+      setPartners((prev) =>
+        prev.map((p) =>
+          p.user_id === partnerUserId
+            ? { ...p, docDetails: [...p.docDetails, newDoc as DocDetail] }
+            : p
+        )
+      );
+    }
+  };
+
   const handleValidateDoc = async (docId: string, validated: boolean) => {
     const { error } = await supabase
       .from("partner_documents")
@@ -265,7 +311,8 @@ const AdminDashboard = () => {
                   onApprove={() => updateStatus(p.id, "approved")}
                   onReject={() => updateStatus(p.id, "rejected")}
                   onDownloadDoc={handleDownloadDoc}
-                  onValidateDoc={handleValidateDoc}
+                   onValidateDoc={handleValidateDoc}
+                   onToggleCotisations={handleToggleCotisations}
                 />
               ))}
             </div>
@@ -286,7 +333,8 @@ const AdminDashboard = () => {
                   onApprove={() => updateStatus(p.id, "approved")}
                   onReject={() => updateStatus(p.id, "rejected")}
                   onDownloadDoc={handleDownloadDoc}
-                  onValidateDoc={handleValidateDoc}
+                   onValidateDoc={handleValidateDoc}
+                   onToggleCotisations={handleToggleCotisations}
                 />
               ))}
             </div>
@@ -307,7 +355,8 @@ const AdminDashboard = () => {
                   onApprove={() => updateStatus(p.id, "approved")}
                   onReject={() => updateStatus(p.id, "rejected")}
                   onDownloadDoc={handleDownloadDoc}
-                  onValidateDoc={handleValidateDoc}
+                   onValidateDoc={handleValidateDoc}
+                   onToggleCotisations={handleToggleCotisations}
                 />
               ))}
             </div>
@@ -328,7 +377,8 @@ const AdminDashboard = () => {
                   onApprove={() => updateStatus(p.id, "approved")}
                   onReject={() => updateStatus(p.id, "rejected")}
                   onDownloadDoc={handleDownloadDoc}
-                  onValidateDoc={handleValidateDoc}
+                   onValidateDoc={handleValidateDoc}
+                   onToggleCotisations={handleToggleCotisations}
                 />
               ))}
             </div>
@@ -361,6 +411,7 @@ const PartnerCard = ({
   onReject,
   onDownloadDoc,
   onValidateDoc,
+  onToggleCotisations,
 }: {
   partner: PartnerRequest;
   updating: string | null;
@@ -368,6 +419,7 @@ const PartnerCard = ({
   onReject: () => void;
   onDownloadDoc: (filePath: string, fileName: string) => void;
   onValidateDoc: (docId: string, validated: boolean) => void;
+  onToggleCotisations: (userId: string, docDetails: DocDetail[]) => void;
 }) => {
   const statusBadge = {
     pending: <Badge variant="outline" className="border-amber-500 text-amber-500">En attente</Badge>,
@@ -441,7 +493,7 @@ const PartnerCard = ({
                 {/* Documents with download/validate */}
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-3">Documents justificatifs</p>
                 <div className="space-y-1.5">
-                  {(["rc", "modele_j", "cotisations"] as const).map((docType) => {
+                  {(["rc", "modele_j"] as const).map((docType) => {
                     const doc = partner.docDetails.find((d) => d.doc_type === docType);
                     const config = DOC_LABELS[docType];
                     return (
@@ -451,7 +503,7 @@ const PartnerCard = ({
                             ? "bg-green-500/10 text-green-700 border-green-500/20"
                             : doc
                             ? "bg-blue-500/10 text-blue-700 border-blue-500/20"
-                            : "bg-red-500/10 text-red-600 border-red-500/20"
+                            : "bg-amber-500/10 text-amber-600 border-amber-500/20"
                         }`}>
                           {config.icon}
                           {config.label}
@@ -503,6 +555,50 @@ const PartnerCard = ({
                       </div>
                     );
                   })}
+
+                  {/* Cotisations - admin toggle */}
+                  <div className="flex items-center gap-2">
+                    {(() => {
+                      const cotisDoc = partner.docDetails.find((d) => d.doc_type === "cotisations");
+                      const isValid = cotisDoc?.validated ?? false;
+                      return (
+                        <>
+                          <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full border ${
+                            isValid
+                              ? "bg-green-500/10 text-green-700 border-green-500/20"
+                              : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                          }`}>
+                            <CreditCard className="w-3.5 h-3.5" />
+                            Cotisations
+                            {isValid ? <CheckCircle2 className="w-2.5 h-2.5" /> : <XCircle className="w-2.5 h-2.5" />}
+                          </span>
+                          {isValid ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-6 px-2 text-[10px] border-amber-500 text-amber-600 hover:bg-amber-50"
+                              onClick={() => {
+                                if (cotisDoc) onValidateDoc(cotisDoc.id, false);
+                              }}
+                            >
+                              <XCircle className="w-3 h-3 mr-1" />
+                              Marquer non à jour
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-6 px-2 text-[10px] border-green-500 text-green-600 hover:bg-green-50"
+                              onClick={() => onToggleCotisations(partner.user_id, partner.docDetails)}
+                            >
+                              <CheckCircle2 className="w-3 h-3 mr-1" />
+                              Marquer à jour
+                            </Button>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
                 </div>
               </div>
             )}

@@ -20,10 +20,9 @@ interface DocumentBadgesProps {
   onStatusChange?: (allDone: boolean) => void;
 }
 
-const DOC_CONFIG = [
+const UPLOAD_DOC_CONFIG = [
   { key: "rc" as const, label: "RC", icon: FileText, uploadLabel: "RC non envoyé", sentLabel: "RC envoyé — en attente", validatedLabel: "RC validé" },
   { key: "modele_j" as const, label: "Modèle J", icon: FileCheck, uploadLabel: "Modèle J non envoyé", sentLabel: "Modèle J envoyé — en attente", validatedLabel: "Modèle J validé" },
-  { key: "cotisations" as const, label: "Cotisations", icon: CreditCard, uploadLabel: "Cotisations non envoyées", sentLabel: "Cotisations envoyées — en attente", validatedLabel: "Cotisations validées" },
 ];
 
 const DEFAULT_STATUS: DocStatus = {
@@ -97,9 +96,11 @@ const DocumentBadges = ({ userId, companyId, onStatusChange }: DocumentBadgesPro
     }
   };
 
-  return (
+    const cotisationsState = docs.cotisations;
+
+    return (
     <div className="flex items-center justify-center gap-3 flex-wrap">
-      {DOC_CONFIG.map(({ key, icon: Icon, uploadLabel, sentLabel, validatedLabel }) => {
+      {UPLOAD_DOC_CONFIG.map(({ key, icon: Icon, uploadLabel, sentLabel, validatedLabel }) => {
         const state = docs[key];
         const isUploading = uploading === key;
 
@@ -149,6 +150,19 @@ const DocumentBadges = ({ userId, companyId, onStatusChange }: DocumentBadgesPro
           </button>
         );
       })}
+
+      {/* Cotisations - read-only badge, controlled by admin */}
+      <span
+        className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${
+          cotisationsState.validated
+            ? "bg-green-500/10 text-green-700 border-green-500/20"
+            : "bg-amber-500/10 text-amber-700 border-amber-500/20"
+        }`}
+      >
+        <CreditCard className="w-3.5 h-3.5" />
+        {cotisationsState.validated ? "Cotisations à jour" : "Cotisations non vérifiées"}
+        {cotisationsState.validated ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Clock className="w-3.5 h-3.5" />}
+      </span>
     </div>
   );
 };
