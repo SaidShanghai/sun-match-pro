@@ -61,7 +61,7 @@ const Diagnostic = () => {
                 <span className="block text-gradient" style={{ fontSize: "160px" }}>économies !</span>
               </h1>
 
-              <p className="text-xl text-muted-foreground max-w-lg">
+              <p className="text-xl text-muted-foreground max-w-lg text-right ml-auto">
                 Particulier ou entreprise, on vous accompagne. Diagnostic personnalisé,
                 installateurs certifiés, et pour les pros : montage des dossiers SR500,
                 Tatwir Al Harariya, et bien plus encore.
