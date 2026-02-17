@@ -17,9 +17,9 @@ const StopwatchIcon = () => {
   const angle = (seconds / 180) * 360;
 
   return (
-    <div className="relative w-[200px] h-[200px] mx-auto">
+    <div className="relative w-[300px] h-[300px] mx-auto">
       {/* Outer ring */}
-      <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-xl">
+      <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-2xl">
         {/* Button top */}
         <rect x="92" y="2" width="16" height="18" rx="4" className="fill-muted-foreground/60" />
         {/* Small circle connector */}
@@ -69,8 +69,8 @@ const StopwatchIcon = () => {
 
       {/* Text inside */}
       <div className="absolute inset-0 flex flex-col items-center justify-center pt-5">
-        <span className="text-3xl font-bold font-display text-foreground mt-8">3:00</span>
-        <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">minutes</span>
+        <span className="text-5xl font-black font-display text-foreground mt-8">3:00</span>
+        <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">minutes</span>
       </div>
     </div>
   );
@@ -139,9 +139,9 @@ const Diagnostic = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="inline-flex items-center gap-2 bg-primary/10 text-primary px-5 py-2 rounded-full text-sm font-semibold mb-8"
+            className="inline-flex items-center gap-2 bg-primary/10 text-primary px-6 py-3 rounded-full text-base font-bold mb-10"
           >
-            <Zap className="w-4 h-4" />
+            <Zap className="w-5 h-5" />
             Rapide &amp; gratuit
           </motion.div>
 
@@ -158,7 +158,7 @@ const Diagnostic = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-4xl md:text-6xl font-bold font-display mb-6 text-foreground leading-tight"
+            className="text-5xl md:text-7xl font-black font-display mb-8 text-foreground leading-tight"
           >
             Votre diagnostic solaire
             <br />
@@ -171,7 +171,7 @@ const Diagnostic = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12"
+            className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-14"
           >
             Découvrez combien vous pouvez économiser grâce au solaire.
             Pas de jargon, pas d'engagement — juste des réponses claires.
