@@ -493,14 +493,23 @@ const Index = () => {
                         {/* Usages spécifiques */}
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-semibold text-foreground">Usages spécifiques</label>
-                          <div className="flex gap-2">
+                          <div className="grid grid-cols-3 gap-1.5">
                             {[
-                              { icon: "❄️", label: "Clim" },
-                              { icon: "⚡", label: "Chauffage" },
-                              { icon: "🔧", label: "Industrie" },
+                              { icon: "❄️", label: "Climatisation" },
+                              { icon: "🔥", label: "Chauffage" },
+                              { icon: "🚿", label: "Chauffe-eau" },
+                              { icon: "🚗", label: "Véhicule élec." },
+                              { icon: "🍳", label: "Cuisine élec." },
+                              { icon: "💻", label: "Informatique" },
+                              { icon: "🧊", label: "Frigo/Congél." },
+                              { icon: "❄️", label: "Chambre froide" },
+                              { icon: "💨", label: "Compresseur air" },
+                              { icon: "💡", label: "Éclairage indus." },
+                              { icon: "⚙️", label: "Machines-outils" },
                             ].map((u) => (
-                              <button key={u.label} className="flex-1 flex flex-col items-center gap-0.5 p-2 rounded-xl border border-border hover:border-primary/40 transition-colors">
-                                <span className="text-sm">{u.icon}</span>
+                              <button key={u.label} className="flex flex-col items-center gap-0.5 p-1.5 rounded-xl border border-border hover:border-primary/40 transition-colors">
+                                <span className="text-xs">{u.icon}</span>
+                                <span className="text-[7px] text-muted-foreground leading-tight text-center">{u.label}</span>
                               </button>
                             ))}
                           </div>
