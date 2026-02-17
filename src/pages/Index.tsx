@@ -382,30 +382,30 @@ const Index = () => {
                 </div>
 
                 <div className="w-full space-y-3">
-                  <div className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl text-left">
-                    <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
-                      <Zap className="w-4 h-4 text-primary" />
+                  <div className="flex items-center gap-4 p-4 bg-background border border-border/80 rounded-2xl text-left shadow-sm">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                      <Zap className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="text-sm">Dimensionnement intelligent basé sur votre consommation</span>
+                    <span className="text-sm leading-snug">Dimensionnement intelligent basé sur votre consommation</span>
                   </div>
-                  <div className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl text-left">
-                    <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
-                      <Shield className="w-4 h-4 text-primary" />
+                  <div className="flex items-center gap-4 p-4 bg-background border border-border/80 rounded-2xl text-left shadow-sm">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                      <Shield className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="text-sm">Catalogue complet 220V & 380V adapté au Maroc</span>
+                    <span className="text-sm leading-snug">Catalogue complet 220V & 380V adapté au Maroc</span>
                   </div>
-                  <div className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl text-left">
-                    <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
-                      <FileText className="w-4 h-4 text-primary" />
+                  <div className="flex items-center gap-4 p-4 bg-background border border-border/80 rounded-2xl text-left shadow-sm">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                      <Sun className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="text-sm">Devis personnalisé en quelques minutes</span>
+                    <span className="text-sm leading-snug">Devis personnalisé en quelques minutes</span>
                   </div>
                 </div>
 
                 <Button
                   asChild
                   size="lg"
-                  className="w-full h-14 text-base rounded-2xl mt-2"
+                  className="w-full h-14 text-base rounded-full mt-2 shadow-lg"
                 >
                   <Link to="/diagnostic">
                     Lancer l'analyse solaire <ArrowRight className="w-5 h-5 ml-2" />
