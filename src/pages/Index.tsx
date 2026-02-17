@@ -611,35 +611,35 @@ const Index = () => {
                           })}
                         </div>
 
-                        {/* Analyse animation - sun random movement */}
-                        <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
-                          <div className="relative w-28 h-28">
-                            <motion.div
-                              animate={{
-                                x: [0, 30, -20, 40, -10, 25, -35, 15, 0],
-                                y: [0, -25, 15, -35, 30, -15, 20, -30, 0],
-                              }}
-                              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                              className="absolute top-1/2 left-1/2"
-                            >
-                              <div className="w-10 h-10 -ml-5 -mt-5 bg-primary/20 rounded-full flex items-center justify-center" style={{ boxShadow: "0 0 20px hsl(var(--primary) / 0.4)" }}>
-                                <Sun className="w-6 h-6 text-primary" />
-                              </div>
-                            </motion.div>
-                          </div>
-                          <div>
-                            <h4 className="text-sm font-bold">Analyse en cours…</h4>
-                            <p className="text-[10px] text-muted-foreground mt-1">{analyseLabel}</p>
-                          </div>
-                          <div className="w-full space-y-1">
-                            <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                              <motion.div
-                                className="h-full bg-primary rounded-full"
-                                animate={{ width: `${analyseProgress}%` }}
-                                transition={{ duration: 0.4 }}
-                              />
+                        {/* Analyse animation - sun random movement full screen */}
+                        <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center relative">
+                          <motion.div
+                            animate={{
+                              x: [0, 80, -60, 100, -90, 50, -80, 70, -40, 0],
+                              y: [0, -80, 60, -120, 100, -60, 80, -100, 40, 0],
+                            }}
+                            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                            className="absolute top-1/2 left-1/2 z-0"
+                          >
+                            <div className="w-12 h-12 -ml-6 -mt-6 bg-primary/20 rounded-full flex items-center justify-center" style={{ boxShadow: "0 0 30px hsl(var(--primary) / 0.4)" }}>
+                              <Sun className="w-7 h-7 text-primary" />
                             </div>
-                            <span className="text-[10px] font-semibold text-foreground">{analyseProgress}%</span>
+                          </motion.div>
+                          <div className="z-10 mt-auto w-full space-y-2">
+                            <div>
+                              <h4 className="text-sm font-bold">Analyse en cours…</h4>
+                              <p className="text-[10px] text-muted-foreground mt-1">{analyseLabel}</p>
+                            </div>
+                            <div className="w-full space-y-1">
+                              <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                                <motion.div
+                                  className="h-full bg-primary rounded-full"
+                                  animate={{ width: `${analyseProgress}%` }}
+                                  transition={{ duration: 0.4 }}
+                                />
+                              </div>
+                              <span className="text-[10px] font-semibold text-foreground">{analyseProgress}%</span>
+                            </div>
                           </div>
                         </div>
                       </motion.div>
