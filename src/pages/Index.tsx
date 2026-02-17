@@ -561,36 +561,43 @@ const Index = () => {
                         </div>
 
                         {/* CTA Analyser */}
-                        <button
-                          onClick={() => {
-                            setPhoneScreen("analyse");
-                            setAnalyseProgress(0);
-                            const labels = [
-                              "Analyse de la consommation...",
-                              "Calcul de l'ensoleillement...",
-                              "Optimisation de la couverture...",
-                              "Dimensionnement des panneaux...",
-                              "Estimation des économies...",
-                              "Finalisation du rapport...",
-                            ];
-                            let p = 0;
-                            const startTime = Date.now();
-                            const totalDuration = 8000;
-                            const interval = setInterval(() => {
-                              const elapsed = Date.now() - startTime;
-                              p = Math.min((elapsed / totalDuration) * 100, 100);
-                              if (p >= 100) {
-                                clearInterval(interval);
-                                setTimeout(() => setPhoneScreen("solutions"), 600);
-                              }
-                              setAnalyseProgress(Math.round(p));
-                              setAnalyseLabel(labels[Math.min(Math.floor(p / 18), labels.length - 1)]);
-                            }, 50);
-                          }}
-                          className="w-full bg-primary text-primary-foreground rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors"
-                        >
-                          Analyser <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
+                        {(() => {
+                          const siteValid = panelAccess.length > 0 && selectedSurface && selectedUsages.length > 0;
+                          return (
+                            <button
+                              onClick={() => {
+                                if (!siteValid) return;
+                                setPhoneScreen("analyse");
+                                setAnalyseProgress(0);
+                                const labels = [
+                                  "Analyse de la consommation...",
+                                  "Calcul de l'ensoleillement...",
+                                  "Optimisation de la couverture...",
+                                  "Dimensionnement des panneaux...",
+                                  "Estimation des économies...",
+                                  "Finalisation du rapport...",
+                                ];
+                                let p = 0;
+                                const startTime = Date.now();
+                                const totalDuration = 8000;
+                                const interval = setInterval(() => {
+                                  const elapsed = Date.now() - startTime;
+                                  p = Math.min((elapsed / totalDuration) * 100, 100);
+                                  if (p >= 100) {
+                                    clearInterval(interval);
+                                    setTimeout(() => setPhoneScreen("solutions"), 600);
+                                  }
+                                  setAnalyseProgress(Math.round(p));
+                                  setAnalyseLabel(labels[Math.min(Math.floor(p / 18), labels.length - 1)]);
+                                }, 50);
+                              }}
+                              disabled={!siteValid}
+                              className={`w-full rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 transition-colors ${siteValid ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
+                            >
+                              Analyser <ArrowRight className="w-3.5 h-3.5" />
+                            </button>
+                          );
+                        })()}
                       </motion.div>
                     ) : phoneScreen === "analyse" ? (
                       /* Analyse screen */
