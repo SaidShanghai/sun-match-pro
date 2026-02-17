@@ -95,7 +95,7 @@ const Diagnostic = () => {
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-2xl" />
 
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-[1600px] w-full mx-auto px-6 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -109,10 +109,10 @@ const Diagnostic = () => {
               </div>
 
               <h1 className="font-black leading-[1.1]">
-                <span className="block" style={{ fontSize: "clamp(30px, 5vw, 60px)" }}>Vous êtes à</span>
-                <span className="block text-gradient" style={{ fontSize: "clamp(50px, 9vw, 112px)" }}>3 minutes</span>
-                <span className="block" style={{ fontSize: "clamp(30px, 5vw, 60px)" }}>de grosses</span>
-                <span className="block text-gradient" style={{ fontSize: "clamp(45px, 8vw, 105px)" }}>économies !</span>
+                <span className="block" style={{ fontSize: "60px" }}>Vous êtes à</span>
+                <span className="block text-gradient" style={{ fontSize: "112px" }}>3 minutes</span>
+                <span className="block" style={{ fontSize: "60px" }}>de grosses</span>
+                <span className="block text-gradient" style={{ fontSize: "105px" }}>économies !</span>
               </h1>
 
               <p className="text-xl text-muted-foreground max-w-lg">
