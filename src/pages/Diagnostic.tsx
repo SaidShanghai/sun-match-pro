@@ -109,10 +109,10 @@ const Diagnostic = () => {
               </div>
 
               <h1 className="font-black leading-[1.1]">
-                <span className="block" style={{ fontSize: "40px" }}>Vous êtes à</span>
-                <span className="block text-gradient" style={{ fontSize: "75px" }}>3 minutes</span>
-                <span className="block" style={{ fontSize: "40px" }}>de grosses</span>
-                <span className="block text-gradient" style={{ fontSize: "70px" }}>économies !</span>
+                <span className="block" style={{ fontSize: "60px" }}>Vous êtes à</span>
+                <span className="block text-gradient" style={{ fontSize: "112px" }}>3 minutes</span>
+                <span className="block" style={{ fontSize: "60px" }}>de grosses</span>
+                <span className="block text-gradient" style={{ fontSize: "105px" }}>économies !</span>
               </h1>
 
               <p className="text-xl text-muted-foreground max-w-lg">
