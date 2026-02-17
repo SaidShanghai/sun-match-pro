@@ -14,13 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      companies: {
+        Row: {
+          certifications: string[] | null
+          city: string
+          created_at: string
+          email: string
+          ice: string
+          id: string
+          name: string
+          phone: string
+          profile_id: string
+          service_areas: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          certifications?: string[] | null
+          city: string
+          created_at?: string
+          email: string
+          ice: string
+          id?: string
+          name: string
+          phone: string
+          profile_id: string
+          service_areas?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          certifications?: string[] | null
+          city?: string
+          created_at?: string
+          email?: string
+          ice?: string
+          id?: string
+          name?: string
+          phone?: string
+          profile_id?: string
+          service_areas?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "companies_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "partner_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_profiles: {
+        Row: {
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_company_owner: { Args: { _company_id: string }; Returns: boolean }
+      is_profile_owner: { Args: { _profile_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
