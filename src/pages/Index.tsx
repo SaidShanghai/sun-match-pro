@@ -143,7 +143,7 @@ const Index = () => {
                       <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
                         <Sun className="w-4 h-4 text-primary-foreground" />
                       </div>
-                      <span className="text-xs font-bold">NOOR<span className="text-primary">IA</span></span>
+                      <span className="text-xs font-bold">NOOR<span style={{ color: "hsl(24 95% 53%)" }}>IA</span></span>
                     </div>
                     <span className="text-[9px] text-muted-foreground">SunStone Finance</span>
                   </div>
