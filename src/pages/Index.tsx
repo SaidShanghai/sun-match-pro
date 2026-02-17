@@ -62,18 +62,20 @@ const HeroRotatingTitle = () => {
 
   return (
     <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
-      <AnimatePresence mode="wait">
-        <motion.span
-          key={heroWords[index]}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.4 }}
-          className="inline-block"
-        >
-          {heroWords[index]}
-        </motion.span>
-      </AnimatePresence>{" "}
+      <span className="block h-[1.2em] relative overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={heroWords[index]}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4 }}
+            className="absolute left-0"
+          >
+            {heroWords[index]}
+          </motion.span>
+        </AnimatePresence>
+      </span>
       <span className="text-gradient">simplifié</span>
     </h1>
   );
