@@ -139,8 +139,7 @@ const Index = () => {
               <HeroRotatingTitle />
 
               <p className="text-xl text-muted-foreground max-w-lg">
-                NOORIA connecte particuliers et installateurs certifiés.
-                Diagnostic gratuit, devis personnalisés, installation garantie.
+                NOORIA connecte particuliers et installateurs certifiés. Diagnostic gratuit, devis personnalisés, installation garantie, programmes d'aides du Royaume.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
