@@ -206,6 +206,45 @@ export type Database = {
           },
         ]
       }
+      packages: {
+        Row: {
+          applicable_aids: string[] | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          power_kwc: number
+          price_ttc: number
+          profile_type: string
+          updated_at: string
+        }
+        Insert: {
+          applicable_aids?: string[] | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          power_kwc: number
+          price_ttc: number
+          profile_type: string
+          updated_at?: string
+        }
+        Update: {
+          applicable_aids?: string[] | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          power_kwc?: number
+          price_ttc?: number
+          profile_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       partner_documents: {
         Row: {
           company_id: string
@@ -279,6 +318,74 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      quote_requests: {
+        Row: {
+          admin_notes: string | null
+          annual_consumption: string | null
+          budget: string | null
+          city: string | null
+          client_email: string
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          housing_type: string | null
+          id: string
+          project_type: string | null
+          recommended_package_id: string | null
+          roof_orientation: string | null
+          roof_surface: string | null
+          roof_type: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          annual_consumption?: string | null
+          budget?: string | null
+          city?: string | null
+          client_email: string
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          housing_type?: string | null
+          id?: string
+          project_type?: string | null
+          recommended_package_id?: string | null
+          roof_orientation?: string | null
+          roof_surface?: string | null
+          roof_type?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          annual_consumption?: string | null
+          budget?: string | null
+          city?: string | null
+          client_email?: string
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          housing_type?: string | null
+          id?: string
+          project_type?: string | null
+          recommended_package_id?: string | null
+          roof_orientation?: string | null
+          roof_surface?: string | null
+          roof_type?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_requests_recommended_package_id_fkey"
+            columns: ["recommended_package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
