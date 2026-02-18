@@ -54,7 +54,29 @@ const Diagnostic = () => {
                 <span className="block" style={{ fontSize: "60px", marginLeft: "2cm" }}>Vous êtes à</span>
                 <span className="block text-gradient" style={{ fontSize: "112px" }}>3 minutes</span>
                 <span className="block text-center" style={{ fontSize: "100px" }}>de grosses</span>
-                <span className="block text-gradient" style={{ fontSize: "160px" }}>économies<span className="relative inline-block"> !<svg className="absolute left-1/2 -translate-x-1/2 w-[135px] h-[135px] text-primary rotate-[20deg]" style={{ top: "-5cm" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="14" r="8"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="2" x2="9" y2="2"/><line x1="12" y1="2" x2="15" y2="2"/><line x1="12" y1="14" x2="12" y2="10"/><line x1="12" y1="14" x2="15" y2="14"/></svg></span></span>
+                <span className="block text-gradient" style={{ fontSize: "160px" }}>économies<span className="relative inline-block"> !<svg className="absolute left-1/2 -translate-x-1/2 w-[135px] h-[135px] text-primary rotate-[20deg]" style={{ top: "-5cm" }} viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  {/* Corps */}
+                  <circle cx="50" cy="55" r="38" />
+                  {/* Bouton poussoir */}
+                  <line x1="50" y1="17" x2="50" y2="8" strokeWidth="4" />
+                  <line x1="44" y1="8" x2="56" y2="8" strokeWidth="3" />
+                  {/* Couronne droite */}
+                  <line x1="73" y1="28" x2="80" y2="21" strokeWidth="3" />
+                  {/* Marqueurs heures */}
+                  <line x1="50" y1="20" x2="50" y2="25" />
+                  <line x1="50" y1="85" x2="50" y2="90" />
+                  <line x1="15" y1="55" x2="20" y2="55" />
+                  <line x1="80" y1="55" x2="85" y2="55" />
+                  {/* Petits marqueurs */}
+                  <line x1="30" y1="30" x2="33" y2="33" strokeWidth="2" />
+                  <line x1="67" y1="33" x2="70" y2="30" strokeWidth="2" />
+                  <line x1="30" y1="80" x2="33" y2="77" strokeWidth="2" />
+                  <line x1="67" y1="77" x2="70" y2="80" strokeWidth="2" />
+                  {/* Centre */}
+                  <circle cx="50" cy="55" r="3" fill="currentColor" />
+                  {/* Aiguille des secondes qui tourne */}
+                  <line x1="50" y1="55" x2="50" y2="25" strokeWidth="2" className="origin-[50px_55px] animate-spin" style={{ animationDuration: "4s" }} stroke="hsl(var(--primary))" />
+                </svg></span></span>
               </h1>
 
               <p className="text-xl text-muted-foreground max-w-xl text-right ml-auto">
