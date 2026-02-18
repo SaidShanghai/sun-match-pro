@@ -291,7 +291,7 @@ const Index = () => {
                         <img src={nooriaLogo} alt="NOORIA" className="w-36 object-contain" />
                         <div className="flex flex-col items-center gap-1">
                           <span className="text-[10px] text-muted-foreground tracking-widest uppercase">Votre partenaire solaire</span>
-                          <span className="text-[9px] text-primary/70 animate-pulse">Appuyez pour commencer</span>
+                          <span className="text-[11px] font-semibold text-primary animate-pulse">Appuyez pour commencer</span>
                         </div>
                       </motion.div>
                     ) : phoneScreen === "intro" ? (
