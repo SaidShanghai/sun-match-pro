@@ -44,7 +44,7 @@ const Header = () => {
             ))}
           </nav>
           <Button asChild size="sm">
-            <Link to="/diagnostic">Mon diagnostic</Link>
+            <Link to="/profil">Mon profil</Link>
           </Button>
         </div>
       </div>
