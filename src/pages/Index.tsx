@@ -49,30 +49,36 @@ const features = [
 ];
 
 const heroWords = ["Le solaire,", "Le diagnostic,", "Le soutien,", "Le financement,", "Le chantier,", "Le suivi,"];
+const heroWordsEntreprise = ["SR500,", "TATWIR,", "GEFF,", "PPA,", "Le chantier,", "Le suivi,", "Le diagnostic,", "Le soutien,", "Le financement,"];
 
-const HeroRotatingTitle = () => {
+const HeroRotatingTitle = ({ entreprise = false }: { entreprise?: boolean }) => {
   const [index, setIndex] = useState(0);
+  const words = entreprise ? heroWordsEntreprise : heroWords;
+
+  useEffect(() => {
+    setIndex(0);
+  }, [entreprise]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % heroWords.length);
+      setIndex((prev) => (prev + 1) % words.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [words]);
 
   return (
     <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
       <span className="block h-[1.2em] relative overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.span
-            key={heroWords[index]}
+            key={words[index]}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4 }}
             className="absolute left-0"
           >
-            {heroWords[index]}
+            {words[index]}
           </motion.span>
         </AnimatePresence>
       </span>
@@ -156,7 +162,7 @@ const Index = () => {
                 <span className="text-sm font-medium">100+ installateurs certifiés au Maroc</span>
               </div>
 
-              <HeroRotatingTitle />
+              <HeroRotatingTitle entreprise={selectedType === "Entreprise"} />
 
               <p className="text-xl text-muted-foreground max-w-lg">
                 NOORIA connecte particuliers et installateurs certifiés. Diagnostic gratuit, devis personnalisés, installation garantie, programmes d'aides du Royaume.
