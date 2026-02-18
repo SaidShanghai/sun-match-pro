@@ -446,36 +446,18 @@ const Index = () => {
                           </div>
                         </div>
 
-                        {/* Facture + Ville */}
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-semibold text-foreground">Facture annuelle (MAD)</label>
-                            <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
-                              <FileText className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                              <input
-                                type="text"
-                                value={facture}
-                                onChange={(e) => setFacture(e.target.value)}
-                                placeholder="Ex: 800"
-                                className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
-                              />
-                            </div>
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-semibold text-foreground">Ville</label>
-                            <div className="flex items-center gap-2 px-3 py-1.5 border border-border rounded-xl">
-                              <MapPinned className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                              <select
-                                value={ville}
-                                onChange={(e) => setVille(e.target.value)}
-                                className="text-[10px] bg-transparent outline-none w-full text-foreground appearance-none cursor-pointer"
-                              >
-                                {["Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", "Oujda", "Kénitra", "Tétouan", "Safi", "El Jadida", "Nador", "Béni Mellal", "Mohammedia"].map((v) => (
-                                  <option key={v} value={v}>{v}</option>
-                                ))}
-                              </select>
-                              <ChevronDown className="w-3 h-3 text-muted-foreground shrink-0" />
-                            </div>
+                        {/* Facture */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Facture annuelle (MAD)</label>
+                          <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
+                            <FileText className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                            <input
+                              type="number"
+                              value={facture}
+                              onChange={e => setFacture(e.target.value)}
+                              placeholder="Ex : 180 000"
+                              className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
+                            />
                           </div>
                         </div>
 
