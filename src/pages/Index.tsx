@@ -107,7 +107,6 @@ const Index = () => {
   const [ctaBlink, setCtaBlink] = useState(false);
   const [entrepriseBlink, setEntrepriseBlink] = useState(false);
   const [callbackOpen, setCallbackOpen] = useState(false);
-  const [showPhoneLogo, setShowPhoneLogo] = useState(true);
   // Rotating placeholder for description
   const projetSuggestions = [
     "Usine textile, 380V, 3 shifts/jour, financement via programme TATWIR souhaité",
@@ -278,23 +277,7 @@ const Index = () => {
 
                   <div className="flex-1 overflow-y-auto min-h-0">
                   <AnimatePresence mode="wait">
-                    {showPhoneLogo ? (
-                      <motion.div
-                        key="logo-splash"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.6 }}
-                        className="flex flex-col items-center justify-center h-full gap-6 cursor-pointer select-none"
-                        onClick={() => setShowPhoneLogo(false)}
-                      >
-                        <img src={nooriaLogo} alt="NOORIA" className="w-36 object-contain" />
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="text-[10px] text-muted-foreground tracking-widest uppercase">Votre partenaire solaire</span>
-                          <span className="text-sm font-bold text-primary animate-pulse">Appuyez pour commencer</span>
-                        </div>
-                      </motion.div>
-                    ) : phoneScreen === "intro" ? (
+                    {phoneScreen === "intro" ? (
                       <motion.div
                         key="intro"
                         initial={{ opacity: 0, x: -20 }}
