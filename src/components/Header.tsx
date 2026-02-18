@@ -17,6 +17,9 @@ const Header = () => {
             <Link to="/diagnostic" className="text-sm font-medium hover:text-primary transition-colors">
               Diagnostic
             </Link>
+            <Link to="/ia" className="text-sm font-medium hover:text-primary transition-colors">
+              IA
+            </Link>
             <Link to="/profil" className="text-sm font-medium hover:text-primary transition-colors">
               Mon profil
             </Link>
