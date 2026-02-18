@@ -258,7 +258,7 @@ const Index = () => {
                   <div className="flex items-center justify-between px-4 py-1 border-b border-border/50">
                     <div className="flex items-center gap-2">
                       {phoneScreen !== "intro" && (
-                        <button onClick={() => setPhoneScreen(phoneScreen === "solutions" ? "analyse" : phoneScreen === "analyse" ? "site" : phoneScreen === "site" ? (selectedType === "Entreprise" ? "informations" : "form") : phoneScreen === "informations" ? "form" : phoneScreen === "form" ? "type" : "intro")} className="p-0.5">
+                        <button onClick={() => setPhoneScreen(phoneScreen === "solutions" ? "analyse" : phoneScreen === "analyse" ? "eligibilite" : phoneScreen === "eligibilite" ? "site" : phoneScreen === "site" ? (selectedType === "Entreprise" ? "informations" : "form") : phoneScreen === "informations" ? "form" : phoneScreen === "form" ? "type" : "intro")} className="p-0.5">
                           <ChevronLeft className="w-4 h-4 text-foreground" />
                         </button>
                       )}
@@ -374,7 +374,7 @@ const Index = () => {
                       >
                         {/* Stepper */}
                         <div className="flex items-center justify-between px-1">
-                          {["Profil", "Site", "Analyse", "Solutions", "Contact"].map((step, i) => {
+                          {(selectedType === "Entreprise" ? ["Profil", "Info", "Site", "Eligib.", "Analyse", "Solut.", "Contact"] : ["Profil", "Site", "Analyse", "Solutions", "Contact"]).map((step, i) => {
                             const isActive = i === 0;
                             const isDone = false;
                             return (
@@ -500,7 +500,7 @@ const Index = () => {
                       >
                         {/* Stepper */}
                         <div className="flex items-center justify-between px-1">
-                          {["Profil", "Infos", "Site", "Analyse", "Solutions"].map((step, i) => {
+                          {["Profil", "Info", "Site", "Eligib.", "Analyse", "Solut.", "Contact"].map((step, i) => {
                             const isDone = i === 0;
                             const isActive = i === 1;
                             return (
@@ -645,7 +645,7 @@ const Index = () => {
                       >
                         {/* Stepper - Site active */}
                         <div className="flex items-center justify-between px-1">
-                          {(selectedType === "Entreprise" ? ["Profil", "Infos", "Site", "Eligib.", "Analyse"] : ["Profil", "Site", "Analyse", "Solutions", "Contact"]).map((step, i) => {
+                          {(selectedType === "Entreprise" ? ["Profil", "Info", "Site", "Eligib.", "Analyse", "Solut.", "Contact"] : ["Profil", "Site", "Analyse", "Solutions", "Contact"]).map((step, i) => {
                             const isDone = selectedType === "Entreprise" ? i <= 1 : i === 0;
                             const isActive = selectedType === "Entreprise" ? i === 2 : i === 1;
                             return (
@@ -831,7 +831,7 @@ const Index = () => {
                       >
                         {/* Stepper */}
                         <div className="flex items-center justify-between px-1">
-                          {["Profil", "Infos", "Site", "Eligib.", "Analyse"].map((step, i) => {
+                          {["Profil", "Info", "Site", "Eligib.", "Analyse", "Solut.", "Contact"].map((step, i) => {
                             const isDone = i <= 2;
                             const isActive = i === 3;
                             return (
@@ -918,7 +918,7 @@ const Index = () => {
                       >
                         {/* Stepper - Analyse active */}
                         <div className="flex items-center justify-between px-1">
-                          {(selectedType === "Entreprise" ? ["Profil", "Infos", "Site", "Eligib.", "Analyse"] : ["Profil", "Site", "Analyse", "Solutions", "Contact"]).map((step, i) => {
+                          {(selectedType === "Entreprise" ? ["Profil", "Info", "Site", "Eligib.", "Analyse", "Solut.", "Contact"] : ["Profil", "Site", "Analyse", "Solutions", "Contact"]).map((step, i) => {
                             const isDone = selectedType === "Entreprise" ? i <= 3 : i <= 1;
                             const isActive = selectedType === "Entreprise" ? i === 4 : i === 2;
                             return (
@@ -976,9 +976,9 @@ const Index = () => {
                       >
                         {/* Stepper - Solutions active */}
                         <div className="flex items-center justify-between px-1">
-                          {["Profil", "Site", "Analyse", "Solutions", "Contact"].map((step, i) => {
-                            const isDone = i <= 2;
-                            const isActive = i === 3;
+                          {(selectedType === "Entreprise" ? ["Profil", "Info", "Site", "Eligib.", "Analyse", "Solut.", "Contact"] : ["Profil", "Site", "Analyse", "Solutions", "Contact"]).map((step, i) => {
+                            const isDone = selectedType === "Entreprise" ? i <= 4 : i <= 2;
+                            const isActive = selectedType === "Entreprise" ? i === 5 : i === 3;
                             return (
                               <div key={step} className="flex flex-col items-center gap-0.5">
                                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${isDone ? "bg-success text-success-foreground" : isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
