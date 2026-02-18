@@ -54,28 +54,31 @@ const Diagnostic = () => {
                 <span className="block" style={{ fontSize: "60px", marginLeft: "2cm" }}>Vous êtes à</span>
                 <span className="block text-gradient" style={{ fontSize: "112px" }}>3 minutes</span>
                 <span className="block text-center" style={{ fontSize: "100px" }}>de grosses</span>
-                <span className="block text-gradient" style={{ fontSize: "160px" }}>économies<span className="relative inline-block"> !<svg className="absolute left-1/2 -translate-x-1/2 w-[202px] h-[202px] text-primary rotate-[20deg]" style={{ top: "-5cm" }} viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  {/* Corps */}
-                  <circle cx="50" cy="55" r="38" />
-                  {/* Bouton poussoir */}
-                  <line x1="50" y1="17" x2="50" y2="8" strokeWidth="4" />
-                  <line x1="44" y1="8" x2="56" y2="8" strokeWidth="3" />
-                  {/* Couronne droite */}
-                  <line x1="73" y1="28" x2="80" y2="21" strokeWidth="3" />
-                  {/* Marqueurs heures */}
-                  <line x1="50" y1="20" x2="50" y2="25" />
-                  <line x1="50" y1="85" x2="50" y2="90" />
-                  <line x1="15" y1="55" x2="20" y2="55" />
-                  <line x1="80" y1="55" x2="85" y2="55" />
-                  {/* Petits marqueurs */}
-                  <line x1="30" y1="30" x2="33" y2="33" strokeWidth="2" />
-                  <line x1="67" y1="33" x2="70" y2="30" strokeWidth="2" />
-                  <line x1="30" y1="80" x2="33" y2="77" strokeWidth="2" />
-                  <line x1="67" y1="77" x2="70" y2="80" strokeWidth="2" />
+                <span className="block text-gradient" style={{ fontSize: "160px" }}>économies<span className="relative inline-block"> !<svg className="absolute left-1/2 -translate-x-1/2 w-[202px] h-[202px] text-primary rotate-[20deg]" style={{ top: "-5cm" }} viewBox="0 0 120 130" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                  {/* Anneau extérieur */}
+                  <circle cx="60" cy="72" r="45" strokeWidth="4" />
+                  <circle cx="60" cy="72" r="40" strokeWidth="1.5" opacity="0.3" />
+                  {/* Bouton poussoir central */}
+                  <rect x="56" y="18" width="8" height="12" rx="3" strokeWidth="3" />
+                  {/* Boutons latéraux */}
+                  <rect x="78" y="38" width="10" height="6" rx="2" strokeWidth="2" transform="rotate(-30 83 41)" />
+                  <rect x="32" y="38" width="10" height="6" rx="2" strokeWidth="2" transform="rotate(30 37 41)" />
+                  {/* Graduation 12 marqueurs */}
+                  {[...Array(12)].map((_, i) => {
+                    const angle = (i * 30 - 90) * (Math.PI / 180);
+                    const r1 = i % 3 === 0 ? 36 : 38;
+                    const r2 = 42;
+                    return <line key={i} x1={60 + r1 * Math.cos(angle)} y1={72 + r1 * Math.sin(angle)} x2={60 + r2 * Math.cos(angle)} y2={72 + r2 * Math.sin(angle)} strokeWidth={i % 3 === 0 ? 3 : 1.5} />;
+                  })}
+                  {/* Petit cadran secondes */}
+                  <circle cx="60" cy="58" r="8" strokeWidth="1.5" />
+                  <line x1="60" y1="58" x2="60" y2="52" strokeWidth="1" className="origin-[60px_58px] animate-spin" style={{ animationDuration: "2s" }} />
                   {/* Centre */}
-                  <circle cx="50" cy="55" r="3" fill="currentColor" />
-                  {/* Aiguille des secondes qui tourne */}
-                  <line x1="50" y1="55" x2="50" y2="25" strokeWidth="2" className="origin-[50px_55px] animate-spin" style={{ animationDuration: "4s" }} stroke="hsl(var(--primary))" />
+                  <circle cx="60" cy="72" r="4" fill="currentColor" />
+                  {/* Aiguille des minutes */}
+                  <line x1="60" y1="72" x2="60" y2="42" strokeWidth="3" opacity="0.5" />
+                  {/* Aiguille des secondes */}
+                  <line x1="60" y1="72" x2="60" y2="35" strokeWidth="2" className="origin-[60px_72px] animate-spin" style={{ animationDuration: "4s" }} stroke="hsl(var(--primary))" />
                 </svg></span></span>
               </h1>
 
