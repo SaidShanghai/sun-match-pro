@@ -20,9 +20,6 @@ const Header = () => {
             <Link to="/diagnostic" className="text-sm font-medium hover:text-primary transition-colors">
               Diagnostic
             </Link>
-            <Link to="/partenaires" className="text-sm font-medium hover:text-primary transition-colors">
-              Partenaires
-            </Link>
           </nav>
           <Button asChild size="sm">
             <Link to="/diagnostic">Mon diagnostic</Link>
