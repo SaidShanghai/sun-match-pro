@@ -54,7 +54,7 @@ const Diagnostic = () => {
                 <span className="block" style={{ fontSize: "60px", marginLeft: "2cm" }}>Vous êtes à</span>
                 <span className="block text-gradient" style={{ fontSize: "112px" }}>3 minutes</span>
                 <span className="block text-center" style={{ fontSize: "100px" }}>de grosses</span>
-                <span className="block text-gradient" style={{ fontSize: "160px" }}>économies<span className="relative inline-block"> !<svg className="absolute left-1/2 -translate-x-1/2 w-[135px] h-[135px] text-primary rotate-[20deg]" style={{ top: "-5cm" }} viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <span className="block text-gradient" style={{ fontSize: "160px" }}>économies<span className="relative inline-block"> !<svg className="absolute left-1/2 -translate-x-1/2 w-[202px] h-[202px] text-primary rotate-[20deg]" style={{ top: "-5cm" }} viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   {/* Corps */}
                   <circle cx="50" cy="55" r="38" />
                   {/* Bouton poussoir */}
