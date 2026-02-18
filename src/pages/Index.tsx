@@ -120,7 +120,7 @@ const Index = () => {
         setProjetPlaceholderIndex(prev => (prev + 1) % projetSuggestions.length);
         setProjetPlaceholderVisible(true);
       }, 400);
-    }, 3000);
+    }, 8000);
     return () => clearInterval(interval);
   }, []);
   // Informations Entreprise
