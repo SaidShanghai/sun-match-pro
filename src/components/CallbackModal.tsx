@@ -55,7 +55,7 @@ const CallbackModal = ({ open, onOpenChange }: CallbackModalProps) => {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 28, stiffness: 280 }}
-            className="fixed top-0 right-0 h-full w-full max-w-sm z-50 bg-background shadow-2xl flex flex-col"
+            className="fixed top-0 right-0 h-full w-full max-w-[441px] z-50 bg-background shadow-2xl flex flex-col"
           >
             {/* Top bar */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-border">
@@ -132,7 +132,7 @@ const CallbackModal = ({ open, onOpenChange }: CallbackModalProps) => {
                           value={telephone}
                           onChange={(e) => setTelephone(e.target.value)}
                           maxLength={20}
-                          className="h-[63px]"
+                          className="h-[63px] text-lg px-5"
                         />
                       </div>
 
