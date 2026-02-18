@@ -62,7 +62,7 @@ const Diagnostic = () => {
               </h1>
 
               <p className="text-xl text-muted-foreground max-w-lg text-right ml-auto">
-                Particulier ou entreprise, on vous accompagne de A à Z : diagnostic sur mesure, dimensionnement, installation par des <strong>partenaires certifiés</strong>.
+                Particulier ou entreprise, nous vous accompagnons de A à Z : diagnostic sur mesure, dimensionnement, installation par des <strong>partenaires certifiés</strong>.
                 <br />Pour les professionnels : montage des dossiers <strong>SR500</strong> et <strong>TATWIR</strong> – Croissance Verte, avec appui financement et conformité technique.
               </p>
 
