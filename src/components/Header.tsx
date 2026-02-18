@@ -6,7 +6,7 @@ import nooriaLogo from "@/assets/nooria-logo.jpg";
 const NAV_LINKS = [
   { to: "/", label: "Accueil" },
   { to: "/diagnostic", label: "Diagnostic IA" },
-  { to: "/qui-sommes-nous", label: "Qui sommes nous" },
+  { to: "/nos-solutions", label: "Nos solutions" },
 ];
 
 const Header = () => {
