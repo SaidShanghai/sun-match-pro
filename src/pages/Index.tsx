@@ -446,7 +446,7 @@ const Index = () => {
                           </div>
                         </div>
 
-                        {/* Facture */}
+                        {/* Facture annuelle */}
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-semibold text-foreground">Facture annuelle (MAD)</label>
                           <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
