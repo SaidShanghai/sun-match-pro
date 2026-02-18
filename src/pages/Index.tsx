@@ -96,7 +96,27 @@ const Index = () => {
   const [selectedUsages, setSelectedUsages] = useState<string[]>([]);
   const [analyseProgress, setAnalyseProgress] = useState(0);
   const [analyseLabel, setAnalyseLabel] = useState("");
+  const [ctaBlink, setCtaBlink] = useState(false);
+  const [entrepriseBlink, setEntrepriseBlink] = useState(false);
   const villeRef = useRef<HTMLDivElement>(null);
+
+  const handleAideCTA = () => {
+    setPhoneScreen("intro");
+    setSelectedType(null);
+    setCtaBlink(true);
+    setTimeout(() => {
+      setCtaBlink(false);
+      setPhoneScreen("type");
+      setTimeout(() => {
+        setEntrepriseBlink(true);
+        setTimeout(() => {
+          setEntrepriseBlink(false);
+          setSelectedType("Entreprise");
+          setPhoneScreen("form");
+        }, 3000);
+      }, 300);
+    }, 2000);
+  };
 
   const villes = ["Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", "Oujda", "Kénitra", "Tétouan", "Safi", "El Jadida", "Nador", "Béni Mellal", "Mohammedia"];
   const filteredVilles = villes.filter(v => v.toLowerCase().includes(villeSearch.toLowerCase()));
@@ -178,7 +198,10 @@ const Index = () => {
               </div>
 
               <div>
-                <button className="flex items-center gap-2 h-14 px-8 text-base font-semibold bg-black text-white rounded-md animate-[pulse_1.5s_ease-in-out_infinite] hover:animate-none hover:scale-105 transition-transform">
+                <button
+                  onClick={handleAideCTA}
+                  className="flex items-center gap-2 h-14 px-8 text-base font-semibold bg-black text-white rounded-md animate-[pulse_1.5s_ease-in-out_infinite] hover:animate-none hover:scale-105 transition-transform"
+                >
                   <span className="w-2 h-2 bg-white rounded-full shrink-0" />
                   Aides d'état SR500, TATWIR
                 </button>
@@ -260,7 +283,7 @@ const Index = () => {
 
                         <button
                           onClick={() => setPhoneScreen("type")}
-                          className="w-full bg-primary text-primary-foreground rounded-full py-3 text-xs font-semibold flex items-center justify-center gap-1.5 mt-1 hover:bg-primary/90 transition-colors"
+                          className={`w-full bg-primary text-primary-foreground rounded-full py-3 text-xs font-semibold flex items-center justify-center gap-1.5 mt-1 hover:bg-primary/90 transition-colors ${ctaBlink ? "animate-[pulse_0.4s_ease-in-out_infinite]" : ""}`}
                         >
                           Lancer l'analyse solaire <ArrowRight className="w-3.5 h-3.5" />
                         </button>
@@ -289,9 +312,13 @@ const Index = () => {
                             <button
                               key={label}
                               onClick={() => { setSelectedType(label); setPhoneScreen("form"); }}
-                              className="flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-border bg-card hover:border-primary hover:bg-primary/5 transition-all active:scale-[0.97]"
+                              className={`flex flex-col items-center gap-2 p-5 rounded-2xl border-2 transition-all active:scale-[0.97] ${
+                                entrepriseBlink && label === "Entreprise"
+                                  ? "border-primary bg-primary/10 animate-[pulse_0.5s_ease-in-out_infinite]"
+                                  : "border-border bg-card hover:border-primary hover:bg-primary/5"
+                              }`}
                             >
-                              <Icon className="w-6 h-6 text-muted-foreground" />
+                              <Icon className={`w-6 h-6 ${entrepriseBlink && label === "Entreprise" ? "text-primary" : "text-muted-foreground"}`} />
                               <span className="text-xs font-semibold">{label}</span>
                             </button>
                           ))}
