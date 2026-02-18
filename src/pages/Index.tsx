@@ -109,7 +109,7 @@ const Index = () => {
     "Usine textile, 380V, 3 shifts/jour, financement via programme TATWIR souhaité",
     "Hôtel 4 étoiles, 120 chambres, besoin eau chaude sanitaire + climatisation centrale",
     "Entrepôt logistique, pic de conso 08h–18h, objectif réduction facture ONEE 60%",
-    "Bâtiment industriel 2 000 m², autoconsommation totale avec revente du surplus",
+    "Bâtiment industriel de 2 000 m², consommation électrique élevée en journée",
   ];
   const [projetPlaceholderIndex, setProjetPlaceholderIndex] = useState(0);
   const [projetPlaceholderVisible, setProjetPlaceholderVisible] = useState(true);
