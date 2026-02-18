@@ -239,7 +239,14 @@ const Index = () => {
                       <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
                         <Sun className="w-4 h-4 text-primary-foreground" />
                       </div>
-                      <span className="text-xs font-bold">NOOR<span style={{ color: "hsl(24 95% 53%)" }}>IA</span></span>
+                      <div className="flex flex-col leading-none">
+                        <span className="text-xs font-bold">NOOR<span style={{ color: "hsl(24 95% 53%)" }}>IA</span></span>
+                        {selectedType && phoneScreen !== "intro" && phoneScreen !== "type" && (
+                          <span className="text-[8px] text-muted-foreground font-normal">
+                            {selectedType === "Maison" || selectedType === "Appartement" ? "Particulier" : selectedType === "Ferme" ? "Agriculteur" : selectedType}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <span className="text-[9px] text-muted-foreground">SunStone Finance</span>
                   </div>
