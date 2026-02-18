@@ -25,6 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CallbackModal from "@/components/CallbackModal";
 
 const features = [
   {
@@ -105,6 +106,7 @@ const Index = () => {
   const [analyseLabel, setAnalyseLabel] = useState("");
   const [ctaBlink, setCtaBlink] = useState(false);
   const [entrepriseBlink, setEntrepriseBlink] = useState(false);
+  const [callbackOpen, setCallbackOpen] = useState(false);
   // Rotating placeholder for description
   const projetSuggestions = [
     "Usine textile, 380V, 3 shifts/jour, financement via programme TATWIR souhaité",
@@ -1099,10 +1101,12 @@ const Index = () => {
                     Diagnostic gratuit
                   </Link>
                 </Button>
-                <Button asChild size="lg" className="bg-transparent border border-background/60 text-background hover:bg-background/15 hover:text-background h-14 px-8 text-base">
-                  <Link to="/diagnostic">
-                    En savoir plus
-                  </Link>
+                <Button
+                  size="lg"
+                  onClick={() => setCallbackOpen(true)}
+                  className="bg-transparent border border-background/60 text-background hover:bg-background/15 hover:text-background h-14 px-8 text-base"
+                >
+                  En savoir plus
                 </Button>
               </div>
             </motion.div>
@@ -1139,6 +1143,7 @@ const Index = () => {
       </section>
 
       <Footer />
+      <CallbackModal open={callbackOpen} onOpenChange={setCallbackOpen} />
     </div>
   );
 };
