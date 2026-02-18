@@ -61,7 +61,7 @@ const Diagnostic = () => {
                 <span className="block text-gradient" style={{ fontSize: "160px" }}>économies !</span>
               </h1>
 
-              <p className="text-xl text-muted-foreground max-w-lg text-right ml-auto">
+              <p className="text-xl text-muted-foreground max-w-xl text-right ml-auto">
                 Particulier ou entreprise, nous vous accompagnons de A à Z : diagnostic sur mesure, dimensionnement, installation par des <strong>partenaires certifiés</strong>.
                 <br />Pour les professionnels : montage des dossiers <strong>SR500</strong> et <strong>TATWIR</strong> – Croissance Verte, avec appui financement et conformité technique.
               </p>
