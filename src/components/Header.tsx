@@ -14,10 +14,7 @@ const Header = () => {
 
   const getScale = (i: number) => {
     if (hoveredIndex === null) return 1;
-    const dist = Math.abs(i - hoveredIndex);
-    if (dist === 0) return 1.35;
-    if (dist === 1) return 1.15;
-    return 1;
+    return i === hoveredIndex ? 1.35 : 1;
   };
 
   return (
