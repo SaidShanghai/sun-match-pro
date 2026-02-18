@@ -206,9 +206,101 @@ const Diagnostic = () => {
         </div>
       </section>
 
+      {/* App Download Section */}
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-col lg:flex-row items-center justify-between gap-12 max-w-5xl mx-auto"
+          >
+            <div className="space-y-6 text-center lg:text-left">
+              <h2 className="text-4xl font-bold">
+                Téléchargez l'app <span className="text-gradient">NOORIA</span>
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-md">
+                Suivez votre diagnostic, vos économies et votre installation directement depuis votre smartphone.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                {/* Apple App Store */}
+                <a
+                  href="#"
+                  className="flex items-center gap-3 bg-foreground text-background px-5 py-3 rounded-xl hover:opacity-90 transition-opacity"
+                >
+                  <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                  </svg>
+                  <div className="text-left">
+                    <div className="text-xs opacity-70">Télécharger sur</div>
+                    <div className="text-base font-semibold leading-tight">App Store</div>
+                  </div>
+                </a>
+
+                {/* Google Play */}
+                <a
+                  href="#"
+                  className="flex items-center gap-3 bg-foreground text-background px-5 py-3 rounded-xl hover:opacity-90 transition-opacity"
+                >
+                  <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3.18 23.76c.37.2.8.19 1.2-.03l12.7-7.34-2.75-2.75-11.15 10.12zM.47 1.6C.18 1.97 0 2.5 0 3.14v17.72c0 .64.18 1.17.47 1.54l.08.08 9.92-9.92v-.23L.55 1.52.47 1.6zM19.84 10.56l-2.61-1.51-3.07 3.07 3.07 3.07 2.63-1.52c.75-.43.75-1.14-.02-1.11zM4.38.27L17.08 7.6l-2.75 2.75L3.18.23c.4-.22.83-.2 1.2.04z"/>
+                  </svg>
+                  <div className="text-left">
+                    <div className="text-xs opacity-70">Disponible sur</div>
+                    <div className="text-base font-semibold leading-tight">Google Play</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            {/* Phone mockup */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="relative"
+            >
+              <div className="w-52 h-96 bg-foreground rounded-[2.5rem] border-4 border-foreground shadow-2xl flex flex-col overflow-hidden relative">
+                {/* Phone notch */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-foreground rounded-b-2xl z-10" />
+                {/* Screen */}
+                <div className="flex-1 bg-background m-2 mt-6 rounded-[2rem] p-4 flex flex-col gap-3">
+                  <div className="text-xs font-bold text-primary">NOORIA</div>
+                  <div className="h-2 bg-primary/20 rounded-full w-3/4" />
+                  <div className="h-2 bg-muted rounded-full w-1/2" />
+                  <div className="mt-2 p-3 bg-primary/10 rounded-xl">
+                    <div className="text-xs font-semibold mb-1">Économies estimées</div>
+                    <div className="text-xl font-black text-primary">2 400 DH/an</div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="p-2 bg-muted/50 rounded-lg">
+                      <div className="text-[9px] text-muted-foreground">Production</div>
+                      <div className="text-xs font-bold">4.2 kWc</div>
+                    </div>
+                    <div className="p-2 bg-muted/50 rounded-lg">
+                      <div className="text-[9px] text-muted-foreground">Rentabilité</div>
+                      <div className="text-xs font-bold">5 ans</div>
+                    </div>
+                  </div>
+                  <div className="mt-auto h-8 bg-primary rounded-full flex items-center justify-center">
+                    <span className="text-[10px] text-primary-foreground font-bold">Lancer mon diagnostic</span>
+                  </div>
+                </div>
+                {/* Home indicator */}
+                <div className="flex justify-center pb-2">
+                  <div className="w-16 h-1 bg-background/30 rounded-full" />
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
 };
+
 
 export default Diagnostic;
