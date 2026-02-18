@@ -88,7 +88,7 @@ const HeroRotatingTitle = ({ entreprise = false }: { entreprise?: boolean }) => 
 };
 
 const Index = () => {
-  const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form" | "site" | "analyse" | "solutions">("intro");
+  const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form" | "informations" | "site" | "analyse" | "solutions">("intro");
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [objectif, setObjectif] = useState<"facture" | "autonomie" | null>(null);
   const [tension, setTension] = useState<"220" | "380" | null>(null);
@@ -104,6 +104,13 @@ const Index = () => {
   const [analyseLabel, setAnalyseLabel] = useState("");
   const [ctaBlink, setCtaBlink] = useState(false);
   const [entrepriseBlink, setEntrepriseBlink] = useState(false);
+  // Informations Entreprise
+  const [batimentType, setBatimentType] = useState<"Industriel" | "Tertiaire" | null>(null);
+  const [secteurActivite, setSecteurActivite] = useState("");
+  const [descriptionProjet, setDescriptionProjet] = useState("");
+  const [adresseProjet, setAdresseProjet] = useState("");
+  const [dateDebut, setDateDebut] = useState("");
+  const [dateFin, setDateFin] = useState("");
   const villeRef = useRef<HTMLDivElement>(null);
 
   const handleAideCTA = () => {
@@ -232,7 +239,7 @@ const Index = () => {
                   <div className="flex items-center justify-between px-4 py-1 border-b border-border/50">
                     <div className="flex items-center gap-2">
                       {phoneScreen !== "intro" && (
-                        <button onClick={() => setPhoneScreen(phoneScreen === "solutions" ? "analyse" : phoneScreen === "analyse" ? "site" : phoneScreen === "site" ? "form" : phoneScreen === "form" ? "type" : "intro")} className="p-0.5">
+                        <button onClick={() => setPhoneScreen(phoneScreen === "solutions" ? "analyse" : phoneScreen === "analyse" ? "site" : phoneScreen === "site" ? (selectedType === "Entreprise" ? "informations" : "form") : phoneScreen === "informations" ? "form" : phoneScreen === "form" ? "type" : "intro")} className="p-0.5">
                           <ChevronLeft className="w-4 h-4 text-foreground" />
                         </button>
                       )}
@@ -456,9 +463,132 @@ const Index = () => {
 
                         {/* CTA */}
                         <button
-                          onClick={() => conso.trim() && setPhoneScreen("site")}
+                          onClick={() => conso.trim() && setPhoneScreen(selectedType === "Entreprise" ? "informations" : "site")}
                           disabled={!conso.trim()}
                           className={`w-full rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 transition-colors ${conso.trim() ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
+                        >
+                          Continuer <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </motion.div>
+                    ) : phoneScreen === "informations" ? (
+                      <motion.div
+                        key="informations"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.25 }}
+                        className="px-4 py-3 flex flex-col gap-3 overflow-y-auto flex-1"
+                      >
+                        {/* Stepper */}
+                        <div className="flex items-center justify-between px-1">
+                          {["Profil", "Infos", "Site", "Analyse", "Solutions"].map((step, i) => {
+                            const isDone = i === 0;
+                            const isActive = i === 1;
+                            return (
+                              <div key={step} className="flex flex-col items-center gap-0.5">
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${isDone ? "bg-success text-success-foreground" : isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
+                                  {isDone ? "✓" : i + 1}
+                                </div>
+                                <span className={`text-[8px] ${isActive ? "font-semibold text-foreground" : isDone ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Title */}
+                        <div className="flex items-center gap-1.5 pt-1">
+                          <ChevronLeft className="w-3.5 h-3.5 text-foreground" />
+                          <h4 className="text-sm font-bold">Informations</h4>
+                        </div>
+
+                        {/* Type de bâtiment */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Type de bâtiment</label>
+                          <div className="flex gap-2">
+                            {(["Industriel", "Tertiaire"] as const).map((type) => (
+                              <button
+                                key={type}
+                                onClick={() => setBatimentType(type)}
+                                className={`flex-1 py-2 rounded-full text-[10px] font-medium border transition-colors ${batimentType === type ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
+                              >
+                                {type}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Secteur d'activité */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Secteur d'activité</label>
+                          <div className="flex items-center gap-2 px-3 py-1.5 border border-border rounded-xl">
+                            <Building2 className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                            <select
+                              value={secteurActivite}
+                              onChange={(e) => setSecteurActivite(e.target.value)}
+                              className="text-[10px] bg-transparent outline-none w-full text-foreground appearance-none cursor-pointer"
+                            >
+                              <option value="">Choisir un secteur...</option>
+                              {["Agroalimentaire", "BTP & Construction", "Chimie & Pharma", "Commerce & Distribution", "Éducation", "Énergie", "Finance & Banque", "Hôtellerie & Tourisme", "Industrie Textile", "Logistique & Transport", "Métallurgie & Sidérurgie", "Plasturgie", "Santé & Médical", "Services & Conseil", "Télécommunications"].map((s) => (
+                                <option key={s} value={s}>{s}</option>
+                              ))}
+                            </select>
+                            <ChevronDown className="w-3 h-3 text-muted-foreground shrink-0" />
+                          </div>
+                        </div>
+
+                        {/* Description du projet */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Information sur le projet</label>
+                          <textarea
+                            value={descriptionProjet}
+                            onChange={(e) => setDescriptionProjet(e.target.value)}
+                            placeholder="Décrivez votre projet..."
+                            rows={2}
+                            className="w-full text-[10px] bg-transparent outline-none border border-border rounded-xl px-3 py-2 text-foreground placeholder:text-muted-foreground resize-none"
+                          />
+                        </div>
+
+                        {/* Adresse */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Adresse complète du projet</label>
+                          <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
+                            <MapPin className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                            <input
+                              type="text"
+                              value={adresseProjet}
+                              onChange={(e) => setAdresseProjet(e.target.value)}
+                              placeholder="N°, Rue, Ville..."
+                              className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Dates */}
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-semibold text-foreground">Date de début</label>
+                            <input
+                              type="date"
+                              value={dateDebut}
+                              onChange={(e) => setDateDebut(e.target.value)}
+                              className="w-full text-[10px] bg-transparent outline-none border border-border rounded-xl px-2 py-2 text-foreground"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-semibold text-foreground">Date de fin</label>
+                            <input
+                              type="date"
+                              value={dateFin}
+                              onChange={(e) => setDateFin(e.target.value)}
+                              className="w-full text-[10px] bg-transparent outline-none border border-border rounded-xl px-2 py-2 text-foreground"
+                            />
+                          </div>
+                        </div>
+
+                        {/* CTA */}
+                        <button
+                          onClick={() => setPhoneScreen("site")}
+                          className="w-full rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                         >
                           Continuer <ArrowRight className="w-3.5 h-3.5" />
                         </button>
@@ -475,9 +605,9 @@ const Index = () => {
                       >
                         {/* Stepper - Site active */}
                         <div className="flex items-center justify-between px-1">
-                          {["Profil", "Site", "Analyse", "Solutions", "Contact"].map((step, i) => {
-                            const isDone = i === 0;
-                            const isActive = i === 1;
+                          {(selectedType === "Entreprise" ? ["Profil", "Infos", "Site", "Analyse", "Solutions"] : ["Profil", "Site", "Analyse", "Solutions", "Contact"]).map((step, i) => {
+                            const isDone = selectedType === "Entreprise" ? i <= 1 : i === 0;
+                            const isActive = selectedType === "Entreprise" ? i === 2 : i === 1;
                             return (
                               <div key={step} className="flex flex-col items-center gap-0.5">
                                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${isDone ? "bg-success text-success-foreground" : isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
