@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import nooriaLogo from "@/assets/nooria-logo.jpg";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -262,17 +263,12 @@ const Index = () => {
                           <ChevronLeft className="w-4 h-4 text-foreground" />
                         </button>
                       )}
-                      <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
-                        <Sun className="w-4 h-4 text-primary-foreground" />
-                      </div>
-                      <div className="flex flex-col gap-0">
-                        <span className="text-xs font-bold leading-none">NOOR<span style={{ color: "hsl(24 95% 53%)" }}>IA</span></span>
-                        <span className="text-[8px] text-muted-foreground font-normal leading-none h-[10px]">
+                      <img src={nooriaLogo} alt="NOORIA" className="h-5 w-auto object-contain" />
+                      <span className="text-[8px] text-muted-foreground font-normal leading-none">
                           {selectedType && phoneScreen !== "intro" && phoneScreen !== "type"
                             ? (selectedType === "Maison" || selectedType === "Appartement" ? "Particulier" : selectedType === "Ferme" ? "Agriculteur" : selectedType)
                             : ""}
                         </span>
-                      </div>
                     </div>
                     <span className="text-[9px] text-muted-foreground">SunStone Finance</span>
                   </div>
