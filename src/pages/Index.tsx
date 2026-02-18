@@ -186,7 +186,7 @@ const Index = () => {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                <span className="text-sm font-medium">100+ installateurs certifiés au Maroc</span>
+                <span className="text-sm font-medium">30+ installateurs certifiés au Maroc</span>
               </div>
 
               <HeroRotatingTitle entreprise={selectedType === "Entreprise"} />
@@ -220,7 +220,7 @@ const Index = () => {
                   <div className="text-sm text-muted-foreground">Diagnostics</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold">100+</div>
+                  <div className="text-3xl font-bold">30+</div>
                   <div className="text-sm text-muted-foreground">Installateurs</div>
                 </div>
                 <div className="flex items-center gap-1">
@@ -1243,7 +1243,7 @@ const Index = () => {
               </div>
               <div className="p-6 bg-background/5 rounded-2xl">
                 <Sun className="w-10 h-10 mb-4" />
-                <div className="text-3xl font-bold">100+</div>
+                <div className="text-3xl font-bold">30+</div>
                 <div className="text-background/70">Installateurs certifiés</div>
               </div>
               <div className="p-6 bg-background/5 rounded-2xl">
