@@ -461,6 +461,19 @@ const Index = () => {
                           </div>
                         </div>
 
+                        {/* Puissance souscrite */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Puissance souscrite (kVA)</label>
+                          <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
+                            <Zap className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                            <input
+                              type="number"
+                              placeholder="Ex : 160"
+                              className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
+                            />
+                          </div>
+                        </div>
+
                         {/* CTA */}
                         <button
                           onClick={() => conso.trim() && setPhoneScreen(selectedType === "Entreprise" ? "informations" : "site")}
