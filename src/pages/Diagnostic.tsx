@@ -54,7 +54,7 @@ const Diagnostic = () => {
                 <span className="block" style={{ fontSize: "60px", marginLeft: "2cm" }}>Vous êtes à</span>
                 <span className="block text-gradient" style={{ fontSize: "112px" }}>3 minutes</span>
                 <span className="block text-center" style={{ fontSize: "100px" }}>de grosses</span>
-                <span className="block text-gradient" style={{ fontSize: "160px" }}>économies<span className="relative inline-block"> !<svg className="absolute -top-28 left-1/2 -translate-x-1/2 w-10 h-10 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="14" r="8"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="2" x2="9" y2="2"/><line x1="12" y1="2" x2="15" y2="2"/><line x1="12" y1="14" x2="12" y2="10"/><line x1="12" y1="14" x2="15" y2="14"/></svg></span></span>
+                <span className="block text-gradient" style={{ fontSize: "160px" }}>économies<span className="relative inline-block"> !<svg className="absolute left-1/2 -translate-x-1/2 w-10 h-10 text-primary" style={{ top: "-4cm" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="14" r="8"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="2" x2="9" y2="2"/><line x1="12" y1="2" x2="15" y2="2"/><line x1="12" y1="14" x2="12" y2="10"/><line x1="12" y1="14" x2="15" y2="14"/></svg></span></span>
               </h1>
 
               <p className="text-xl text-muted-foreground max-w-xl text-right ml-auto">
