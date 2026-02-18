@@ -107,6 +107,14 @@ const Index = () => {
   const [ctaBlink, setCtaBlink] = useState(false);
   const [entrepriseBlink, setEntrepriseBlink] = useState(false);
   const [callbackOpen, setCallbackOpen] = useState(false);
+  const [showPhoneLogo, setShowPhoneLogo] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowPhoneLogo(prev => !prev);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
   // Rotating placeholder for description
   const projetSuggestions = [
     "Usine textile, 380V, 3 shifts/jour, financement via programme TATWIR souhaité",
@@ -277,7 +285,19 @@ const Index = () => {
 
                   <div className="flex-1 overflow-y-auto min-h-0">
                   <AnimatePresence mode="wait">
-                    {phoneScreen === "intro" ? (
+                    {showPhoneLogo ? (
+                      <motion.div
+                        key="logo-splash"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="flex flex-col items-center justify-center h-full gap-4"
+                      >
+                        <img src={nooriaLogo} alt="NOORIA" className="w-36 object-contain" />
+                        <span className="text-[10px] text-muted-foreground tracking-widest uppercase">Votre partenaire solaire</span>
+                      </motion.div>
+                    ) : phoneScreen === "intro" ? (
                       <motion.div
                         key="intro"
                         initial={{ opacity: 0, x: -20 }}
