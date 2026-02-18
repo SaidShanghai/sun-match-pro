@@ -229,7 +229,7 @@ const Index = () => {
                   </div>
 
                   {/* Header */}
-                  <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
+                  <div className="flex items-center justify-between px-4 py-1 border-b border-border/50">
                     <div className="flex items-center gap-2">
                       {phoneScreen !== "intro" && (
                         <button onClick={() => setPhoneScreen(phoneScreen === "solutions" ? "analyse" : phoneScreen === "analyse" ? "site" : phoneScreen === "site" ? "form" : phoneScreen === "form" ? "type" : "intro")} className="p-0.5">
@@ -242,7 +242,7 @@ const Index = () => {
                       <div className="relative">
                         <span className="text-xs font-bold">NOOR<span style={{ color: "hsl(24 95% 53%)" }}>IA</span></span>
                         {selectedType && phoneScreen !== "intro" && phoneScreen !== "type" && (
-                          <span className="absolute top-full left-0 text-[8px] text-muted-foreground font-normal whitespace-nowrap leading-none mt-0.5">
+                          <span className="absolute top-full left-0 text-[8px] text-muted-foreground font-normal whitespace-nowrap leading-none">
                             {selectedType === "Maison" || selectedType === "Appartement" ? "Particulier" : selectedType === "Ferme" ? "Agriculteur" : selectedType}
                           </span>
                         )}
