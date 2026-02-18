@@ -433,7 +433,7 @@ const Index = () => {
 
                         {/* Consommation */}
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Consommation mensuelle (kWh/mois)</label>
+                          <label className="text-[10px] font-semibold text-foreground">Consommation annuelle (kWh)</label>
                           <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
                             <Zap className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                             <input
@@ -449,7 +449,7 @@ const Index = () => {
                         {/* Facture + Ville */}
                         <div className="grid grid-cols-2 gap-2">
                           <div className="space-y-1">
-                            <label className="text-[10px] font-semibold text-foreground">Facture (MAD)</label>
+                            <label className="text-[10px] font-semibold text-foreground">Facture annuelle (MAD)</label>
                             <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
                               <FileText className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                               <input
