@@ -161,7 +161,7 @@ const Index = () => {
               </div>
 
               <div>
-                <button className="flex items-center gap-2 px-5 py-2.5 bg-black text-white text-sm font-semibold rounded-full animate-[pulse_1.5s_ease-in-out_infinite] hover:animate-none hover:scale-105 transition-transform">
+                <button className="flex items-center gap-2 h-14 px-8 text-base font-semibold bg-black text-white rounded-md animate-[pulse_1.5s_ease-in-out_infinite] hover:animate-none hover:scale-105 transition-transform">
                   <span className="w-2 h-2 bg-white rounded-full shrink-0" />
                   Aides d'état SR500, TATWIR
                 </button>
