@@ -160,13 +160,6 @@ const Index = () => {
                 </Button>
               </div>
 
-              <div>
-                <button className="flex items-center gap-2 h-14 px-8 text-base font-semibold bg-black text-white rounded-md animate-[pulse_1.5s_ease-in-out_infinite] hover:animate-none hover:scale-105 transition-transform">
-                  <span className="w-2 h-2 bg-white rounded-full shrink-0" />
-                  Aides d'état SR500, TATWIR
-                </button>
-              </div>
-
               {/* Trust indicators */}
               <div className="flex items-center gap-8 pt-8 border-t border-border">
                 <div className="text-center">
@@ -182,6 +175,13 @@ const Index = () => {
                   <span className="text-3xl font-bold">4.9</span>
                   <span className="text-sm text-muted-foreground">/5</span>
                 </div>
+              </div>
+
+              <div>
+                <button className="flex items-center gap-2 h-14 px-8 text-base font-semibold bg-black text-white rounded-md animate-[pulse_1.5s_ease-in-out_infinite] hover:animate-none hover:scale-105 transition-transform">
+                  <span className="w-2 h-2 bg-white rounded-full shrink-0" />
+                  Aides d'état SR500, TATWIR
+                </button>
               </div>
             </motion.div>
 
