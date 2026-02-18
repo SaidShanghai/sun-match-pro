@@ -306,7 +306,7 @@ const Index = () => {
                             <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
                               <Shield className="w-4 h-4 text-primary" />
                             </div>
-                            <span className="text-[10px] leading-snug">Catalogue complet 220V & 380V adapté au Maroc</span>
+                            <span className="text-[10px] leading-snug">Matching intelligent avec les installateurs certifiés près de chez vous</span>
                           </div>
                           <div className="flex items-center gap-2.5 p-3 bg-background border border-border/80 rounded-xl text-left shadow-sm">
                             <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
@@ -995,56 +995,28 @@ const Index = () => {
                           Basé sur votre consommation et votre {selectedType?.toLowerCase() || "logement"}
                         </p>
 
-                        {/* Toiture solutions */}
-                        <div className="space-y-1.5">
-                          <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide">🏠 Toiture</span>
-                          {[
-                            { id: "T1", panels: 4, power: "1.6 kWc", savings: "30%", price: "25 000 MAD" },
-                            { id: "T2", panels: 8, power: "3.2 kWc", savings: "55%", price: "45 000 MAD" },
-                            { id: "T3", panels: 12, power: "4.8 kWc", savings: "75%", price: "62 000 MAD" },
-                          ].map((sol) => (
-                            <button
-                              key={sol.id}
-                              className="w-full flex items-center gap-2.5 p-2.5 rounded-xl border border-border bg-card hover:border-primary hover:bg-primary/5 transition-all text-left"
-                            >
-                              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                                <span className="text-[10px] font-bold text-primary">{sol.id}</span>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-[10px] font-semibold">{sol.panels} panneaux • {sol.power}</span>
-                                  <span className="text-[9px] font-bold text-primary">{sol.price}</span>
+                        {/* Results placeholder */}
+                        <div className="flex flex-col items-center justify-center gap-3 py-4 text-center">
+                          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                            <Sun className="w-6 h-6 text-primary" />
+                          </div>
+                          <div>
+                            <p className="text-[11px] font-bold text-foreground">Analyse terminée !</p>
+                            <p className="text-[9px] text-muted-foreground mt-1 leading-relaxed">
+                              Vos solutions personnalisées ont été préparées.<br />
+                              Nos experts vous contactent sous 24h.
+                            </p>
+                          </div>
+                          <div className="w-full space-y-2 mt-1">
+                            {["Solution optimale identifiée", "Installateurs certifiés sélectionnés", "Aides d'état applicables détectées"].map((item) => (
+                              <div key={item} className="flex items-center gap-2 p-2 rounded-lg bg-primary/5 border border-primary/20">
+                                <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center shrink-0">
+                                  <span className="text-[8px] text-primary-foreground font-bold">✓</span>
                                 </div>
-                                <span className="text-[8px] text-muted-foreground">Économie estimée : {sol.savings} sur la facture</span>
+                                <span className="text-[9px] text-foreground font-medium">{item}</span>
                               </div>
-                            </button>
-                          ))}
-                        </div>
-
-                        {/* Sol solutions */}
-                        <div className="space-y-1.5">
-                          <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide">🌍 Au sol</span>
-                          {[
-                            { id: "M1", panels: 6, power: "2.4 kWc", savings: "40%", price: "32 000 MAD" },
-                            { id: "M2", panels: 10, power: "4.0 kWc", savings: "65%", price: "52 000 MAD" },
-                            { id: "M3", panels: 16, power: "6.4 kWc", savings: "85%", price: "78 000 MAD" },
-                          ].map((sol) => (
-                            <button
-                              key={sol.id}
-                              className="w-full flex items-center gap-2.5 p-2.5 rounded-xl border border-border bg-card hover:border-primary hover:bg-primary/5 transition-all text-left"
-                            >
-                              <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center shrink-0">
-                                <span className="text-[10px] font-bold text-accent-foreground">{sol.id}</span>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-[10px] font-semibold">{sol.panels} panneaux • {sol.power}</span>
-                                  <span className="text-[9px] font-bold text-primary">{sol.price}</span>
-                                </div>
-                                <span className="text-[8px] text-muted-foreground">Économie estimée : {sol.savings} sur la facture</span>
-                              </div>
-                            </button>
-                          ))}
+                            ))}
+                          </div>
                         </div>
 
                         <button className="w-full bg-primary text-primary-foreground rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors">
