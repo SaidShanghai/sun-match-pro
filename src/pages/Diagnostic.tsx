@@ -1,6 +1,5 @@
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Sun, ClipboardCheck, BarChart3, Shield, Zap, ArrowRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -31,87 +30,7 @@ const features = [
   },
 ];
 
-const StopwatchIcon = ({ model }: { model: number }) => {
-  const common = "absolute left-1/2 -translate-x-1/2 w-[202px] h-[202px] text-primary rotate-[20deg]";
-  const style = { top: "-5cm" };
-
-  if (model === 0) {
-    // Sport – double cadran
-    return (
-      <svg className={common} style={style} viewBox="0 0 120 130" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="60" cy="72" r="45" strokeWidth="4" />
-        <circle cx="60" cy="72" r="40" strokeWidth="1.5" opacity="0.3" />
-        <rect x="56" y="18" width="8" height="12" rx="3" strokeWidth="3" />
-        <rect x="78" y="38" width="10" height="6" rx="2" strokeWidth="2" transform="rotate(-30 83 41)" />
-        <rect x="32" y="38" width="10" height="6" rx="2" strokeWidth="2" transform="rotate(30 37 41)" />
-        {[...Array(12)].map((_, i) => {
-          const angle = (i * 30 - 90) * (Math.PI / 180);
-          const r1 = i % 3 === 0 ? 36 : 38;
-          return <line key={i} x1={60 + r1 * Math.cos(angle)} y1={72 + r1 * Math.sin(angle)} x2={60 + 42 * Math.cos(angle)} y2={72 + 42 * Math.sin(angle)} strokeWidth={i % 3 === 0 ? 3 : 1.5} />;
-        })}
-        <circle cx="60" cy="58" r="8" strokeWidth="1.5" />
-        <line x1="60" y1="58" x2="60" y2="52" strokeWidth="1" className="origin-[60px_58px] animate-spin" style={{ animationDuration: "2s" }} />
-        <circle cx="60" cy="72" r="4" fill="currentColor" />
-        <line x1="60" y1="72" x2="60" y2="42" strokeWidth="3" opacity="0.5" />
-        <line x1="60" y1="72" x2="60" y2="35" strokeWidth="2" className="origin-[60px_72px] animate-spin" style={{ animationDuration: "4s" }} stroke="hsl(var(--primary))" />
-      </svg>
-    );
-  }
-
-  if (model === 1) {
-    // Classique – épuré
-    return (
-      <svg className={common} style={style} viewBox="0 0 100 115" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="50" cy="62" r="40" strokeWidth="3" />
-        <line x1="50" y1="22" x2="50" y2="10" strokeWidth="4" />
-        <circle cx="50" cy="8" r="4" strokeWidth="2" />
-        {[...Array(60)].map((_, i) => {
-          const angle = (i * 6 - 90) * (Math.PI / 180);
-          const r1 = i % 5 === 0 ? 34 : 36;
-          return <line key={i} x1={50 + r1 * Math.cos(angle)} y1={62 + r1 * Math.sin(angle)} x2={50 + 38 * Math.cos(angle)} y2={62 + 38 * Math.sin(angle)} strokeWidth={i % 5 === 0 ? 2.5 : 0.8} />;
-        })}
-        <circle cx="50" cy="62" r="3" fill="currentColor" />
-        <line x1="50" y1="62" x2="50" y2="30" strokeWidth="2" className="origin-[50px_62px] animate-spin" style={{ animationDuration: "4s" }} stroke="hsl(var(--primary))" />
-      </svg>
-    );
-  }
-
-  // Moderne – minimaliste digital
-  return (
-    <svg className={common} style={style} viewBox="0 0 110 125" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="55" cy="68" r="43" strokeWidth="3" />
-      <circle cx="55" cy="68" r="48" strokeWidth="1" opacity="0.15" />
-      <line x1="55" y1="25" x2="55" y2="12" strokeWidth="5" />
-      <line x1="47" y1="12" x2="63" y2="12" strokeWidth="3" />
-      <line x1="82" y1="35" x2="90" y2="27" strokeWidth="3" />
-      <line x1="90" y1="27" x2="94" y2="31" strokeWidth="3" />
-      {[...Array(12)].map((_, i) => {
-        const angle = (i * 30 - 90) * (Math.PI / 180);
-        return <line key={i} x1={55 + 37 * Math.cos(angle)} y1={68 + 37 * Math.sin(angle)} x2={55 + 41 * Math.cos(angle)} y2={68 + 41 * Math.sin(angle)} strokeWidth={i % 3 === 0 ? 3.5 : 1.5} />;
-      })}
-      {/* Sous-cadran haut */}
-      <circle cx="55" cy="52" r="9" strokeWidth="1.5" />
-      <line x1="55" y1="52" x2="55" y2="45" strokeWidth="1" className="origin-[55px_52px] animate-spin" style={{ animationDuration: "3s" }} />
-      {/* Sous-cadran bas */}
-      <circle cx="55" cy="84" r="9" strokeWidth="1.5" />
-      <line x1="55" y1="84" x2="55" y2="77" strokeWidth="1" className="origin-[55px_84px] animate-spin" style={{ animationDuration: "6s" }} />
-      <circle cx="55" cy="68" r="5" fill="currentColor" />
-      <line x1="55" y1="68" x2="55" y2="45" strokeWidth="2.5" opacity="0.4" />
-      <line x1="55" y1="68" x2="55" y2="32" strokeWidth="1.5" className="origin-[55px_68px] animate-spin" style={{ animationDuration: "4s" }} stroke="hsl(var(--primary))" />
-    </svg>
-  );
-};
-
 const Diagnostic = () => {
-  const [stopwatchModel, setStopwatchModel] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStopwatchModel((prev) => (prev + 1) % 3);
-    }, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -136,17 +55,25 @@ const Diagnostic = () => {
                 <span className="block text-gradient" style={{ fontSize: "112px" }}>3 minutes</span>
                 <span className="block text-center" style={{ fontSize: "100px" }}>de grosses</span>
                 <span className="block text-gradient" style={{ fontSize: "160px" }}>économies<span className="relative inline-block"> !
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={stopwatchModel}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <StopwatchIcon model={stopwatchModel} />
-                    </motion.div>
-                  </AnimatePresence>
+                  <svg className="absolute left-1/2 -translate-x-1/2 w-[202px] h-[202px] text-primary rotate-[20deg]" style={{ top: "-5cm" }} viewBox="0 0 110 125" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="55" cy="68" r="43" strokeWidth="3" />
+                    <circle cx="55" cy="68" r="48" strokeWidth="1" opacity="0.15" />
+                    <line x1="55" y1="25" x2="55" y2="12" strokeWidth="5" />
+                    <line x1="47" y1="12" x2="63" y2="12" strokeWidth="3" />
+                    <line x1="82" y1="35" x2="90" y2="27" strokeWidth="3" />
+                    <line x1="90" y1="27" x2="94" y2="31" strokeWidth="3" />
+                    {[...Array(12)].map((_, i) => {
+                      const angle = (i * 30 - 90) * (Math.PI / 180);
+                      return <line key={i} x1={55 + 37 * Math.cos(angle)} y1={68 + 37 * Math.sin(angle)} x2={55 + 41 * Math.cos(angle)} y2={68 + 41 * Math.sin(angle)} strokeWidth={i % 3 === 0 ? 3.5 : 1.5} />;
+                    })}
+                    <circle cx="55" cy="52" r="9" strokeWidth="1.5" />
+                    <line x1="55" y1="52" x2="55" y2="45" strokeWidth="1" className="origin-[55px_52px] animate-spin" style={{ animationDuration: "3s" }} />
+                    <circle cx="55" cy="84" r="9" strokeWidth="1.5" />
+                    <line x1="55" y1="84" x2="55" y2="77" strokeWidth="1" className="origin-[55px_84px] animate-spin" style={{ animationDuration: "6s" }} />
+                    <circle cx="55" cy="68" r="5" fill="currentColor" />
+                    <line x1="55" y1="68" x2="55" y2="45" strokeWidth="2.5" opacity="0.4" />
+                    <line x1="55" y1="68" x2="55" y2="32" strokeWidth="1.5" className="origin-[55px_68px] animate-spin" style={{ animationDuration: "4s" }} stroke="hsl(var(--primary))" />
+                  </svg>
                 </span></span>
               </h1>
 
