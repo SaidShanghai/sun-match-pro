@@ -132,7 +132,7 @@ const CallbackModal = ({ open, onOpenChange }: CallbackModalProps) => {
                           value={telephone}
                           onChange={(e) => setTelephone(e.target.value)}
                           maxLength={20}
-                          className="h-12"
+                          className="h-[55px]"
                         />
                       </div>
 
