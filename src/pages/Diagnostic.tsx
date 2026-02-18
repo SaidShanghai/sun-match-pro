@@ -49,10 +49,6 @@ const Diagnostic = () => {
               transition={{ duration: 0.6 }}
               className="space-y-8 overflow-visible"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
-                <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                <span className="text-sm font-medium">Gratuit • Sans engagement • Résultat instantané</span>
-              </div>
 
               <h1 className="font-black leading-[1.1] overflow-visible whitespace-nowrap">
                 <span className="block" style={{ fontSize: "60px", marginLeft: "2cm" }}>Vous êtes à</span>
@@ -66,13 +62,14 @@ const Diagnostic = () => {
                 <br />Pour les professionnels : montage des dossiers <strong>SR500</strong> et <strong>TATWIR</strong> – Croissance Verte, avec appui financement et conformité technique.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row items-center gap-4">
                 <Button asChild size="lg" className="group h-14 px-8 text-base">
                   <Link to="/diagnostic">
                     Lancer mon diagnostic
                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
+                <span className="text-sm text-muted-foreground font-medium">Gratuit • Sans engagement • Résultat instantané</span>
               </div>
 
               {/* Trust indicators */}
