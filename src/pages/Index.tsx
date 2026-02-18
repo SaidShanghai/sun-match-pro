@@ -592,34 +592,46 @@ const Index = () => {
                         </div>
 
                         {/* Dates */}
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-semibold text-foreground">Date de début</label>
-                            <input
-                              type="date"
-                              value={dateDebut}
-                              onChange={(e) => setDateDebut(e.target.value)}
-                              className="w-full text-[10px] bg-transparent outline-none border border-border rounded-xl px-2 py-2 text-foreground"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-semibold text-foreground">Date de fin</label>
-                            <input
-                              type="date"
-                              value={dateFin}
-                              onChange={(e) => setDateFin(e.target.value)}
-                              className="w-full text-[10px] bg-transparent outline-none border border-border rounded-xl px-2 py-2 text-foreground"
-                            />
-                          </div>
-                        </div>
+                        {(() => {
+                          const dateError = dateDebut && dateFin && dateFin < dateDebut;
+                          return (
+                            <>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-semibold text-foreground">Date de début</label>
+                                  <input
+                                    type="date"
+                                    value={dateDebut}
+                                    onChange={(e) => setDateDebut(e.target.value)}
+                                    className="w-full text-[10px] bg-transparent outline-none border border-border rounded-xl px-2 py-2 text-foreground"
+                                  />
+                                </div>
+                                <div className="space-y-1">
+                                  <label className={`text-[10px] font-semibold ${dateError ? "text-destructive" : "text-foreground"}`}>Date de fin</label>
+                                  <input
+                                    type="date"
+                                    value={dateFin}
+                                    min={dateDebut || undefined}
+                                    onChange={(e) => setDateFin(e.target.value)}
+                                    className={`w-full text-[10px] bg-transparent outline-none border rounded-xl px-2 py-2 text-foreground ${dateError ? "border-destructive" : "border-border"}`}
+                                  />
+                                </div>
+                              </div>
+                              {dateError && (
+                                <p className="text-[9px] text-destructive -mt-1">La date de fin doit être après la date de début.</p>
+                              )}
 
-                        {/* CTA */}
-                        <button
-                          onClick={() => setPhoneScreen("site")}
-                          className="w-full rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-                        >
-                          Continuer <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
+                              {/* CTA */}
+                              <button
+                                onClick={() => !dateError && setPhoneScreen("site")}
+                                disabled={!!dateError}
+                                className={`w-full rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 transition-colors ${dateError ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-primary text-primary-foreground hover:bg-primary/90"}`}
+                              >
+                                Continuer <ArrowRight className="w-3.5 h-3.5" />
+                              </button>
+                            </>
+                          );
+                        })()}
                       </motion.div>
                     ) : phoneScreen === "site" ? (
                       /* Site screen */
