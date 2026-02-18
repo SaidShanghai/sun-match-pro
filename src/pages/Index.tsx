@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CallbackModal from "@/components/CallbackModal";
+import EligibiliteScreen from "@/components/EligibiliteScreen";
 
 const features = [
   {
@@ -818,92 +819,34 @@ const Index = () => {
                         })()}
                       </motion.div>
                     ) : phoneScreen === "eligibilite" ? (
-                      /* Eligibilité screen */
-                      <motion.div
+                      <EligibiliteScreen
                         key="eligibilite"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        transition={{ duration: 0.25 }}
-                        className="px-4 py-3 flex flex-col gap-3 overflow-y-auto flex-1"
-                      >
-                        {/* Stepper */}
-                        <div className="flex items-center justify-between px-1">
-                          {["Profil", "Info", "Site", "Eligib.", "Analyse", "Solut.", "Contact"].map((step, i) => {
-                            const isDone = i <= 2;
-                            const isActive = i === 3;
-                            return (
-                              <div key={step} className="flex flex-col items-center gap-0.5">
-                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${isDone ? "bg-success text-success-foreground" : isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
-                                  {isDone ? "✓" : i + 1}
-                                </div>
-                                <span className={`text-[8px] ${isActive || isDone ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-
-                        {/* Title */}
-                        <div className="pt-1">
-                          <p className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Vous êtes à</p>
-                          <div className="overflow-visible whitespace-nowrap">
-                            <span className="font-black text-foreground" style={{ fontSize: "28px", lineHeight: 1.1 }}>deux clics</span>
-                          </div>
-                          <div className="overflow-visible whitespace-nowrap">
-                            <span className="font-black text-foreground" style={{ fontSize: "18px", lineHeight: 1.2 }}>d'une aide d'état</span>
-                          </div>
-                        </div>
-
-                        {/* Label */}
-                        <p className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground -mt-1">Mécanismes de financement couverts</p>
-
-                        {/* 4 boxes */}
-                        <div className="grid grid-cols-2 gap-2">
-                          {[
-                            { name: "SR500", desc: "Bonus carbone via Africa Climate Solutions", bg: "bg-emerald-50 dark:bg-emerald-950/30", border: "border-emerald-200 dark:border-emerald-800" },
-                            { name: "Tatwir", desc: "Maroc PME — Croissance Verte", bg: "bg-amber-50 dark:bg-amber-950/30", border: "border-amber-200 dark:border-amber-800" },
-                            { name: "GEFF", desc: "BERD via banques partenaires", bg: "bg-sky-50 dark:bg-sky-950/30", border: "border-sky-200 dark:border-sky-800" },
-                            { name: "PPA", desc: "Tiers-investisseur, zéro CAPEX", bg: "bg-orange-50 dark:bg-orange-950/30", border: "border-orange-200 dark:border-orange-800" },
-                          ].map((item) => (
-                            <div key={item.name} className={`rounded-xl border p-2.5 ${item.bg} ${item.border}`}>
-                              <p className="text-[11px] font-bold text-foreground">{item.name}</p>
-                              <p className="text-[8.5px] text-muted-foreground mt-0.5 leading-tight">{item.desc}</p>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* CTA */}
-                        <button
-                          onClick={() => {
-                            setPhoneScreen("analyse");
-                            setAnalyseProgress(0);
-                            const labels = [
-                              "Analyse de la consommation...",
-                              "Calcul de l'ensoleillement...",
-                              "Optimisation de la couverture...",
-                              "Dimensionnement des panneaux...",
-                              "Estimation des économies...",
-                              "Finalisation du rapport...",
-                            ];
-                            let p = 0;
-                            const startTime = Date.now();
-                            const totalDuration = 8000;
-                            const interval = setInterval(() => {
-                              const elapsed = Date.now() - startTime;
-                              p = Math.min((elapsed / totalDuration) * 100, 100);
-                              if (p >= 100) {
-                                clearInterval(interval);
-                                setTimeout(() => setPhoneScreen("solutions"), 600);
-                              }
-                              setAnalyseProgress(Math.round(p));
-                              setAnalyseLabel(labels[Math.min(Math.floor(p / 18), labels.length - 1)]);
-                            }, 50);
-                          }}
-                          className="w-full rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-                        >
-                          Analyser mon projet <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
-                      </motion.div>
+                        onContinue={() => {
+                          setPhoneScreen("analyse");
+                          setAnalyseProgress(0);
+                          const labels = [
+                            "Analyse de la consommation...",
+                            "Calcul de l'ensoleillement...",
+                            "Optimisation de la couverture...",
+                            "Dimensionnement des panneaux...",
+                            "Estimation des économies...",
+                            "Finalisation du rapport...",
+                          ];
+                          let p = 0;
+                          const startTime = Date.now();
+                          const totalDuration = 8000;
+                          const interval = setInterval(() => {
+                            const elapsed = Date.now() - startTime;
+                            p = Math.min((elapsed / totalDuration) * 100, 100);
+                            if (p >= 100) {
+                              clearInterval(interval);
+                              setTimeout(() => setPhoneScreen("solutions"), 600);
+                            }
+                            setAnalyseProgress(Math.round(p));
+                            setAnalyseLabel(labels[Math.min(Math.floor(p / 18), labels.length - 1)]);
+                          }, 50);
+                        }}
+                      />
                     ) : phoneScreen === "analyse" ? (
                       /* Analyse screen */
                       <motion.div
