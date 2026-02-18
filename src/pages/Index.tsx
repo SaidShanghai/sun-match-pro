@@ -1099,7 +1099,7 @@ const Index = () => {
                     Diagnostic gratuit
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="border-background/30 text-background hover:bg-background/10 h-14 px-8 text-base">
+                <Button asChild variant="outline" size="lg" className="border-foreground/30 text-foreground hover:bg-foreground/10 h-14 px-8 text-base">
                   <Link to="/diagnostic">
                     En savoir plus
                   </Link>
