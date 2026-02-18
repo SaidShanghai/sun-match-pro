@@ -104,6 +104,25 @@ const Index = () => {
   const [analyseLabel, setAnalyseLabel] = useState("");
   const [ctaBlink, setCtaBlink] = useState(false);
   const [entrepriseBlink, setEntrepriseBlink] = useState(false);
+  // Rotating placeholder for description
+  const projetSuggestions = [
+    "Usine textile, 380V, 3 shifts/jour, financement via programme TATWIR souhaité",
+    "Hôtel 4 étoiles, 120 chambres, besoin eau chaude sanitaire + climatisation centrale",
+    "Entrepôt logistique, pic de conso 08h–18h, objectif réduction facture ONEE 60%",
+    "Bâtiment industriel 2 000 m², autoconsommation totale avec revente du surplus",
+  ];
+  const [projetPlaceholderIndex, setProjetPlaceholderIndex] = useState(0);
+  const [projetPlaceholderVisible, setProjetPlaceholderVisible] = useState(true);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProjetPlaceholderVisible(false);
+      setTimeout(() => {
+        setProjetPlaceholderIndex(prev => (prev + 1) % projetSuggestions.length);
+        setProjetPlaceholderVisible(true);
+      }, 400);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
   // Informations Entreprise
   const [batimentType, setBatimentType] = useState<"Industriel" | "Tertiaire" | null>(null);
   const [secteurActivite, setSecteurActivite] = useState("");
@@ -539,13 +558,22 @@ const Index = () => {
                         {/* Description du projet */}
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-semibold text-foreground">Information sur le projet</label>
-                          <textarea
-                            value={descriptionProjet}
-                            onChange={(e) => setDescriptionProjet(e.target.value)}
-                            placeholder="Décrivez votre projet..."
-                            rows={2}
-                            className="w-full text-[10px] bg-transparent outline-none border border-border rounded-xl px-3 py-2 text-foreground placeholder:text-muted-foreground resize-none"
-                          />
+                          <div className="relative">
+                            <textarea
+                              value={descriptionProjet}
+                              onChange={(e) => setDescriptionProjet(e.target.value)}
+                              rows={2}
+                              className="w-full text-[10px] bg-transparent outline-none border border-border rounded-xl px-3 py-2 text-foreground resize-none relative z-10"
+                            />
+                            {!descriptionProjet && (
+                              <span
+                                className="absolute top-2 left-3 right-3 text-[10px] text-muted-foreground pointer-events-none leading-relaxed transition-opacity duration-400 z-0"
+                                style={{ opacity: projetPlaceholderVisible ? 1 : 0, transition: "opacity 0.4s ease" }}
+                              >
+                                {projetSuggestions[projetPlaceholderIndex]}
+                              </span>
+                            )}
+                          </div>
                         </div>
 
                         {/* Adresse */}
