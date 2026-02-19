@@ -434,13 +434,13 @@ const Index = () => {
                           <div className="flex gap-2">
                             <button
                               onClick={() => setObjectif("facture")}
-                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[9px] font-medium border transition-colors ${objectif === "facture" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
+                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] font-medium border transition-colors ${objectif === "facture" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
                             >
                               <TrendingDown className="w-3 h-3" /> Réduire la facture
                             </button>
                             <button
                               onClick={() => setObjectif("autonomie")}
-                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[9px] font-medium border transition-colors ${objectif === "autonomie" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
+                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] font-medium border transition-colors ${objectif === "autonomie" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
                             >
                               <Battery className="w-3 h-3" /> Autonomie totale
                             </button>
