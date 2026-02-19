@@ -64,7 +64,7 @@ const EligibiliteScreen = ({ onContinue }: EligibiliteScreenProps) => {
         <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Déclarations d'éligibilité</p>
         {declarations.map(d => (
           <div key={d.id} className="rounded-xl border border-border p-2 space-y-1.5">
-            <p className="text-[9px] text-foreground leading-snug font-medium">{d.text} <span className="text-destructive">*</span></p>
+            <p className="text-[9px] text-foreground leading-snug font-medium">{d.text}</p>
             <div className="flex gap-2">
               {(["Oui", "Non"] as const).map(opt => (
                 <button
