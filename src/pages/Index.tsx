@@ -854,13 +854,17 @@ const Index = () => {
                             </div>
 
                             <div className="space-y-1.5">
-                              <label className="text-[9px] font-semibold text-foreground">Surface disponible</label>
+                              <label className="text-[9px] font-semibold text-foreground">Surface disponible (m²)</label>
                               <div className="grid grid-cols-4 gap-1">
                                 {[
-                                  { m2: "10–20 m²", kwc: "~3 kWc", label: "S" },
-                                  { m2: "20–40 m²", kwc: "~6 kWc", label: "M" },
-                                  { m2: "40–70 m²", kwc: "~10 kWc", label: "L" },
-                                  { m2: "70 m²+", kwc: "~15+ kWc", label: "XL" },
+                                  { m2: "10 m²", pan: "4 pan.", label: "S1" },
+                                  { m2: "20 m²", pan: "8 pan.", label: "S2" },
+                                  { m2: "30 m²", pan: "12 pan.", label: "M1" },
+                                  { m2: "40 m²", pan: "16 pan.", label: "M2" },
+                                  { m2: "55 m²", pan: "20 pan.", label: "M3" },
+                                  { m2: "70 m²", pan: "26 pan.", label: "L1" },
+                                  { m2: "90 m²", pan: "32 pan.", label: "L2" },
+                                  { m2: "110 m²+", pan: "40 pan.+", label: "XL" },
                                 ].map((s) => (
                                   <button
                                     key={s.label}
@@ -868,8 +872,8 @@ const Index = () => {
                                     className={`flex flex-col items-center p-1.5 rounded-xl border text-center transition-colors ${selectedSurface === s.label ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}
                                   >
                                     <span className="text-[9px] font-bold text-foreground">{s.m2}</span>
-                                    <span className="text-[7px] text-muted-foreground">{s.kwc}</span>
-                                    <span className="text-[8px] font-semibold text-primary">{s.label}</span>
+                                    <span className="text-[7px] text-muted-foreground">{s.pan}</span>
+                                    <span className="text-[7px] font-medium text-primary">{s.label}</span>
                                   </button>
                                 ))}
                               </div>
