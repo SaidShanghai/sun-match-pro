@@ -683,7 +683,7 @@ const Index = () => {
                             <textarea
                               value={descriptionProjet}
                               onChange={(e) => setDescriptionProjet(e.target.value)}
-                              rows={7}
+                              rows={4}
                               className="w-full text-[9px] bg-transparent outline-none border border-border rounded-xl px-2.5 py-1.5 text-foreground resize-none relative z-10"
                             />
                             {!descriptionProjet && (
