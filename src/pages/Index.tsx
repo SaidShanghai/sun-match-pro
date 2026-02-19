@@ -562,7 +562,7 @@ const Index = () => {
 
                             {/* Consommation annuelle — Particulier / Ferme */}
                             <div className="space-y-1.5">
-                              <label className="text-[9px] font-semibold text-foreground">Consommation annuelle (kWh) <span className="font-normal text-muted-foreground">(optionnel)</span></label>
+                              <label className="text-[9px] font-semibold text-foreground">Consommation annuelle (kWh)</label>
                               <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl">
                                 <Zap className="w-3 h-3 text-muted-foreground shrink-0" />
                                 <input
