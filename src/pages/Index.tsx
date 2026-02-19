@@ -397,6 +397,25 @@ const Index = () => {
                           <h4 className="text-sm font-bold">Votre profil énergie</h4>
                         </div>
 
+                        {/* Objectif principal */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Objectif principal</label>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => setObjectif("facture")}
+                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] font-medium border transition-colors ${objectif === "facture" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
+                            >
+                              <TrendingDown className="w-3 h-3" /> Réduire la facture
+                            </button>
+                            <button
+                              onClick={() => setObjectif("autonomie")}
+                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] font-medium border transition-colors ${objectif === "autonomie" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
+                            >
+                              <Battery className="w-3 h-3" /> Autonomie totale
+                            </button>
+                          </div>
+                        </div>
+
                         {/* Type de bâtiment */}
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-semibold text-foreground">Type de bâtiment</label>
@@ -427,25 +446,6 @@ const Index = () => {
                               ))}
                             </select>
                             <ChevronDown className="w-3 h-3 text-muted-foreground shrink-0" />
-                          </div>
-                        </div>
-
-                        {/* Objectif principal */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Objectif principal</label>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => setObjectif("facture")}
-                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] font-medium border transition-colors ${objectif === "facture" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
-                            >
-                              <TrendingDown className="w-3 h-3" /> Réduire la facture
-                            </button>
-                            <button
-                              onClick={() => setObjectif("autonomie")}
-                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] font-medium border transition-colors ${objectif === "autonomie" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
-                            >
-                              <Battery className="w-3 h-3" /> Autonomie totale
-                            </button>
                           </div>
                         </div>
                         {/* Consommation */}
