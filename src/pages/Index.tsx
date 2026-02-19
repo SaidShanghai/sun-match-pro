@@ -97,6 +97,7 @@ const Index = () => {
   const [tension, setTension] = useState<"220" | "380" | null>(null);
   const [conso, setConso] = useState("");
   const [facture, setFacture] = useState("");
+  const [typeAbonnement, setTypeAbonnement] = useState<"Basse Tension" | "Moyenne Tension" | "Haute Tension" | null>(null);
   const [ville, setVille] = useState("Casablanca");
   const [villeOpen, setVilleOpen] = useState(false);
   const [villeSearch, setVilleSearch] = useState("");
@@ -471,6 +472,22 @@ const Index = () => {
                               placeholder="Ex : 160"
                               className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
                             />
+                          </div>
+                        </div>
+
+                        {/* Type d'abonnement */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Type d'abonnement</label>
+                          <div className="flex flex-col gap-1.5">
+                            {(["Basse Tension", "Moyenne Tension", "Haute Tension"] as const).map(opt => (
+                              <button
+                                key={opt}
+                                onClick={() => setTypeAbonnement(opt)}
+                                className={`w-full py-1.5 rounded-full text-[10px] font-medium border transition-colors ${typeAbonnement === opt ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
+                              >
+                                {opt}
+                              </button>
+                            ))}
                           </div>
                         </div>
 
