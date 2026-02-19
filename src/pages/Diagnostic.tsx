@@ -442,7 +442,7 @@ const Diagnostic = () => {
                   <div className="space-y-2">
                     <label className="text-sm font-semibold">Description du projet</label>
                     <div className="relative">
-                      <textarea value={descriptionProjet} onChange={(e) => setDescriptionProjet(e.target.value)} rows={5} className="w-full text-sm bg-transparent outline-none border-2 border-border rounded-xl px-4 py-3 text-foreground resize-none focus:border-primary transition-colors relative z-10" />
+                      <textarea value={descriptionProjet} onChange={(e) => setDescriptionProjet(e.target.value)} rows={3} className="w-full text-sm bg-transparent outline-none border-2 border-border rounded-xl px-4 py-3 text-foreground resize-none focus:border-primary transition-colors relative z-10" />
                       {!descriptionProjet && (
                         <span className="absolute top-3 left-4 right-4 text-sm text-muted-foreground pointer-events-none leading-relaxed z-0" style={{ opacity: projetPlaceholderVisible ? 1 : 0, transition: "opacity 0.4s ease" }}>
                           {projetSuggestions[projetPlaceholderIndex]}
