@@ -45,6 +45,7 @@ Deno.serve(async (req) => {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     if (RESEND_API_KEY) {
       const firstName = String(client_name).trim().split(" ")[0];
+      const refShort = data.id.slice(0, 8).toUpperCase();
       await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
@@ -54,7 +55,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           from: "NOORIA <noreply@sungpt.ma>",
           to: [String(client_email).trim()],
-          subject: "✅ Votre demande NOORIA a bien été reçue",
+          subject: `✅ Votre demande NOORIA a bien été reçue – Réf. #${refShort}`,
           html: `
             <div style="font-family:sans-serif;max-width:600px;margin:auto;padding:32px;background:#fff;border-radius:12px;">
               <div style="text-align:center;margin-bottom:24px;">
@@ -71,6 +72,12 @@ Deno.serve(async (req) => {
               <div style="background:#fff7ed;border-left:4px solid #f97316;padding:16px 20px;border-radius:8px;margin:24px 0;">
                 <p style="margin:0;font-size:14px;color:#92400e;font-weight:600;">⏱ Délai de traitement</p>
                 <p style="margin:4px 0 0;font-size:14px;color:#78350f;">Un conseiller vous contactera sous <strong>24h</strong> pour vous présenter votre devis personnalisé.</p>
+              </div>
+
+              <div style="background:#f0fdf4;border:2px solid #22c55e;border-radius:12px;padding:20px;margin:24px 0;text-align:center;">
+                <p style="margin:0 0 6px;font-size:13px;color:#166534;font-weight:600;">📋 Votre numéro de référence dossier</p>
+                <p style="margin:0;font-size:28px;font-weight:900;color:#15803d;letter-spacing:4px;font-family:monospace;">#${refShort}</p>
+                <p style="margin:8px 0 0;font-size:12px;color:#166534;">Conservez ce numéro pour suivre votre dossier et le retrouver dans votre espace client sur <a href="https://sungpt.ma/profil" style="color:#f97316;">sungpt.ma/profil</a></p>
               </div>
 
               <p style="font-size:14px;color:#666;line-height:1.6;">
