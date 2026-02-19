@@ -411,6 +411,23 @@ const Index = () => {
                           </div>
                         </div>
 
+                        {/* Secteur d'activité */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Secteur d'activité</label>
+                          <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl bg-background">
+                            <select
+                              className="text-[10px] bg-background outline-none w-full text-foreground appearance-none cursor-pointer"
+                              defaultValue=""
+                            >
+                              <option value="" disabled>Choisir un secteur...</option>
+                              {["Agroalimentaire", "BTP & Construction", "Chimie & Pharma", "Commerce & Distribution", "Éducation", "Énergie", "Finance & Banque", "Hôtellerie & Tourisme", "Industrie Textile", "Logistique & Transport", "Métallurgie & Sidérurgie", "Plasturgie", "Santé & Médical", "Services & Conseil", "Télécommunications"].map(s => (
+                                <option key={s} value={s}>{s}</option>
+                              ))}
+                            </select>
+                            <ChevronDown className="w-3 h-3 text-muted-foreground shrink-0" />
+                          </div>
+                        </div>
+
                         {/* Objectif principal */}
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-semibold text-foreground">Objectif principal</label>
