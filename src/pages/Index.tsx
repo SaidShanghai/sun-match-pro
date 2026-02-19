@@ -983,11 +983,12 @@ const Index = () => {
                             accept=".pdf,.jpg,.jpeg,.png,.webp"
             onChange={async (e) => {
                               const file = e.target.files?.[0];
-                              if (!file || !quoteRef) return;
+                              if (!file) return;
+                              const ref = quoteRef ?? crypto.randomUUID();
                               setInvoiceUploading(true);
                               try {
                                 const ext = file.name.split(".").pop();
-                                const filePath = `${quoteRef}.${ext}`;
+                                const filePath = `${ref}.${ext}`;
                                 const { error: uploadError } = await supabase.storage
                                   .from("client-invoices")
                                   .upload(filePath, file, { upsert: true });
@@ -1001,11 +1002,11 @@ const Index = () => {
                                   body: {
                                     filePath,
                                     fileName: file.name,
-                                    quoteRef: quoteRef.slice(0, 8).toUpperCase(),
+                                    quoteRef: ref.slice(0, 8).toUpperCase(),
                                     clientName: contactNom,
                                     clientEmail: contactEmail,
                                   },
-                                }).catch(() => {/* silent — file is already uploaded */});
+                                }).catch(() => {/* silent */});
 
                               } catch (err: any) {
                                 toast({ title: "Erreur lors de l'envoi", description: "Veuillez réessayer.", variant: "destructive" });
