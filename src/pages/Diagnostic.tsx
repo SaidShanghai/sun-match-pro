@@ -107,6 +107,9 @@ const Diagnostic = () => {
   const [pvExistante, setPvExistante] = useState<"Oui" | "Non" | null>(null);
   const [extensionInstall, setExtensionInstall] = useState<"Oui" | "Non" | null>(null);
   const [subventionRecue, setSubventionRecue] = useState<"Oui" | "Non" | null>(null);
+  const [eligDecl, setEligDecl] = useState<Record<string, "Oui" | "Non" | null>>({
+    d1: null, d2: null, d3: null, d4: null, d5: null, d6: null,
+  });
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [quoteRef, setQuoteRef] = useState<string | null>(null);
   const [invoiceUploading, setInvoiceUploading] = useState(false);
@@ -643,14 +646,56 @@ const Diagnostic = () => {
                 </motion.div>
               )}
 
-              {/* ── ELIGIBILITE ── */}
-              {screen === "eligibilite" && (
-                <motion.div key="eligibilite" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
-                  <div className="mb-6">
+               {screen === "eligibilite" && (
+                <motion.div key="eligibilite" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }} className="space-y-6">
+                  <div>
                     <h2 className="text-2xl font-black">Éligibilité</h2>
                     <p className="text-muted-foreground text-sm mt-1">Vérification de l'éligibilité aux programmes SR500 / TATWIR</p>
                   </div>
-                  <EligibiliteScreen onContinue={() => { setScreen("analyse"); setTimeout(() => setScreen("solutions"), 4000); }} />
+
+                  <div className="space-y-3">
+                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Déclarations d'éligibilité</p>
+                    {[
+                      { id: "d1", text: "Le projet n'a pas encore commencé" },
+                      { id: "d2", text: "L'installation solaire photovoltaïque est nouvelle (GreenField)" },
+                      { id: "d3", text: "L'installation est sur toiture (ou shelter) et connectée au réseau" },
+                      { id: "d4", text: "La capacité installée est inférieure à 3 MW" },
+                      { id: "d5", text: "Le bénéficiaire n'a reçu et ne recevra pas d'autres incitations financières autres que les revenus générés par les crédits carbone issus de son projet solaire" },
+                      { id: "d6", text: "Le bénéficiaire déclare être le propriétaire de l'installation solaire et confirme son engagement à transférer les réductions d'émissions associées au projet, dans le cadre d'un programme de valorisation carbone." },
+                    ].map(d => (
+                      <div key={d.id} className="rounded-2xl border border-border p-4 space-y-3">
+                        <p className="text-sm text-foreground leading-relaxed font-medium">{d.text}</p>
+                        <div className="flex gap-3">
+                          {(["Oui", "Non"] as const).map(opt => (
+                            <button
+                              key={opt}
+                              onClick={() => setEligDecl(prev => ({ ...prev, [d.id]: opt }))}
+                              className={`flex-1 py-2 rounded-xl text-sm font-semibold border-2 transition-colors ${
+                                eligDecl[d.id] === opt
+                                  ? opt === "Oui"
+                                    ? "bg-emerald-100 border-emerald-400 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
+                                    : "bg-destructive/10 border-destructive/40 text-destructive"
+                                  : "border-border text-foreground hover:border-primary/50"
+                              }`}
+                            >
+                              {opt}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      const allOui = ["d1","d2","d3","d4","d5","d6"].every(id => eligDecl[id] === "Oui");
+                      if (allOui) { setScreen("analyse"); setTimeout(() => setScreen("solutions"), 4000); }
+                    }}
+                    disabled={!["d1","d2","d3","d4","d5","d6"].every(id => eligDecl[id] === "Oui")}
+                    className={`w-full rounded-2xl h-14 font-semibold text-base flex items-center justify-center gap-2 transition-colors ${["d1","d2","d3","d4","d5","d6"].every(id => eligDecl[id] === "Oui") ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
+                  >
+                    Analyser mon projet <ArrowRight className="w-4 h-4" />
+                  </button>
                 </motion.div>
               )}
 
