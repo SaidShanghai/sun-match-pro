@@ -373,58 +373,57 @@ const Index = () => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
                         transition={{ duration: 0.25 }}
-                        className="px-4 py-3 flex flex-col gap-3 overflow-y-auto flex-1"
+                        className="px-4 py-2 flex flex-col gap-1.5 overflow-y-auto flex-1"
                       >
                         {/* Stepper */}
                         <div className="flex items-center justify-between px-1">
                           {(selectedType === "Entreprise" ? ["Profil", "Info", "Site", "Eligib.", "Analyse", "Solut.", "Contact"] : ["Profil", "Site", "Analyse", "Solutions", "Contact"]).map((step, i) => {
                             const isActive = i === 0;
-                            const isDone = false;
                             return (
                               <div key={step} className="flex flex-col items-center gap-0.5">
-                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
+                                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold ${isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
                                   {i + 1}
                                 </div>
-                                <span className={`text-[8px] ${isActive ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
+                                <span className={`text-[7px] ${isActive ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
                               </div>
                             );
                           })}
                         </div>
 
                         {/* Form title */}
-                        <div className="flex items-center gap-1.5 pt-1">
-                          <ChevronLeft className="w-3.5 h-3.5 text-foreground" />
-                          <h4 className="text-sm font-bold">Votre profil énergie</h4>
+                        <div className="flex items-center gap-1">
+                          <ChevronLeft className="w-3 h-3 text-foreground" />
+                          <h4 className="text-[11px] font-bold">Votre profil énergie</h4>
                         </div>
 
                         {/* Objectif principal */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Objectif principal</label>
-                          <div className="flex gap-2">
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-semibold text-foreground">Objectif principal</label>
+                          <div className="flex gap-1.5">
                             <button
                               onClick={() => setObjectif("facture")}
-                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] font-medium border transition-colors ${objectif === "facture" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
+                              className={`flex-1 flex items-center gap-1 px-2 py-1.5 rounded-full text-[10px] font-medium border transition-colors ${objectif === "facture" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
                             >
-                              <TrendingDown className="w-3 h-3" /> Réduire la facture
+                              <TrendingDown className="w-2.5 h-2.5 shrink-0" /> Réduire la facture
                             </button>
                             <button
                               onClick={() => setObjectif("autonomie")}
-                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] font-medium border transition-colors ${objectif === "autonomie" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
+                              className={`flex-1 flex items-center gap-1 px-2 py-1.5 rounded-full text-[10px] font-medium border transition-colors ${objectif === "autonomie" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
                             >
-                              <Battery className="w-3 h-3" /> Autonomie totale
+                              <Battery className="w-2.5 h-2.5 shrink-0" /> Autonomie totale
                             </button>
                           </div>
                         </div>
 
                         {/* Type de bâtiment */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Type de bâtiment</label>
-                          <div className="flex gap-2">
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-semibold text-foreground">Type de bâtiment</label>
+                          <div className="flex gap-1.5">
                             {(["Industriel", "Tertiaire"] as const).map(opt => (
                               <button
                                 key={opt}
                                 onClick={() => setTypeBatiment(opt)}
-                                className={`flex-1 py-1.5 rounded-full text-[12px] font-medium border transition-colors ${typeBatiment === opt ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
+                                className={`flex-1 py-1.5 rounded-full text-[10px] font-medium border transition-colors ${typeBatiment === opt ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
                               >
                                 {opt}
                               </button>
@@ -433,11 +432,11 @@ const Index = () => {
                         </div>
 
                         {/* Secteur d'activité */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Secteur d'activité</label>
-                          <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl bg-background">
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-semibold text-foreground">Secteur d'activité</label>
+                          <div className="flex items-center gap-1.5 px-2.5 py-1.5 border border-border rounded-xl bg-background">
                             <select
-                              className="text-[10px] bg-background outline-none w-full text-foreground appearance-none cursor-pointer"
+                              className="text-[9px] bg-background outline-none w-full text-foreground appearance-none cursor-pointer"
                               defaultValue=""
                             >
                               <option value="" disabled>Choisir un secteur...</option>
@@ -445,14 +444,15 @@ const Index = () => {
                                 <option key={s} value={s}>{s}</option>
                               ))}
                             </select>
-                            <ChevronDown className="w-3 h-3 text-muted-foreground shrink-0" />
+                            <ChevronDown className="w-2.5 h-2.5 text-muted-foreground shrink-0" />
                           </div>
                         </div>
+
                         {/* Consommation */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Consommation annuelle (kWh)</label>
-                          <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
-                            <Zap className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-semibold text-foreground">Consommation annuelle (kWh)</label>
+                          <div className="flex items-center gap-1.5 px-2.5 py-1.5 border border-border rounded-xl">
+                            <Zap className="w-3 h-3 text-muted-foreground shrink-0" />
                             <input
                               type="text"
                               inputMode="numeric"
@@ -462,16 +462,16 @@ const Index = () => {
                                 setConso(raw ? Number(raw).toLocaleString("fr-FR") : "");
                               }}
                               placeholder="Ex : 480 000"
-                              className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
+                              className="text-[9px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
                             />
                           </div>
                         </div>
 
                         {/* Facture annuelle */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Facture annuelle (MAD)</label>
-                          <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
-                            <FileText className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-semibold text-foreground">Facture annuelle (MAD)</label>
+                          <div className="flex items-center gap-1.5 px-2.5 py-1.5 border border-border rounded-xl">
+                            <FileText className="w-3 h-3 text-muted-foreground shrink-0" />
                             <input
                               type="text"
                               inputMode="numeric"
@@ -481,41 +481,41 @@ const Index = () => {
                                 setFacture(raw ? Number(raw).toLocaleString("fr-FR") : "");
                               }}
                               placeholder="Ex : 180 000"
-                              className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
+                              className="text-[9px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
                             />
                           </div>
                         </div>
 
                         {/* Puissance souscrite */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Puissance souscrite (kVA)</label>
-                          <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
-                            <Zap className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-semibold text-foreground">Puissance souscrite (kVA)</label>
+                          <div className="flex items-center gap-1.5 px-2.5 py-1.5 border border-border rounded-xl">
+                            <Zap className="w-3 h-3 text-muted-foreground shrink-0" />
                             <input
                               type="number"
                               value={puissanceSouscrite}
                               onChange={e => setPuissanceSouscrite(e.target.value)}
                               placeholder="Ex : 160"
-                              className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
+                              className="text-[9px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
                             />
                           </div>
                         </div>
 
                         {/* Type d'abonnement */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Type d'abonnement</label>
-                          <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl bg-background">
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-semibold text-foreground">Type d'abonnement</label>
+                          <div className="flex items-center gap-1.5 px-2.5 py-1.5 border border-border rounded-xl bg-background">
                             <select
                               value={typeAbonnement ?? ""}
                               onChange={e => setTypeAbonnement(e.target.value as "Basse Tension" | "Moyenne Tension" | "Haute Tension")}
-                              className="text-[10px] bg-background outline-none w-full text-foreground appearance-none cursor-pointer"
+                              className="text-[9px] bg-background outline-none w-full text-foreground appearance-none cursor-pointer"
                             >
                               <option value="" disabled>Choisir...</option>
                               <option value="Basse Tension">Basse Tension (≤ 1 kV)</option>
-                              <option value="Moyenne Tension">Moyenne Tension (1 kV à 50 kV)</option>
+                              <option value="Moyenne Tension">Moyenne Tension (1–50 kV)</option>
                               <option value="Haute Tension">Haute Tension (&gt; 50 kV)</option>
                             </select>
-                            <ChevronDown className="w-3 h-3 text-muted-foreground shrink-0" />
+                            <ChevronDown className="w-2.5 h-2.5 text-muted-foreground shrink-0" />
                           </div>
                         </div>
 
@@ -523,9 +523,9 @@ const Index = () => {
                         <button
                           onClick={() => { const valid = typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement; if (valid) setPhoneScreen(selectedType === "Entreprise" ? "informations" : "site"); }}
                           disabled={!(typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement)}
-                          className={`w-full rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 transition-colors ${typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
+                          className={`w-full rounded-full text-[10px] h-8 font-semibold flex items-center justify-center gap-1.5 transition-colors ${typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
                         >
-                          Continuer <ArrowRight className="w-3.5 h-3.5" />
+                          Continuer <ArrowRight className="w-3 h-3" />
                         </button>
                       </motion.div>
                     ) : phoneScreen === "informations" ? (
