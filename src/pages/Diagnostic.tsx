@@ -650,7 +650,7 @@ const Diagnostic = () => {
                 <motion.div key="eligibilite" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }} className="space-y-6">
                   <div>
                     <h2 className="text-2xl font-black">Éligibilité</h2>
-                    <p className="text-muted-foreground text-sm mt-1">Vérification de l'éligibilité aux programmes SR500 / TATWIR</p>
+                    <p className="text-muted-foreground text-sm mt-1">Vérification de l'éligibilité aux programmes d'aides de l'État</p>
                   </div>
 
                   <div className="space-y-3">
