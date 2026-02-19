@@ -138,6 +138,9 @@ const Index = () => {
   const [adresseProjet, setAdresseProjet] = useState("");
   const [dateDebut, setDateDebut] = useState("");
   const [dateFin, setDateFin] = useState("");
+  const [pvExistante, setPvExistante] = useState<"Oui" | "Non" | null>(null);
+  const [extensionInstall, setExtensionInstall] = useState<"Oui" | "Non" | null>(null);
+  const [subventionRecue, setSubventionRecue] = useState<"Oui" | "Non" | null>(null);
   const villeRef = useRef<HTMLDivElement>(null);
 
   const handleAideCTA = () => {
@@ -786,9 +789,36 @@ const Index = () => {
                           </div>
                         </div>
 
+                        {/* Oui/Non fields — Entreprise only */}
+                        {selectedType === "Entreprise" && (
+                          <div className="space-y-2">
+                            {([
+                              { label: "Installation PV existante", value: pvExistante, set: setPvExistante },
+                              { label: "Extension d'une installation ?", value: extensionInstall, set: setExtensionInstall },
+                              { label: "Subvention déjà reçue ?", value: subventionRecue, set: setSubventionRecue },
+                            ] as { label: string; value: "Oui" | "Non" | null; set: (v: "Oui" | "Non") => void }[]).map(({ label, value, set }) => (
+                              <div key={label} className="space-y-1">
+                                <label className="text-[9px] font-semibold text-foreground">{label}</label>
+                                <div className="flex gap-2">
+                                  {(["Oui", "Non"] as const).map(opt => (
+                                    <button
+                                      key={opt}
+                                      onClick={() => set(opt)}
+                                      className={`flex-1 py-1.5 rounded-full text-[10px] font-medium border transition-colors ${value === opt ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
+                                    >
+                                      {opt}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
                         {/* CTA Analyser */}
                         {(() => {
-                          const siteValid = panelAccess.length > 0 && selectedSurface && selectedUsages.length > 0;
+                          const siteValid = panelAccess.length > 0 && selectedSurface && selectedUsages.length > 0 &&
+                            (selectedType !== "Entreprise" || (pvExistante !== null && extensionInstall !== null && subventionRecue !== null));
                           return (
                             <button
                               onClick={() => {
