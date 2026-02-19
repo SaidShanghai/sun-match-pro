@@ -19,15 +19,12 @@ const EligibiliteScreen = ({ onContinue }: EligibiliteScreenProps) => {
   const [consoAnnuelle, setConsoAnnuelle] = useState("");
   const [factureAnnuelle, setFactureAnnuelle] = useState("");
   const [puissanceSouscrite, setPuissanceSouscrite] = useState("");
-  const [pvExistante, setPvExistante] = useState<"Oui" | "Non" | null>(null);
-  const [extension, setExtension] = useState<"Oui" | "Non" | null>(null);
-  const [subvention, setSubvention] = useState<"Oui" | "Non" | null>(null);
   const [decl, setDecl] = useState<Record<string, "Oui" | "Non" | null>>({
     d1: null, d2: null, d3: null, d4: null, d5: null, d6: null,
   });
 
   const allDeclOui = declarations.every(d => decl[d.id] === "Oui");
-  const canContinue = !!(consoAnnuelle && factureAnnuelle && puissanceSouscrite && pvExistante && extension && subvention && allDeclOui);
+  const canContinue = !!(consoAnnuelle && factureAnnuelle && puissanceSouscrite && allDeclOui);
 
   return (
     <motion.div
@@ -83,27 +80,8 @@ const EligibiliteScreen = ({ onContinue }: EligibiliteScreenProps) => {
         ))}
       </div>
 
-      {/* Oui/Non fields */}
-      {([
-        { label: "Installation PV existante", value: pvExistante, set: setPvExistante },
-        { label: "Extension d'une installation ?", value: extension, set: setExtension },
-        { label: "Subvention déjà reçue ?", value: subvention, set: setSubvention },
-      ] as { label: string; value: "Oui" | "Non" | null; set: (v: "Oui" | "Non") => void }[]).map(({ label, value, set }) => (
-        <div key={label} className="space-y-1">
-          <label className="text-[9px] font-semibold text-foreground">{label}</label>
-          <div className="flex gap-2">
-            {(["Oui", "Non"] as const).map(opt => (
-              <button
-                key={opt}
-                onClick={() => set(opt)}
-                className={`flex-1 py-1.5 rounded-full text-[10px] font-medium border transition-colors ${value === opt ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
-              >
-                {opt}
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
+
+
 
       {/* Déclarations SR500 */}
       <div className="space-y-1.5">
