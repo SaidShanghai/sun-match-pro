@@ -16,14 +16,12 @@ const declarations = [
 ];
 
 const EligibiliteScreen = ({ onContinue }: EligibiliteScreenProps) => {
-  const [factureAnnuelle, setFactureAnnuelle] = useState("");
-  const [puissanceSouscrite, setPuissanceSouscrite] = useState("");
   const [decl, setDecl] = useState<Record<string, "Oui" | "Non" | null>>({
     d1: null, d2: null, d3: null, d4: null, d5: null, d6: null,
   });
 
   const allDeclOui = declarations.every(d => decl[d.id] === "Oui");
-  const canContinue = !!(factureAnnuelle && puissanceSouscrite && allDeclOui);
+  const canContinue = allDeclOui;
 
   return (
     <motion.div
@@ -55,28 +53,8 @@ const EligibiliteScreen = ({ onContinue }: EligibiliteScreenProps) => {
         <h4 className="text-sm font-bold">Éligibilité</h4>
       </div>
 
-      {/* Champs numériques */}
-      <div className="space-y-2">
-        {[
-          { label: "Facture annuelle (MAD)", value: factureAnnuelle, set: setFactureAnnuelle, placeholder: "Ex : 180 000", format: true },
-          { label: "Puissance souscrite (kVA)", value: puissanceSouscrite, set: setPuissanceSouscrite, placeholder: "Ex : 160", format: false },
-        ].map(({ label, value, set, placeholder, format }) => (
-          <div key={label} className="space-y-0.5">
-            <label className="text-[9px] font-semibold text-foreground">{label}</label>
-            <input
-              type="text"
-              inputMode="numeric"
-              value={value}
-              onChange={e => {
-                const raw = e.target.value.replace(/\s/g, "").replace(/\D/g, "");
-                set(format && raw ? Number(raw).toLocaleString("fr-FR") : raw);
-              }}
-              placeholder={placeholder}
-              className="w-full text-[10px] bg-background border border-border rounded-xl px-2.5 py-1.5 outline-none focus:border-primary text-foreground placeholder:text-muted-foreground"
-            />
-          </div>
-        ))}
-      </div>
+
+
 
 
 
