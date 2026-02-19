@@ -541,9 +541,9 @@ const Index = () => {
                           </>
                         ) : (
                           <>
-                            {/* Facture mensuelle — Particulier / Ferme */}
+                            {/* Facture annuelle — Particulier / Ferme */}
                             <div className="space-y-1.5">
-                              <label className="text-[9px] font-semibold text-foreground">Facture mensuelle moyenne (MAD)</label>
+                              <label className="text-[9px] font-semibold text-foreground">Facture annuelle (MAD)</label>
                               <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl">
                                 <FileText className="w-3 h-3 text-muted-foreground shrink-0" />
                                 <input
@@ -554,15 +554,15 @@ const Index = () => {
                                     const raw = e.target.value.replace(/\s/g, "").replace(/\D/g, "");
                                     setFacture(raw ? Number(raw).toLocaleString("fr-FR") : "");
                                   }}
-                                  placeholder="Ex : 800"
+                                  placeholder="Ex : 9 600"
                                   className="text-[9px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
                                 />
                               </div>
                             </div>
 
-                            {/* Consommation mensuelle — Particulier / Ferme */}
+                            {/* Consommation annuelle — Particulier / Ferme */}
                             <div className="space-y-1.5">
-                              <label className="text-[9px] font-semibold text-foreground">Consommation mensuelle (kWh) <span className="font-normal text-muted-foreground">(optionnel)</span></label>
+                              <label className="text-[9px] font-semibold text-foreground">Consommation annuelle (kWh) <span className="font-normal text-muted-foreground">(optionnel)</span></label>
                               <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl">
                                 <Zap className="w-3 h-3 text-muted-foreground shrink-0" />
                                 <input
