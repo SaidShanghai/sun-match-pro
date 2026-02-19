@@ -697,14 +697,20 @@ const Index = () => {
                         })()}
                         </div>
                         {/* CTA — épinglé en bas, hors scroll */}
-                        <div className="px-4 pb-2.5 pt-2 shrink-0">
-                          <button
-                            onClick={() => setPhoneScreen("site")}
-                            className="w-full rounded-full text-[10px] h-[36px] font-semibold flex items-center justify-center gap-1.5 transition-colors bg-primary text-primary-foreground hover:bg-primary/90"
-                          >
-                            Continuer <ArrowRight className="w-3 h-3" />
-                          </button>
-                        </div>
+                        {(() => {
+                          const infoValid = descriptionProjet.trim().length > 0 && adresseProjet.trim().length > 0 && panelAccess.length > 0 && selectedSurface;
+                          return (
+                            <div className="px-4 pb-2.5 pt-2 shrink-0">
+                              <button
+                                onClick={() => { if (infoValid) setPhoneScreen("site"); }}
+                                disabled={!infoValid}
+                                className={`w-full rounded-full text-[10px] h-[36px] font-semibold flex items-center justify-center gap-1.5 transition-colors ${infoValid ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
+                              >
+                                Continuer <ArrowRight className="w-3 h-3" />
+                              </button>
+                            </div>
+                          );
+                        })()}
                       </motion.div>
                     ) : phoneScreen === "site" ? (
                       /* Site screen */
