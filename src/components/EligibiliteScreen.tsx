@@ -12,7 +12,7 @@ const declarations = [
   { id: "d3", text: "L'installation est sur toiture (ou shelter) et connectée au réseau" },
   { id: "d4", text: "La capacité installée est inférieure à 3 MW" },
   { id: "d5", text: "Le bénéficiaire n'a reçu et ne recevra pas d'autres incitations financières autres que les revenus générés par les crédits carbone issus de son projet solaire" },
-  { id: "d6", text: "Le bénéficiaire déclare être le propriétaire de l'installation solaire et confirme son engagement à transférer les émissions réduites dans le cadre du programme SR500" },
+  { id: "d6", text: "Le bénéficiaire déclare être le propriétaire de l'installation solaire et confirme son engagement à transférer les réductions d'émissions associées au projet, dans le cadre d'un programme de valorisation carbone." },
 ];
 
 const EligibiliteScreen = ({ onContinue }: EligibiliteScreenProps) => {
