@@ -835,7 +835,7 @@ const Index = () => {
                         </div>
                         {/* CTA — épinglé en bas, hors scroll */}
                         {(() => {
-                          const infoValid = descriptionProjet.trim().length > 0 && adresseProjet.trim().length > 0 && villeProjet.length > 0 && panelAccess.length > 0 && selectedSurface;
+                          const infoValid = descriptionProjet.trim().length > 0 && adresseProjet.trim().length > 0 && villeProjet.length > 0 && panelAccess.length > 0 && selectedSurface && dateDebut.length > 0 && dateFin.length > 0 && dateFin >= dateDebut;
                           return (
                             <div className="px-4 pb-2.5 pt-2 shrink-0">
                               <button
