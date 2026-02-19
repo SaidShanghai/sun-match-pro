@@ -94,6 +94,7 @@ const Index = () => {
   const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form" | "informations" | "site" | "eligibilite" | "analyse" | "solutions">("intro");
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [objectif, setObjectif] = useState<"facture" | "autonomie" | null>(null);
+  const [typeBatiment, setTypeBatiment] = useState<"Industriel" | "Tertiaire" | null>(null);
   const [tension, setTension] = useState<"220" | "380" | null>(null);
   const [conso, setConso] = useState("");
   const [facture, setFacture] = useState("");
@@ -392,6 +393,22 @@ const Index = () => {
                         <div className="flex items-center gap-1.5 pt-1">
                           <ChevronLeft className="w-3.5 h-3.5 text-foreground" />
                           <h4 className="text-sm font-bold">Votre profil énergie</h4>
+                        </div>
+
+                        {/* Type de bâtiment */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Type de bâtiment</label>
+                          <div className="flex gap-2">
+                            {(["Industriel", "Tertiaire"] as const).map(opt => (
+                              <button
+                                key={opt}
+                                onClick={() => setTypeBatiment(opt)}
+                                className={`flex-1 py-1.5 rounded-full text-[10px] font-medium border transition-colors ${typeBatiment === opt ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
+                              >
+                                {opt}
+                              </button>
+                            ))}
+                          </div>
                         </div>
 
                         {/* Objectif principal */}
