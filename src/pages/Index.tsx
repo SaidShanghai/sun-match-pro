@@ -955,7 +955,7 @@ const Index = () => {
                         </motion.div>
                         <div className="space-y-2">
                           <h3 className="text-[14px] font-black text-foreground">Demande reçue ✅</h3>
-                          <p className="text-[10px] text-muted-foreground leading-relaxed">
+                          <p className="text-[12px] text-muted-foreground leading-relaxed">
                             Prochaine étape : vérification technique et estimation préliminaire.<br />
                             Un expert NOORIA vous contacte sous <span className="font-semibold text-foreground">24h</span> (WhatsApp ou appel).
                           </p>
