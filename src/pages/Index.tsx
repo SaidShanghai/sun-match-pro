@@ -95,9 +95,11 @@ const Index = () => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [objectif, setObjectif] = useState<"facture" | "autonomie" | null>(null);
   const [typeBatiment, setTypeBatiment] = useState<"Industriel" | "Tertiaire" | null>(null);
+  const [secteurActiviteProfil, setSecteurActiviteProfil] = useState("");
   const [tension, setTension] = useState<"220" | "380" | null>(null);
   const [conso, setConso] = useState("");
   const [facture, setFacture] = useState("");
+  const [puissanceSouscrite, setPuissanceSouscrite] = useState("");
   const [typeAbonnement, setTypeAbonnement] = useState<"Basse Tension" | "Moyenne Tension" | "Haute Tension" | null>(null);
   const [ville, setVille] = useState("Casablanca");
   const [villeOpen, setVilleOpen] = useState(false);
@@ -483,6 +485,8 @@ const Index = () => {
                             <Zap className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                             <input
                               type="number"
+                              value={puissanceSouscrite}
+                              onChange={e => setPuissanceSouscrite(e.target.value)}
                               placeholder="Ex : 160"
                               className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
                             />
@@ -509,9 +513,9 @@ const Index = () => {
 
                         {/* CTA */}
                         <button
-                          onClick={() => conso.trim() && setPhoneScreen(selectedType === "Entreprise" ? "informations" : "site")}
-                          disabled={!conso.trim()}
-                          className={`w-full rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 transition-colors ${conso.trim() ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
+                          onClick={() => { const valid = typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement; if (valid) setPhoneScreen(selectedType === "Entreprise" ? "informations" : "site"); }}
+                          disabled={!(typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement)}
+                          className={`w-full rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 transition-colors ${typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
                         >
                           Continuer <ArrowRight className="w-3.5 h-3.5" />
                         </button>
@@ -547,40 +551,7 @@ const Index = () => {
                           <h4 className="text-sm font-bold">Informations</h4>
                         </div>
 
-                        {/* Type de bâtiment */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Type de bâtiment</label>
-                          <div className="flex gap-2">
-                            {(["Industriel", "Tertiaire"] as const).map((type) => (
-                              <button
-                                key={type}
-                                onClick={() => setBatimentType(type)}
-                                className={`flex-1 py-2 rounded-full text-[10px] font-medium border transition-colors ${batimentType === type ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
-                              >
-                                {type}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Secteur d'activité */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Secteur d'activité</label>
-                          <div className="flex items-center gap-2 px-3 py-1.5 border border-border rounded-xl">
-                            <Building2 className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                            <select
-                              value={secteurActivite}
-                              onChange={(e) => setSecteurActivite(e.target.value)}
-                              className="text-[10px] bg-transparent outline-none w-full text-foreground appearance-none cursor-pointer"
-                            >
-                              <option value="">Choisir un secteur...</option>
-                              {["Agroalimentaire", "BTP & Construction", "Chimie & Pharma", "Commerce & Distribution", "Éducation", "Énergie", "Finance & Banque", "Hôtellerie & Tourisme", "Industrie Textile", "Logistique & Transport", "Métallurgie & Sidérurgie", "Plasturgie", "Santé & Médical", "Services & Conseil", "Télécommunications"].map((s) => (
-                                <option key={s} value={s}>{s}</option>
-                              ))}
-                            </select>
-                            <ChevronDown className="w-3 h-3 text-muted-foreground shrink-0" />
-                          </div>
-                        </div>
+                        
 
                         {/* Description du projet */}
                         <div className="space-y-1.5">
