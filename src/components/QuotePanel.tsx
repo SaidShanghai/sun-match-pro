@@ -9,7 +9,7 @@ interface QuotePanelProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   installerName?: string;
-  onSuccess?: () => void;
+  onSuccess?: (id: string) => void;
 }
 
 const phoneRegex = /^(\+212|0)([ \-]?[0-9]){9}$/;
@@ -47,16 +47,16 @@ const QuotePanel = ({ open, onOpenChange, installerName, onSuccess }: QuotePanel
 
     setLoading(true);
     try {
-      await supabase.from("quote_requests").insert({
+      const { data } = await supabase.from("quote_requests").insert({
         client_name: nom.trim().slice(0, 100),
         client_email: email.trim().slice(0, 255),
         client_phone: telephone.trim().slice(0, 20),
         city: ville.trim().slice(0, 100),
         status: "pending",
-      });
+      }).select("id").single();
       setSubmitted(true);
       onOpenChange(false);
-      onSuccess?.();
+      onSuccess?.(data?.id ?? "");
     } catch {
       setError("Une erreur est survenue. Veuillez réessayer.");
     } finally {

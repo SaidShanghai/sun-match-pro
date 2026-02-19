@@ -114,6 +114,7 @@ const Index = () => {
   const [entrepriseBlink, setEntrepriseBlink] = useState(false);
   const [callbackOpen, setCallbackOpen] = useState(false);
   const [quoteOpen, setQuoteOpen] = useState(false);
+  const [quoteRef, setQuoteRef] = useState<string | null>(null);
   const [contactNom, setContactNom] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactTel, setContactTel] = useState("");
@@ -942,29 +943,42 @@ const Index = () => {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.35 }}
-                        className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center gap-4"
+                        className="absolute inset-0 flex flex-col items-center justify-start px-5 pt-8 text-center gap-4 overflow-y-auto"
                       >
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 20 }}
-                          className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center"
+                          className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center shrink-0"
                         >
-                          <span className="text-3xl">☀️</span>
+                          <span className="text-2xl">✅</span>
                         </motion.div>
-                        <div>
-                          <h3 className="text-[15px] font-black text-foreground mb-1">Merci, {contactNom.split(" ")[0] || "cher client"} !</h3>
-                          <p className="text-[11px] text-muted-foreground leading-relaxed">
-                            Votre demande a bien été reçue.<br />
-                            Un expert NOORIA vous contacte<br />sous <span className="font-semibold text-foreground">24h</span>. À bientôt ! 🌿
+                        <div className="space-y-2">
+                          <h3 className="text-[14px] font-black text-foreground">Demande reçue ✅</h3>
+                          <p className="text-[10px] text-muted-foreground leading-relaxed">
+                            Prochaine étape : vérification technique et estimation préliminaire.<br />
+                            Un expert NOORIA vous contacte sous <span className="font-semibold text-foreground">24h</span> (WhatsApp ou appel).
                           </p>
+                          {quoteRef && (
+                            <div className="inline-flex items-center gap-1.5 bg-muted rounded-lg px-3 py-1.5 mt-1">
+                              <span className="text-[9px] text-muted-foreground font-medium">Référence :</span>
+                              <span className="text-[9px] font-bold text-foreground font-mono">#{quoteRef.slice(0, 8).toUpperCase()}</span>
+                            </div>
+                          )}
                         </div>
-                        <button
-                          onClick={() => { setPhoneScreen("intro"); setContactNom(""); setContactEmail(""); setContactTel(""); }}
-                          className="text-[10px] text-primary font-semibold underline underline-offset-2 mt-2"
-                        >
-                          Retour à l'accueil
-                        </button>
+                        <div className="w-full space-y-2 mt-1">
+                          <button
+                            className="w-full bg-primary text-primary-foreground rounded-full py-2.5 text-[10px] font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors"
+                          >
+                            📎 Téléverser une facture
+                          </button>
+                          <button
+                            onClick={() => { setPhoneScreen("intro"); setQuoteRef(null); }}
+                            className="w-full border border-border rounded-full py-2.5 text-[10px] font-semibold text-foreground hover:bg-muted transition-colors"
+                          >
+                            Retour à l'accueil
+                          </button>
+                        </div>
                       </motion.div>
                     ) : null}
 
@@ -1086,7 +1100,7 @@ const Index = () => {
 
       <Footer />
       <CallbackModal open={callbackOpen} onOpenChange={setCallbackOpen} />
-      <QuotePanel open={quoteOpen} onOpenChange={setQuoteOpen} onSuccess={() => setPhoneScreen("merci")} />
+      <QuotePanel open={quoteOpen} onOpenChange={setQuoteOpen} onSuccess={(id) => { setQuoteRef(id); setPhoneScreen("merci"); }} />
     </div>
   );
 };
