@@ -150,6 +150,10 @@ const Index = () => {
   const [secteurActivite, setSecteurActivite] = useState("");
   const [descriptionProjet, setDescriptionProjet] = useState("");
   const [adresseProjet, setAdresseProjet] = useState("");
+  const [villeProjet, setVilleProjet] = useState("");
+  const [villeProjetOpen, setVilleProjetOpen] = useState(false);
+  const [villeProjetSearch, setVilleProjetSearch] = useState("");
+  const villeProjetRef = useRef<HTMLDivElement>(null);
   const [dateDebut, setDateDebut] = useState("");
   const [dateFin, setDateFin] = useState("");
   const [pvExistante, setPvExistante] = useState<"Oui" | "Non" | null>(null);
@@ -184,6 +188,10 @@ const Index = () => {
       if (villeRef.current && !villeRef.current.contains(e.target as Node)) {
         setVilleOpen(false);
         setVilleSearch("");
+      }
+      if (villeProjetRef.current && !villeProjetRef.current.contains(e.target as Node)) {
+        setVilleProjetOpen(false);
+        setVilleProjetSearch("");
       }
     };
     document.addEventListener("mousedown", handler);
@@ -691,16 +699,58 @@ const Index = () => {
 
                         {/* Adresse */}
                         <div className="space-y-1">
-                          <label className="text-[9px] font-semibold text-foreground">Adresse complète du projet</label>
+                          <label className="text-[9px] font-semibold text-foreground">Adresse du projet</label>
                           <div className="flex items-center gap-1.5 px-2.5 py-1.5 border border-border rounded-xl">
                             <MapPin className="w-3 h-3 text-muted-foreground shrink-0" />
                             <input
                               type="text"
                               value={adresseProjet}
                               onChange={(e) => setAdresseProjet(e.target.value)}
-                              placeholder="N°, Rue, Ville..."
+                              placeholder="N°, Rue"
                               className="text-[9px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
                             />
+                          </div>
+                        </div>
+
+                        {/* Ville du projet */}
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-semibold text-foreground">Ville</label>
+                          <div ref={villeProjetRef} className="relative">
+                            <button
+                              type="button"
+                              onClick={() => setVilleProjetOpen(o => !o)}
+                              className="w-full flex items-center gap-1.5 px-2.5 py-1.5 border border-border rounded-xl text-left"
+                            >
+                              <MapPin className="w-3 h-3 text-muted-foreground shrink-0" />
+                              <span className={`text-[9px] flex-1 ${villeProjet ? "text-foreground" : "text-muted-foreground"}`}>{villeProjet || "Sélectionner une ville"}</span>
+                              <ChevronDown className="w-3 h-3 text-muted-foreground" />
+                            </button>
+                            {villeProjetOpen && (
+                              <div className="absolute top-full left-0 right-0 mt-0.5 bg-background border border-border rounded-xl shadow-lg z-50 max-h-32 overflow-hidden flex flex-col">
+                                <div className="p-1.5 border-b border-border">
+                                  <input
+                                    autoFocus
+                                    type="text"
+                                    value={villeProjetSearch}
+                                    onChange={(e) => setVilleProjetSearch(e.target.value)}
+                                    placeholder="Rechercher..."
+                                    className="w-full text-[9px] bg-transparent outline-none px-1"
+                                  />
+                                </div>
+                                <div className="overflow-y-auto">
+                                  {villes.filter(v => v.toLowerCase().includes(villeProjetSearch.toLowerCase())).map(v => (
+                                    <button
+                                      key={v}
+                                      type="button"
+                                      onClick={() => { setVilleProjet(v); setVilleProjetOpen(false); setVilleProjetSearch(""); }}
+                                      className={`w-full text-left px-2.5 py-1 text-[9px] hover:bg-muted transition-colors ${villeProjet === v ? "text-primary font-medium" : "text-foreground"}`}
+                                    >
+                                      {v}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -785,7 +835,7 @@ const Index = () => {
                         </div>
                         {/* CTA — épinglé en bas, hors scroll */}
                         {(() => {
-                          const infoValid = descriptionProjet.trim().length > 0 && adresseProjet.trim().length > 0 && panelAccess.length > 0 && selectedSurface;
+                          const infoValid = descriptionProjet.trim().length > 0 && adresseProjet.trim().length > 0 && villeProjet.length > 0 && panelAccess.length > 0 && selectedSurface;
                           return (
                             <div className="px-4 pb-2.5 pt-2 shrink-0">
                               <button
