@@ -857,14 +857,14 @@ const Index = () => {
                               <label className="text-[9px] font-semibold text-foreground">Surface disponible (m²)</label>
                               <div className="grid grid-cols-4 gap-1">
                                 {[
-                                  { m2: "10 m²", pan: "4 pan.", label: "S1" },
-                                  { m2: "20 m²", pan: "8 pan.", label: "S2" },
-                                  { m2: "30 m²", pan: "12 pan.", label: "M1" },
-                                  { m2: "40 m²", pan: "16 pan.", label: "M2" },
-                                  { m2: "55 m²", pan: "20 pan.", label: "M3" },
-                                  { m2: "70 m²", pan: "26 pan.", label: "L1" },
-                                  { m2: "90 m²", pan: "32 pan.", label: "L2" },
-                                  { m2: "110 m²+", pan: "40 pan.+", label: "XL" },
+                                  { m2: "22 m²", pan: "8 pan.", label: "M1" },
+                                  { m2: "44 m²", pan: "16 pan.", label: "M2" },
+                                  { m2: "66 m²", pan: "24 pan.", label: "M3/T1" },
+                                  { m2: "132 m²", pan: "48 pan.", label: "T2" },
+                                  { m2: "198 m²", pan: "72 pan.", label: "T3" },
+                                  { m2: "264 m²", pan: "96 pan.", label: "T4" },
+                                  { m2: "330 m²", pan: "120 pan.", label: "T5" },
+                                  { m2: "396 m²", pan: "144 pan.", label: "T5+" },
                                 ].map((s) => (
                                   <button
                                     key={s.label}
