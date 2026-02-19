@@ -544,9 +544,10 @@ const Diagnostic = () => {
 
                   <button
                     onClick={() => {
-                      if (descriptionProjet.trim() && adresseProjet.trim() && villeProjet && panelAccess.length > 0 && selectedSurface) setScreen("site");
+                      const valid = descriptionProjet.trim() && adresseProjet.trim() && villeProjet && panelAccess.length > 0 && selectedSurface && dateDebut && dateFin && dateFin >= dateDebut;
+                      if (valid) setScreen("site");
                     }}
-                    className={`w-full rounded-2xl h-14 font-semibold text-base flex items-center justify-center gap-2 transition-colors ${descriptionProjet.trim() && adresseProjet.trim() && villeProjet && panelAccess.length > 0 && selectedSurface ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
+                    className={`w-full rounded-2xl h-14 font-semibold text-base flex items-center justify-center gap-2 transition-colors ${descriptionProjet.trim() && adresseProjet.trim() && villeProjet && panelAccess.length > 0 && selectedSurface && dateDebut && dateFin && dateFin >= dateDebut ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
                   >
                     Continuer <ArrowRight className="w-4 h-4" />
                   </button>
