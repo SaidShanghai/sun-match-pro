@@ -3,7 +3,6 @@ import { X, ArrowRight, CheckCircle, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
 
 interface QuotePanelProps {
   open: boolean;
@@ -47,17 +46,27 @@ const QuotePanel = ({ open, onOpenChange, installerName, onSuccess }: QuotePanel
 
     setLoading(true);
     try {
-      const { data, error: dbError } = await supabase.from("quote_requests").insert({
-        client_name: nom.trim().slice(0, 100),
-        client_email: email.trim().slice(0, 255),
-        client_phone: telephone.trim().slice(0, 20),
-        city: ville.trim().slice(0, 100),
-        status: "new",
-      }).select("id").single();
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-quote`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({
+            client_name: nom.trim().slice(0, 100),
+            client_email: email.trim().slice(0, 255),
+            client_phone: telephone.trim().slice(0, 20),
+            city: ville.trim().slice(0, 100),
+          }),
+        }
+      );
 
-      if (dbError) throw dbError;
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Erreur serveur");
 
-      const id = data?.id ?? crypto.randomUUID();
+      const id = json.id ?? crypto.randomUUID();
       onOpenChange(false);
       onSuccess?.(id);
     } catch (err: any) {
