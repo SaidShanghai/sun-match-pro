@@ -114,6 +114,11 @@ const Index = () => {
   const [entrepriseBlink, setEntrepriseBlink] = useState(false);
   const [callbackOpen, setCallbackOpen] = useState(false);
   const [quoteOpen, setQuoteOpen] = useState(false);
+  const [contactNom, setContactNom] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactTel, setContactTel] = useState("");
+  const [contactError, setContactError] = useState("");
+  const [contactLoading, setContactLoading] = useState(false);
   // Rotating placeholder for description
   const projetSuggestions = [
     "Usine textile, 380V, 3 shifts/jour, financement via programme TATWIR souhaité",
@@ -271,7 +276,7 @@ const Index = () => {
                   <div className="flex items-center justify-between px-4 py-1 border-b border-border/50">
                     <div className="flex items-center gap-2">
                       {phoneScreen !== "intro" && (
-                        <button onClick={() => setPhoneScreen(phoneScreen === "solutions" ? "analyse" : phoneScreen === "analyse" ? "eligibilite" : phoneScreen === "eligibilite" ? "site" : phoneScreen === "site" ? (selectedType === "Entreprise" ? "informations" : "form") : phoneScreen === "informations" ? "form" : phoneScreen === "form" ? "type" : "intro")} className="p-0.5">
+                        <button onClick={() => setPhoneScreen(phoneScreen === "merci" ? "solutions" : phoneScreen === "contact" ? "solutions" : phoneScreen === "solutions" ? "analyse" : phoneScreen === "analyse" ? "eligibilite" : phoneScreen === "eligibilite" ? "site" : phoneScreen === "site" ? (selectedType === "Entreprise" ? "informations" : "form") : phoneScreen === "informations" ? "form" : phoneScreen === "form" ? "type" : "intro")} className="p-0.5">
                           <ChevronLeft className="w-4 h-4 text-foreground" />
                         </button>
                       )}
@@ -867,8 +872,8 @@ const Index = () => {
                           className="w-44 object-contain select-none"
                         />
                       </motion.div>
-                    ) : (
-                      /* Solutions screen */
+                    ) : phoneScreen === "solutions" ? (
+                       /* Solutions screen */
                       <motion.div
                         key="solutions"
                         initial={{ opacity: 0, x: 20 }}
@@ -926,11 +931,140 @@ const Index = () => {
                           </div>
                         </div>
 
-                        <button onClick={() => setQuoteOpen(true)} className="w-full bg-primary text-primary-foreground rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors">
+                        <button onClick={() => setPhoneScreen("contact")} className="w-full bg-primary text-primary-foreground rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors">
                           Demander un devis <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </motion.div>
-                    )}
+                    ) : phoneScreen === "contact" ? (
+                      /* Écran Contact */
+                      <motion.div
+                        key="contact"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.25 }}
+                        className="px-4 py-4 flex flex-col gap-3 flex-1 overflow-y-auto"
+                      >
+                        {/* Stepper */}
+                        <div className="flex items-center justify-between px-1">
+                          {(selectedType === "Entreprise" ? ["Profil", "Info", "Site", "Eligib.", "Analyse", "Solut.", "Contact"] : ["Profil", "Site", "Analyse", "Solut.", "Contact"]).map((step, i) => {
+                            const total = selectedType === "Entreprise" ? 7 : 5;
+                            const activeIndex = selectedType === "Entreprise" ? 6 : 4;
+                            const isDone = i < activeIndex;
+                            const isActive = i === activeIndex;
+                            return (
+                              <div key={step} className="flex flex-col items-center gap-0.5">
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${isDone ? "bg-success text-success-foreground" : isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
+                                  {isDone ? "✓" : i + 1}
+                                </div>
+                                <span className={`text-[8px] ${isActive || isDone ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        <div>
+                          <h3 className="text-[13px] font-bold">Vos coordonnées</h3>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">Un conseiller vous contactera sous 24h.</p>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <div>
+                            <label className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide block mb-1">Nom complet</label>
+                            <input
+                              className="w-full border border-border rounded-xl px-3 py-2 text-[11px] bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+                              placeholder="Ex : Youssef El Amrani"
+                              value={contactNom}
+                              onChange={e => setContactNom(e.target.value)}
+                              maxLength={100}
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide block mb-1">Email</label>
+                            <input
+                              type="email"
+                              className="w-full border border-border rounded-xl px-3 py-2 text-[11px] bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+                              placeholder="Ex : youssef@gmail.com"
+                              value={contactEmail}
+                              onChange={e => setContactEmail(e.target.value)}
+                              maxLength={255}
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide block mb-1">Téléphone</label>
+                            <input
+                              type="tel"
+                              className="w-full border border-border rounded-xl px-3 py-2 text-[11px] bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+                              placeholder="Ex : 06 12 34 56 78"
+                              value={contactTel}
+                              onChange={e => setContactTel(e.target.value)}
+                              maxLength={20}
+                            />
+                          </div>
+                        </div>
+
+                        {contactError && <p className="text-[10px] text-destructive font-medium">{contactError}</p>}
+
+                        <button
+                          disabled={contactLoading}
+                          onClick={async () => {
+                            setContactError("");
+                            if (!contactNom.trim() || contactNom.trim().length < 2) { setContactError("Veuillez entrer votre nom."); return; }
+                            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail.trim())) { setContactError("Email invalide."); return; }
+                            if (!/^(\+212|0)([ \-]?[0-9]){9}$/.test(contactTel.replace(/\s/g, ""))) { setContactError("Numéro invalide (ex : 06 12 34 56 78)"); return; }
+                            setContactLoading(true);
+                            try {
+                              const { supabase } = await import("@/integrations/supabase/client");
+                              await supabase.from("quote_requests").insert({
+                                client_name: contactNom.trim(),
+                                client_email: contactEmail.trim(),
+                                client_phone: contactTel.trim(),
+                                status: "pending",
+                              });
+                            } finally {
+                              setContactLoading(false);
+                              setPhoneScreen("merci");
+                            }
+                          }}
+                          className="w-full bg-primary text-primary-foreground rounded-full text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors disabled:opacity-60 mt-1"
+                        >
+                          {contactLoading ? "Envoi..." : "Envoyer ma demande"} <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </motion.div>
+                    ) : phoneScreen === "merci" ? (
+                      /* Écran Merci */
+                      <motion.div
+                        key="merci"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.35 }}
+                        className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center gap-4"
+                      >
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 20 }}
+                          className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center"
+                        >
+                          <span className="text-3xl">☀️</span>
+                        </motion.div>
+                        <div>
+                          <h3 className="text-[15px] font-black text-foreground mb-1">Merci, {contactNom.split(" ")[0] || "cher client"} !</h3>
+                          <p className="text-[11px] text-muted-foreground leading-relaxed">
+                            Votre demande a bien été reçue.<br />
+                            Un expert NOORIA vous contacte<br />sous <span className="font-semibold text-foreground">24h</span>. À bientôt ! 🌿
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => { setPhoneScreen("intro"); setContactNom(""); setContactEmail(""); setContactTel(""); }}
+                          className="text-[10px] text-primary font-semibold underline underline-offset-2 mt-2"
+                        >
+                          Retour à l'accueil
+                        </button>
+                      </motion.div>
+                    ) : null}
+
                   </AnimatePresence>
                   </div>
 
