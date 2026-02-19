@@ -954,10 +954,10 @@ const Index = () => {
                             const isActive = i === activeIndex;
                             return (
                               <div key={step} className="flex flex-col items-center gap-0.5">
-                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${isDone ? "bg-success text-success-foreground" : isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${isDone ? "bg-success text-success-foreground" : isActive ? "bg-primary text-primary-foreground ring-2 ring-primary ring-offset-1" : "border border-border text-muted-foreground"}`}>
                                   {isDone ? "✓" : i + 1}
                                 </div>
-                                <span className={`text-[8px] ${isActive || isDone ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
+                                <span className={`text-[8px] ${isActive ? "font-bold text-primary" : isDone ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
                               </div>
                             );
                           })}
