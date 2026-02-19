@@ -373,8 +373,9 @@ const Index = () => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
                         transition={{ duration: 0.25 }}
-                        className="px-4 py-2.5 flex flex-col gap-2 overflow-y-auto flex-1"
+                        className="flex flex-col flex-1 overflow-hidden"
                       >
+                      <div className="px-4 py-2.5 flex flex-col gap-2 overflow-y-auto flex-1">
                         {/* Stepper */}
                         <div className="flex items-center justify-between px-1">
                           {(selectedType === "Entreprise" ? ["Profil", "Info", "Site", "Eligib.", "Analyse", "Solut.", "Contact"] : ["Profil", "Site", "Analyse", "Solutions", "Contact"]).map((step, i) => {
@@ -519,14 +520,17 @@ const Index = () => {
                           </div>
                         </div>
 
-                        {/* CTA */}
-                        <button
-                          onClick={() => { const valid = typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement; if (valid) setPhoneScreen(selectedType === "Entreprise" ? "informations" : "site"); }}
-                          disabled={!(typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement)}
-                          className={`w-full rounded-full text-[10px] h-9 font-semibold flex items-center justify-center gap-1.5 transition-colors ${typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
-                        >
-                          Continuer <ArrowRight className="w-3 h-3" />
-                        </button>
+                        </div>
+                        {/* CTA — épinglé en bas, hors scroll */}
+                        <div className="px-4 pb-2.5 pt-2 shrink-0">
+                          <button
+                            onClick={() => { const valid = typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement; if (valid) setPhoneScreen(selectedType === "Entreprise" ? "informations" : "site"); }}
+                            disabled={!(typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement)}
+                            className={`w-full rounded-full text-[10px] h-[36px] font-semibold flex items-center justify-center gap-1.5 transition-colors ${typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
+                          >
+                            Continuer <ArrowRight className="w-3 h-3" />
+                          </button>
+                        </div>
                       </motion.div>
                     ) : phoneScreen === "informations" ? (
                       <motion.div
