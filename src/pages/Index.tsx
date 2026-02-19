@@ -433,121 +433,208 @@ const Index = () => {
                           </div>
                         </div>
 
-                        {/* Type de bâtiment */}
-                        <div className="space-y-1.5">
-                          <label className="text-[9px] font-semibold text-foreground">Type de bâtiment</label>
-                          <div className="flex gap-1.5">
-                            {(["Industriel", "Tertiaire"] as const).map(opt => (
-                              <button
-                                key={opt}
-                                onClick={() => setTypeBatiment(opt)}
-                                className={`flex-1 py-2 rounded-full text-[10px] font-medium border transition-colors ${typeBatiment === opt ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
+                        {selectedType === "Entreprise" ? (
+                          <>
+                            {/* Type de bâtiment — Entreprise uniquement */}
+                            <div className="space-y-1.5">
+                              <label className="text-[9px] font-semibold text-foreground">Type de bâtiment</label>
+                              <div className="flex gap-1.5">
+                                {(["Industriel", "Tertiaire"] as const).map(opt => (
+                                  <button
+                                    key={opt}
+                                    onClick={() => setTypeBatiment(opt)}
+                                    className={`flex-1 py-2 rounded-full text-[10px] font-medium border transition-colors ${typeBatiment === opt ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
+                                  >
+                                    {opt}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Secteur d'activité — Entreprise uniquement */}
+                            <div className="space-y-1.5">
+                              <label className="text-[9px] font-semibold text-foreground">Secteur d'activité</label>
+                              <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl bg-background">
+                                <select
+                                  className="text-[9px] bg-background outline-none w-full text-foreground appearance-none cursor-pointer"
+                                  defaultValue=""
+                                >
+                                  <option value="" disabled>Choisir un secteur...</option>
+                                  {["Agroalimentaire", "BTP & Construction", "Chimie & Pharma", "Commerce & Distribution", "Éducation", "Énergie", "Finance & Banque", "Hôtellerie & Tourisme", "Industrie Textile", "Logistique & Transport", "Métallurgie & Sidérurgie", "Plasturgie", "Santé & Médical", "Services & Conseil", "Télécommunications"].map(s => (
+                                    <option key={s} value={s}>{s}</option>
+                                  ))}
+                                </select>
+                                <ChevronDown className="w-2.5 h-2.5 text-muted-foreground shrink-0" />
+                              </div>
+                            </div>
+
+                            {/* Consommation annuelle — Entreprise */}
+                            <div className="space-y-1.5">
+                              <label className="text-[9px] font-semibold text-foreground">Consommation annuelle (kWh)</label>
+                              <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl">
+                                <Zap className="w-3 h-3 text-muted-foreground shrink-0" />
+                                <input
+                                  type="text"
+                                  inputMode="numeric"
+                                  value={conso}
+                                  onChange={(e) => {
+                                    const raw = e.target.value.replace(/\s/g, "").replace(/\D/g, "");
+                                    setConso(raw ? Number(raw).toLocaleString("fr-FR") : "");
+                                  }}
+                                  placeholder="Ex : 480 000"
+                                  className="text-[9px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Facture annuelle — Entreprise */}
+                            <div className="space-y-1.5">
+                              <label className="text-[9px] font-semibold text-foreground">Facture annuelle (MAD)</label>
+                              <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl">
+                                <FileText className="w-3 h-3 text-muted-foreground shrink-0" />
+                                <input
+                                  type="text"
+                                  inputMode="numeric"
+                                  value={facture}
+                                  onChange={(e) => {
+                                    const raw = e.target.value.replace(/\s/g, "").replace(/\D/g, "");
+                                    setFacture(raw ? Number(raw).toLocaleString("fr-FR") : "");
+                                  }}
+                                  placeholder="Ex : 180 000"
+                                  className="text-[9px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Puissance souscrite — Entreprise */}
+                            <div className="space-y-1.5">
+                              <label className="text-[9px] font-semibold text-foreground">Puissance souscrite (kVA)</label>
+                              <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl">
+                                <Zap className="w-3 h-3 text-muted-foreground shrink-0" />
+                                <input
+                                  type="number"
+                                  value={puissanceSouscrite}
+                                  onChange={e => setPuissanceSouscrite(e.target.value)}
+                                  placeholder="Ex : 160"
+                                  className="text-[9px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Type d'abonnement — Entreprise */}
+                            <div className="space-y-1.5">
+                              <label className="text-[9px] font-semibold text-foreground">Type d'abonnement</label>
+                              <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl bg-background">
+                                <select
+                                  value={typeAbonnement ?? ""}
+                                  onChange={e => setTypeAbonnement(e.target.value as "Basse Tension" | "Moyenne Tension" | "Haute Tension")}
+                                  className="text-[9px] bg-background outline-none w-full text-foreground appearance-none cursor-pointer"
+                                >
+                                  <option value="" disabled>Choisir...</option>
+                                  <option value="Basse Tension">Basse Tension (≤ 1 kV)</option>
+                                  <option value="Moyenne Tension">Moyenne Tension (1–50 kV)</option>
+                                  <option value="Haute Tension">Haute Tension (&gt; 50 kV)</option>
+                                </select>
+                                <ChevronDown className="w-2.5 h-2.5 text-muted-foreground shrink-0" />
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            {/* Facture mensuelle — Particulier / Ferme */}
+                            <div className="space-y-1.5">
+                              <label className="text-[9px] font-semibold text-foreground">Facture mensuelle moyenne (MAD)</label>
+                              <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl">
+                                <FileText className="w-3 h-3 text-muted-foreground shrink-0" />
+                                <input
+                                  type="text"
+                                  inputMode="numeric"
+                                  value={facture}
+                                  onChange={(e) => {
+                                    const raw = e.target.value.replace(/\s/g, "").replace(/\D/g, "");
+                                    setFacture(raw ? Number(raw).toLocaleString("fr-FR") : "");
+                                  }}
+                                  placeholder="Ex : 800"
+                                  className="text-[9px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Consommation mensuelle — Particulier / Ferme */}
+                            <div className="space-y-1.5">
+                              <label className="text-[9px] font-semibold text-foreground">Consommation mensuelle (kWh) <span className="font-normal text-muted-foreground">(optionnel)</span></label>
+                              <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl">
+                                <Zap className="w-3 h-3 text-muted-foreground shrink-0" />
+                                <input
+                                  type="text"
+                                  inputMode="numeric"
+                                  value={conso}
+                                  onChange={(e) => {
+                                    const raw = e.target.value.replace(/\s/g, "").replace(/\D/g, "");
+                                    setConso(raw ? Number(raw).toLocaleString("fr-FR") : "");
+                                  }}
+                                  placeholder="Ex : 350"
+                                  className="text-[9px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Ville — Particulier / Ferme */}
+                            <div className="space-y-1.5" ref={villeRef}>
+                              <label className="text-[9px] font-semibold text-foreground">Ville</label>
+                              <div
+                                className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl cursor-pointer relative"
+                                onClick={() => setVilleOpen(v => !v)}
                               >
-                                {opt}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
+                                <MapPinned className="w-3 h-3 text-muted-foreground shrink-0" />
+                                <span className="text-[9px] text-foreground flex-1">{ville}</span>
+                                <ChevronDown className="w-2.5 h-2.5 text-muted-foreground shrink-0" />
+                              </div>
+                              {villeOpen && (
+                                <div className="border border-border rounded-xl bg-background shadow-lg z-10 max-h-32 overflow-y-auto">
+                                  <div className="px-2 pt-1.5 pb-1 sticky top-0 bg-background">
+                                    <input
+                                      type="text"
+                                      value={villeSearch}
+                                      onChange={e => setVilleSearch(e.target.value)}
+                                      placeholder="Rechercher..."
+                                      className="w-full text-[9px] border border-border rounded-lg px-2 py-1 bg-background outline-none"
+                                      autoFocus
+                                    />
+                                  </div>
+                                  {filteredVilles.map(v => (
+                                    <button
+                                      key={v}
+                                      onClick={() => { setVille(v); setVilleOpen(false); setVilleSearch(""); }}
+                                      className={`w-full text-left px-3 py-1.5 text-[9px] hover:bg-primary/5 transition-colors ${v === ville ? "text-primary font-semibold" : "text-foreground"}`}
+                                    >
+                                      {v}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </div>
 
-                        {/* Secteur d'activité */}
-                        <div className="space-y-1.5">
-                          <label className="text-[9px] font-semibold text-foreground">Secteur d'activité</label>
-                          <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl bg-background">
-                            <select
-                              className="text-[9px] bg-background outline-none w-full text-foreground appearance-none cursor-pointer"
-                              defaultValue=""
+                      {/* CTA — épinglé en bas, hors scroll */}
+                      <div className="px-4 pb-2.5 pt-2 shrink-0">
+                        {(() => {
+                          const formValid = selectedType === "Entreprise"
+                            ? !!(typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement)
+                            : !!(objectif && facture.trim());
+                          return (
+                            <button
+                              onClick={() => { if (formValid) setPhoneScreen(selectedType === "Entreprise" ? "informations" : "site"); }}
+                              disabled={!formValid}
+                              className={`w-full rounded-full text-[10px] h-[36px] font-semibold flex items-center justify-center gap-1.5 transition-colors ${formValid ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
                             >
-                              <option value="" disabled>Choisir un secteur...</option>
-                              {["Agroalimentaire", "BTP & Construction", "Chimie & Pharma", "Commerce & Distribution", "Éducation", "Énergie", "Finance & Banque", "Hôtellerie & Tourisme", "Industrie Textile", "Logistique & Transport", "Métallurgie & Sidérurgie", "Plasturgie", "Santé & Médical", "Services & Conseil", "Télécommunications"].map(s => (
-                                <option key={s} value={s}>{s}</option>
-                              ))}
-                            </select>
-                            <ChevronDown className="w-2.5 h-2.5 text-muted-foreground shrink-0" />
-                          </div>
-                        </div>
-
-                        {/* Consommation */}
-                        <div className="space-y-1.5">
-                          <label className="text-[9px] font-semibold text-foreground">Consommation annuelle (kWh)</label>
-                          <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl">
-                            <Zap className="w-3 h-3 text-muted-foreground shrink-0" />
-                            <input
-                              type="text"
-                              inputMode="numeric"
-                              value={conso}
-                              onChange={(e) => {
-                                const raw = e.target.value.replace(/\s/g, "").replace(/\D/g, "");
-                                setConso(raw ? Number(raw).toLocaleString("fr-FR") : "");
-                              }}
-                              placeholder="Ex : 480 000"
-                              className="text-[9px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Facture annuelle */}
-                        <div className="space-y-1.5">
-                          <label className="text-[9px] font-semibold text-foreground">Facture annuelle (MAD)</label>
-                          <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl">
-                            <FileText className="w-3 h-3 text-muted-foreground shrink-0" />
-                            <input
-                              type="text"
-                              inputMode="numeric"
-                              value={facture}
-                              onChange={(e) => {
-                                const raw = e.target.value.replace(/\s/g, "").replace(/\D/g, "");
-                                setFacture(raw ? Number(raw).toLocaleString("fr-FR") : "");
-                              }}
-                              placeholder="Ex : 180 000"
-                              className="text-[9px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Puissance souscrite */}
-                        <div className="space-y-1.5">
-                          <label className="text-[9px] font-semibold text-foreground">Puissance souscrite (kVA)</label>
-                          <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl">
-                            <Zap className="w-3 h-3 text-muted-foreground shrink-0" />
-                            <input
-                              type="number"
-                              value={puissanceSouscrite}
-                              onChange={e => setPuissanceSouscrite(e.target.value)}
-                              placeholder="Ex : 160"
-                              className="text-[9px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Type d'abonnement */}
-                        <div className="space-y-1.5">
-                          <label className="text-[9px] font-semibold text-foreground">Type d'abonnement</label>
-                          <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl bg-background">
-                            <select
-                              value={typeAbonnement ?? ""}
-                              onChange={e => setTypeAbonnement(e.target.value as "Basse Tension" | "Moyenne Tension" | "Haute Tension")}
-                              className="text-[9px] bg-background outline-none w-full text-foreground appearance-none cursor-pointer"
-                            >
-                              <option value="" disabled>Choisir...</option>
-                              <option value="Basse Tension">Basse Tension (≤ 1 kV)</option>
-                              <option value="Moyenne Tension">Moyenne Tension (1–50 kV)</option>
-                              <option value="Haute Tension">Haute Tension (&gt; 50 kV)</option>
-                            </select>
-                            <ChevronDown className="w-2.5 h-2.5 text-muted-foreground shrink-0" />
-                          </div>
-                        </div>
-
-                        </div>
-                        {/* CTA — épinglé en bas, hors scroll */}
-                        <div className="px-4 pb-2.5 pt-2 shrink-0">
-                          <button
-                            onClick={() => { const valid = typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement; if (valid) setPhoneScreen(selectedType === "Entreprise" ? "informations" : "site"); }}
-                            disabled={!(typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement)}
-                            className={`w-full rounded-full text-[10px] h-[36px] font-semibold flex items-center justify-center gap-1.5 transition-colors ${typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
-                          >
-                            Continuer <ArrowRight className="w-3 h-3" />
-                          </button>
-                        </div>
+                              Continuer <ArrowRight className="w-3 h-3" />
+                            </button>
+                          );
+                        })()}
+                      </div>
                       </motion.div>
                     ) : phoneScreen === "informations" ? (
                       <motion.div
@@ -744,6 +831,52 @@ const Index = () => {
                           <h4 className="text-sm font-bold">Votre site</h4>
                         </div>
 
+                        {/* Accès Panneaux + Surface — non-Entreprise uniquement */}
+                        {selectedType !== "Entreprise" && (
+                          <>
+                            <div className="space-y-1.5">
+                              <label className="text-[9px] font-semibold text-foreground">Accès panneaux</label>
+                              <div className="flex gap-1.5">
+                                {([
+                                  { value: "toit", label: "Toit" },
+                                  { value: "sol", label: "Sol" },
+                                  { value: "terrasse", label: "Terrasse" },
+                                ] as const).map((opt) => (
+                                  <button
+                                    key={opt.value}
+                                    onClick={() => setPanelAccess(prev => prev.includes(opt.value) ? prev.filter(v => v !== opt.value) : [...prev, opt.value])}
+                                    className={`flex-1 py-1.5 rounded-full text-[9px] font-medium border transition-colors ${panelAccess.includes(opt.value) ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
+                                  >
+                                    {opt.label}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <label className="text-[9px] font-semibold text-foreground">Surface disponible</label>
+                              <div className="grid grid-cols-4 gap-1">
+                                {[
+                                  { m2: "10–20 m²", kwc: "~3 kWc", label: "S" },
+                                  { m2: "20–40 m²", kwc: "~6 kWc", label: "M" },
+                                  { m2: "40–70 m²", kwc: "~10 kWc", label: "L" },
+                                  { m2: "70 m²+", kwc: "~15+ kWc", label: "XL" },
+                                ].map((s) => (
+                                  <button
+                                    key={s.label}
+                                    onClick={() => setSelectedSurface(s.label)}
+                                    className={`flex flex-col items-center p-1.5 rounded-xl border text-center transition-colors ${selectedSurface === s.label ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}
+                                  >
+                                    <span className="text-[9px] font-bold text-foreground">{s.m2}</span>
+                                    <span className="text-[7px] text-muted-foreground">{s.kwc}</span>
+                                    <span className="text-[8px] font-semibold text-primary">{s.label}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </>
+                        )}
+
                         {/* Usages spécifiques */}
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-semibold text-foreground">Usages spécifiques</label>
@@ -791,8 +924,6 @@ const Index = () => {
                               { icon: "🧊", label: "Frigo/Congél." },
                               { icon: "❄️", label: "Chambre froide" },
                               { icon: "💨", label: "Compresseur air" },
-                              { icon: "💡", label: "Éclairage indus." },
-                              { icon: "⚙️", label: "Machines-outils" },
                             ]).map((u) => {
                               const isSelected = selectedUsages.includes(u.label);
                               return (
@@ -837,8 +968,10 @@ const Index = () => {
 
                         {/* CTA Analyser */}
                         {(() => {
-                          const siteValid = panelAccess.length > 0 && selectedSurface && selectedUsages.length > 0 &&
-                            (selectedType !== "Entreprise" || (pvExistante !== null && extensionInstall !== null && subventionRecue !== null));
+                          const siteValid = selectedUsages.length > 0 &&
+                            (selectedType === "Entreprise"
+                              ? (panelAccess.length > 0 && selectedSurface && pvExistante !== null && extensionInstall !== null && subventionRecue !== null)
+                              : (panelAccess.length > 0 && selectedSurface));
                           return (
                             <button
                               onClick={() => {
