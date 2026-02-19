@@ -854,34 +854,16 @@ const Index = () => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
                         transition={{ duration: 0.25 }}
-                        className="px-4 py-3 flex flex-col gap-3 flex-1"
+                        className="flex-1 flex items-center justify-center"
                       >
-                        {/* Stepper - Analyse active */}
-                        <div className="flex items-center justify-between px-1">
-                          {(selectedType === "Entreprise" ? ["Profil", "Info", "Site", "Eligib.", "Analyse", "Solut.", "Contact"] : ["Profil", "Site", "Analyse", "Solutions", "Contact"]).map((step, i) => {
-                            const isDone = selectedType === "Entreprise" ? i <= 3 : i <= 1;
-                            const isActive = selectedType === "Entreprise" ? i === 4 : i === 2;
-                            return (
-                              <div key={step} className="flex flex-col items-center gap-0.5">
-                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${isDone ? "bg-success text-success-foreground" : isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
-                                  {isDone ? "✓" : i + 1}
-                                </div>
-                                <span className={`text-[8px] ${isActive || isDone ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-
-                        {/* Analyse animation - NOORIA logo clignotant */}
-                        <div className="flex-1 flex flex-col items-center justify-center">
-                          <motion.img
-                            src={nooriaLogo}
-                            alt="NOORIA"
-                            animate={{ opacity: [1, 0.15, 1] }}
-                            transition={{ duration: 0.9, repeat: Infinity, ease: "easeInOut" }}
-                            className="w-40 object-contain select-none"
-                          />
-                        </div>
+                        {/* Analyse animation - NOORIA logo clignotant centré */}
+                        <motion.img
+                          src={nooriaLogo}
+                          alt="NOORIA"
+                          animate={{ opacity: [1, 0.1, 1] }}
+                          transition={{ duration: 0.9, repeat: Infinity, ease: "easeInOut" }}
+                          className="w-44 object-contain select-none"
+                        />
                       </motion.div>
                     ) : (
                       /* Solutions screen */
