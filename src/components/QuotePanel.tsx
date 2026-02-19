@@ -47,17 +47,21 @@ const QuotePanel = ({ open, onOpenChange, installerName, onSuccess }: QuotePanel
 
     setLoading(true);
     try {
-      const { data } = await supabase.from("quote_requests").insert({
+      const { data, error: dbError } = await supabase.from("quote_requests").insert({
         client_name: nom.trim().slice(0, 100),
         client_email: email.trim().slice(0, 255),
         client_phone: telephone.trim().slice(0, 20),
         city: ville.trim().slice(0, 100),
-        status: "pending",
+        status: "new",
       }).select("id").single();
-      setSubmitted(true);
+
+      if (dbError) throw dbError;
+
+      const id = data?.id ?? crypto.randomUUID();
       onOpenChange(false);
-      onSuccess?.(data?.id ?? "");
-    } catch {
+      onSuccess?.(id);
+    } catch (err: any) {
+      console.error("QuotePanel error:", err);
       setError("Une erreur est survenue. Veuillez réessayer.");
     } finally {
       setLoading(false);
