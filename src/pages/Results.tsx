@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import QuotePanel from "@/components/QuotePanel";
 
 const mockInstallers = [
   {
@@ -35,6 +36,8 @@ const Results = () => {
   const location = useLocation();
   const diagnostic = location.state?.diagnostic;
   const [compareList, setCompareList] = useState<number[]>([]);
+  const [quoteOpen, setQuoteOpen] = useState(false);
+  const [selectedInstaller, setSelectedInstaller] = useState<string | undefined>();
 
   const toggleCompare = (id: number) => {
     setCompareList((prev) =>
@@ -159,7 +162,11 @@ const Results = () => {
                     </div>
 
                     <div className="flex gap-2">
-                      <Button className="flex-1 gap-2 rounded-full" size="sm">
+                      <Button
+                        className="flex-1 gap-2 rounded-full"
+                        size="sm"
+                        onClick={() => { setSelectedInstaller(installer.name); setQuoteOpen(true); }}
+                      >
                         Demander un devis <ArrowRight className="h-3.5 w-3.5" />
                       </Button>
                       <Button
@@ -179,6 +186,7 @@ const Results = () => {
         </div>
       </main>
       <Footer />
+      <QuotePanel open={quoteOpen} onOpenChange={setQuoteOpen} installerName={selectedInstaller} />
     </div>
   );
 };
