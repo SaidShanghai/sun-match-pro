@@ -827,28 +827,7 @@ const Index = () => {
                                   setPhoneScreen("eligibilite");
                                 } else {
                                   setPhoneScreen("analyse");
-                                  setAnalyseProgress(0);
-                                  const labels = [
-                                    "Analyse de la consommation...",
-                                    "Calcul de l'ensoleillement...",
-                                    "Optimisation de la couverture...",
-                                    "Dimensionnement des panneaux...",
-                                    "Estimation des économies...",
-                                    "Finalisation du rapport...",
-                                  ];
-                                  let p = 0;
-                                  const startTime = Date.now();
-                                  const totalDuration = 8000;
-                                  const interval = setInterval(() => {
-                                    const elapsed = Date.now() - startTime;
-                                    p = Math.min((elapsed / totalDuration) * 100, 100);
-                                    if (p >= 100) {
-                                      clearInterval(interval);
-                                      setTimeout(() => setPhoneScreen("solutions"), 600);
-                                    }
-                                    setAnalyseProgress(Math.round(p));
-                                    setAnalyseLabel(labels[Math.min(Math.floor(p / 18), labels.length - 1)]);
-                                  }, 50);
+                                  setTimeout(() => setPhoneScreen("solutions"), 10000);
                                 }
                               }}
                               disabled={!siteValid}
@@ -864,28 +843,7 @@ const Index = () => {
                         key="eligibilite"
                         onContinue={() => {
                           setPhoneScreen("analyse");
-                          setAnalyseProgress(0);
-                          const labels = [
-                            "Analyse de la consommation...",
-                            "Calcul de l'ensoleillement...",
-                            "Optimisation de la couverture...",
-                            "Dimensionnement des panneaux...",
-                            "Estimation des économies...",
-                            "Finalisation du rapport...",
-                          ];
-                          let p = 0;
-                          const startTime = Date.now();
-                          const totalDuration = 8000;
-                          const interval = setInterval(() => {
-                            const elapsed = Date.now() - startTime;
-                            p = Math.min((elapsed / totalDuration) * 100, 100);
-                            if (p >= 100) {
-                              clearInterval(interval);
-                              setTimeout(() => setPhoneScreen("solutions"), 600);
-                            }
-                            setAnalyseProgress(Math.round(p));
-                            setAnalyseLabel(labels[Math.min(Math.floor(p / 18), labels.length - 1)]);
-                          }, 50);
+                          setTimeout(() => setPhoneScreen("solutions"), 10000);
                         }}
                       />
                     ) : phoneScreen === "analyse" ? (
@@ -914,36 +872,15 @@ const Index = () => {
                           })}
                         </div>
 
-                        {/* Analyse animation */}
-                        <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center relative">
-                          <motion.div
-                            animate={{
-                              x: [-80, 80],
-                              y: [-100, 100],
-                            }}
-                            transition={{ duration: 4, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-                            className="absolute top-1/2 left-1/2 z-0"
+                        {/* Analyse animation - NOORIA clignotant */}
+                        <div className="flex-1 flex flex-col items-center justify-center">
+                          <motion.span
+                            animate={{ opacity: [1, 0, 1] }}
+                            transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
+                            className="text-4xl font-black tracking-widest text-primary select-none"
                           >
-                            <div className="w-12 h-12 -ml-6 -mt-6 bg-primary/20 rounded-full flex items-center justify-center" style={{ boxShadow: "0 0 30px hsl(var(--primary) / 0.4)" }}>
-                              <Sun className="w-7 h-7 text-primary" />
-                            </div>
-                          </motion.div>
-                          <div className="z-10 mt-auto w-full space-y-2">
-                            <div>
-                              <h4 className="text-sm font-bold">Analyse en cours…</h4>
-                              <p className="text-[10px] text-muted-foreground mt-1">{analyseLabel}</p>
-                            </div>
-                            <div className="w-full space-y-1">
-                              <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                                <motion.div
-                                  className="h-full bg-primary rounded-full"
-                                  animate={{ width: `${analyseProgress}%` }}
-                                  transition={{ duration: 0.4 }}
-                                />
-                              </div>
-                              <span className="text-[10px] font-semibold text-foreground">{analyseProgress}%</span>
-                            </div>
-                          </div>
+                            NOORIA
+                          </motion.span>
                         </div>
                       </motion.div>
                     ) : (
