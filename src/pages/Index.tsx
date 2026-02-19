@@ -92,7 +92,7 @@ const HeroRotatingTitle = ({ entreprise = false }: { entreprise?: boolean }) => 
 };
 
 const Index = () => {
-  const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form" | "informations" | "site" | "eligibilite" | "analyse" | "solutions">("intro");
+  const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form" | "informations" | "site" | "eligibilite" | "analyse" | "solutions" | "contact" | "merci">("intro");
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [objectif, setObjectif] = useState<"facture" | "autonomie" | null>(null);
   const [typeBatiment, setTypeBatiment] = useState<"Industriel" | "Tertiaire" | null>(null);
