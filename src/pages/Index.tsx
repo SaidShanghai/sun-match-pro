@@ -676,10 +676,10 @@ const Index = () => {
                         })()}
                         </div>
                         {/* CTA — épinglé en bas, hors scroll */}
-                        <div className="px-4 pb-3 pt-2 shrink-0">
+                        <div className="px-4 pb-2.5 pt-2 shrink-0">
                           <button
                             onClick={() => setPhoneScreen("site")}
-                            className="w-full rounded-full text-[10px] h-9 font-semibold flex items-center justify-center gap-1.5 transition-colors bg-primary text-primary-foreground hover:bg-primary/90"
+                            className="w-full rounded-full text-[10px] h-[36px] font-semibold flex items-center justify-center gap-1.5 transition-colors bg-primary text-primary-foreground hover:bg-primary/90"
                           >
                             Continuer <ArrowRight className="w-3 h-3" />
                           </button>
