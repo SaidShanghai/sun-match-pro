@@ -872,15 +872,15 @@ const Index = () => {
                           })}
                         </div>
 
-                        {/* Analyse animation - NOORIA clignotant */}
+                        {/* Analyse animation - NOORIA logo clignotant */}
                         <div className="flex-1 flex flex-col items-center justify-center">
-                          <motion.span
-                            animate={{ opacity: [1, 0, 1] }}
-                            transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
-                            className="text-4xl font-black tracking-widest text-primary select-none"
-                          >
-                            NOORIA
-                          </motion.span>
+                          <motion.img
+                            src={nooriaLogo}
+                            alt="NOORIA"
+                            animate={{ opacity: [1, 0.15, 1] }}
+                            transition={{ duration: 0.9, repeat: Infinity, ease: "easeInOut" }}
+                            className="w-40 object-contain select-none"
+                          />
                         </div>
                       </motion.div>
                     ) : (
