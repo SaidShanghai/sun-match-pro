@@ -993,29 +993,31 @@ const Index = () => {
                               const ref = quoteRef ?? crypto.randomUUID();
                               setInvoiceUploading(true);
                               try {
-                                const ext = file.name.split(".").pop();
-                                const filePath = `${ref}.${ext}`;
-                                const { error: uploadError } = await supabase.storage
-                                  .from("client-invoices")
-                                  .upload(filePath, file, { upsert: true });
-                                if (uploadError) throw uploadError;
+                                // Convert file to base64 and send via edge function (uses service role — no RLS issue)
+                                const reader = new FileReader();
+                                const fileBase64 = await new Promise<string>((resolve, reject) => {
+                                  reader.onload = () => resolve(reader.result as string);
+                                  reader.onerror = reject;
+                                  reader.readAsDataURL(file);
+                                });
 
-                                // Confirm upload to user immediately
-                                setInvoiceUploaded(true);
-
-                                // Try to send email notification (best-effort)
-                                supabase.functions.invoke("send-invoice-email", {
+                                const { error: fnError } = await supabase.functions.invoke("send-invoice-email", {
                                   body: {
-                                    filePath,
+                                    fileBase64,
+                                    fileType: file.type,
                                     fileName: file.name,
                                     quoteRef: ref.slice(0, 8).toUpperCase(),
-                                    clientName: contactNom,
-                                    clientEmail: contactEmail,
+                                    clientName: contactNom || "Client",
+                                    clientEmail: contactEmail || "",
                                   },
-                                }).catch(() => {/* silent */});
+                                });
+
+                                if (fnError) throw fnError;
+                                setInvoiceUploaded(true);
 
                               } catch (err: any) {
-                                toast({ title: "Erreur lors de l'envoi", description: "Veuillez réessayer.", variant: "destructive" });
+                                console.error("Invoice upload error:", err);
+                                toast({ title: "Erreur lors de l'envoi", description: err?.message ?? "Veuillez réessayer.", variant: "destructive" });
                               } finally {
                                 setInvoiceUploading(false);
                                 e.target.value = "";

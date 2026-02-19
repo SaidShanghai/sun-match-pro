@@ -12,12 +12,24 @@ serve(async (req) => {
   }
 
   try {
-    const { filePath, fileName, quoteRef, clientName, clientEmail } = await req.json();
+    const { fileBase64, fileType, fileName, quoteRef, clientName, clientEmail } = await req.json();
 
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
+
+    // Decode base64 and upload with service role (bypasses RLS)
+    const base64Data = fileBase64.split(",")[1] ?? fileBase64;
+    const fileBytes = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+    const ext = fileName.split(".").pop() ?? "pdf";
+    const filePath = `${quoteRef}-${Date.now()}.${ext}`;
+
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from("client-invoices")
+      .upload(filePath, fileBytes, { contentType: fileType, upsert: true });
+
+    if (uploadError) throw uploadError;
 
     // Generate a signed URL valid for 7 days
     const { data: signedData, error: signedError } = await supabaseAdmin.storage
@@ -28,40 +40,35 @@ serve(async (req) => {
 
     const signedUrl = signedData.signedUrl;
 
-    // Send email via Resend
+    // Send email via Resend (best-effort)
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-    if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY not configured");
-
-    const emailRes = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: "NOORIA <noreply@sungpt.ma>",
-        to: ["contact@sungpt.ma"],
-        subject: `📄 Nouvelle facture — ${clientName} (Réf. #${quoteRef})`,
-        html: `
-          <h2>Nouvelle facture téléversée</h2>
-          <p><strong>Client :</strong> ${clientName}</p>
-          <p><strong>Email :</strong> ${clientEmail}</p>
-          <p><strong>Référence :</strong> #${quoteRef}</p>
-          <p><strong>Fichier :</strong> ${fileName}</p>
-          <br/>
-          <p>
-            <a href="${signedUrl}" style="background:#f97316;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold;">
-              📥 Télécharger la facture
-            </a>
-          </p>
-          <p style="color:#888;font-size:12px;">Ce lien expire dans 7 jours.</p>
-        `,
-      }),
-    });
-
-    if (!emailRes.ok) {
-      const err = await emailRes.text();
-      throw new Error(`Resend error: ${err}`);
+    if (RESEND_API_KEY) {
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "NOORIA <noreply@sungpt.ma>",
+          to: ["contact@sungpt.ma"],
+          subject: `📄 Nouvelle facture — ${clientName} (Réf. #${quoteRef})`,
+          html: `
+            <h2>Nouvelle facture téléversée</h2>
+            <p><strong>Client :</strong> ${clientName}</p>
+            <p><strong>Email :</strong> ${clientEmail}</p>
+            <p><strong>Référence :</strong> #${quoteRef}</p>
+            <p><strong>Fichier :</strong> ${fileName}</p>
+            <br/>
+            <p>
+              <a href="${signedUrl}" style="background:#f97316;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold;">
+                📥 Télécharger la facture
+              </a>
+            </p>
+            <p style="color:#888;font-size:12px;">Ce lien expire dans 7 jours.</p>
+          `,
+        }),
+      }).catch(() => {/* email optional */});
     }
 
     return new Response(JSON.stringify({ success: true }), {
