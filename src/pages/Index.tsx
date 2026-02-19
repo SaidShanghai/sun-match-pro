@@ -1016,11 +1016,16 @@ const Index = () => {
                             }}
                           />
                           {invoiceUploaded ? (
-                            <div className="w-full rounded-2xl bg-green-50 border border-green-200 px-3 py-3 flex flex-col items-center gap-1 text-center">
-                              <span className="text-xl">✅</span>
-                              <p className="text-[10px] font-bold text-green-700">Facture envoyée avec succès !</p>
-                              <p className="text-[9px] text-green-600/80 leading-relaxed">Nous avons bien reçu votre document.<br />Notre équipe l'analyse avant de vous rappeler.</p>
-                            </div>
+                            <motion.div
+                              initial={{ scale: 0.8, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{ type: "spring", stiffness: 260, damping: 18 }}
+                              className="w-full rounded-2xl bg-green-500 px-4 py-5 flex flex-col items-center gap-2 text-center shadow-lg"
+                            >
+                              <span className="text-4xl">✅</span>
+                              <p className="text-[15px] font-black text-white tracking-tight">Facture envoyée !</p>
+                              <p className="text-[10px] text-white/80 leading-relaxed">Notre équipe va l'analyser<br />avant de vous rappeler.</p>
+                            </motion.div>
                           ) : (
                             <button
                               onClick={() => !invoiceUploading && invoiceInputRef.current?.click()}
