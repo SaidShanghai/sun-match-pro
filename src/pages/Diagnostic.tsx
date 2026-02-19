@@ -659,7 +659,7 @@ const Diagnostic = () => {
                       { id: "d1", text: "Le projet n'a pas encore commencé" },
                       { id: "d2", text: "L'installation solaire photovoltaïque est nouvelle (GreenField)" },
                       { id: "d3", text: "L'installation est sur toiture (ou shelter) et connectée au réseau" },
-                      { id: "d4", text: "La capacité installée est inférieure à 3 MW" },
+                      { id: "d4", text: "La capacité installée est inférieure à 3 MW", anyOk: true },
                       { id: "d5", text: "Le bénéficiaire n'a reçu et ne recevra pas d'autres incitations financières autres que les revenus générés par les crédits carbone issus de son projet solaire" },
                       { id: "d6", text: "Le bénéficiaire déclare être le propriétaire de l'installation solaire et confirme son engagement à transférer les réductions d'émissions associées au projet, dans le cadre d'un programme de valorisation carbone." },
                     ].map(d => (
@@ -672,7 +672,7 @@ const Diagnostic = () => {
                               onClick={() => setEligDecl(prev => ({ ...prev, [d.id]: opt }))}
                               className={`flex-1 py-2 rounded-xl text-sm font-semibold border-2 transition-colors ${
                                 eligDecl[d.id] === opt
-                                  ? opt === "Oui"
+                                  ? (opt === "Oui" || d.anyOk)
                                     ? "bg-emerald-100 border-emerald-400 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
                                     : "bg-red-100 border-red-400 text-red-800 dark:bg-red-900/30 dark:text-red-300"
                                   : "border-border text-foreground hover:border-primary/50"
@@ -686,16 +686,18 @@ const Diagnostic = () => {
                     ))}
                   </div>
 
-                  <button
-                    onClick={() => {
-                      const allOui = ["d1","d2","d3","d4","d5","d6"].every(id => eligDecl[id] === "Oui");
-                      if (allOui) { setScreen("analyse"); setTimeout(() => setScreen("solutions"), 4000); }
-                    }}
-                    disabled={!["d1","d2","d3","d4","d5","d6"].every(id => eligDecl[id] === "Oui")}
-                    className={`w-full rounded-2xl h-14 font-semibold text-base flex items-center justify-center gap-2 transition-colors ${["d1","d2","d3","d4","d5","d6"].every(id => eligDecl[id] === "Oui") ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
-                  >
-                    Analyser mon projet <ArrowRight className="w-4 h-4" />
-                  </button>
+                  {(() => {
+                    const canContinue = ["d1","d2","d3","d5","d6"].every(id => eligDecl[id] === "Oui") && eligDecl["d4"] !== null;
+                    return (
+                      <button
+                        onClick={() => { if (canContinue) { setScreen("analyse"); setTimeout(() => setScreen("solutions"), 4000); } }}
+                        disabled={!canContinue}
+                        className={`w-full rounded-2xl h-14 font-semibold text-base flex items-center justify-center gap-2 transition-colors ${canContinue ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
+                      >
+                        Analyser mon projet <ArrowRight className="w-4 h-4" />
+                      </button>
+                    );
+                  })()}
                 </motion.div>
               )}
 
