@@ -1,105 +1,228 @@
-
-import { motion } from "framer-motion";
-import { Sun, ClipboardCheck, BarChart3, Shield, Zap, ArrowRight, Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import nooriaLogo from "@/assets/nooria-logo.jpg";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Sun, Zap, Shield, ArrowRight, Star, MapPin, FileText,
+  ChevronLeft, TrendingDown, Battery, MapPinned, ChevronDown,
+  Home, Building2, Store, Warehouse,
+} from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import QuotePanel from "@/components/QuotePanel";
+import EligibiliteScreen from "@/components/EligibiliteScreen";
 
+type Screen =
+  | "landing"
+  | "type"
+  | "form"
+  | "informations"
+  | "site"
+  | "eligibilite"
+  | "analyse"
+  | "solutions"
+  | "merci";
 
-const features = [
-  {
-    icon: ClipboardCheck,
-    title: "Analyse personnalisée",
-    description: "On étudie votre toit, votre orientation, votre conso… Bref, tout ce qui compte pour un projet solaire réussi.",
-  },
-  {
-    icon: Sun,
-    title: "Potentiel solaire",
-    description: "On calcule combien de kWh votre toiture peut produire chaque année. C'est souvent plus que ce qu'on imagine !",
-  },
-  {
-    icon: BarChart3,
-    title: "Économies estimées",
-    description: "Combien vous économisez sur votre facture ? Quel retour sur investissement ? On vous dit tout, sans surprise.",
-  },
-  {
-    icon: Shield,
-    title: "Installateurs vérifiés",
-    description: "Nos partenaires sont triés sur le volet : certifications, documents légaux, références… Zéro improvisation.",
-  },
+const villes = [
+  "Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir",
+  "Meknès", "Oujda", "Kénitra", "Tétouan", "Safi", "El Jadida",
+  "Nador", "Béni Mellal", "Mohammedia",
+];
+
+const projetSuggestions = [
+  "Usine textile, 380V, 3 shifts/jour, financement via programme TATWIR souhaité",
+  "Hôtel 4 étoiles, 120 chambres, besoin eau chaude sanitaire + climatisation centrale",
+  "Entrepôt logistique, pic de conso 08h–18h, objectif réduction facture ONEE 60%",
+  "Bâtiment industriel de 2 000 m², consommation électrique élevée en journée",
+];
+
+const getUsages = (type: string | null) => {
+  if (type === "Maison") return [
+    { icon: "❄️", label: "Climatisation" }, { icon: "🔥", label: "Chauffage" },
+    { icon: "🚿", label: "Chauffe-eau" }, { icon: "🚗", label: "Véhicule élec." },
+    { icon: "🏊", label: "Piscine" }, { icon: "🍳", label: "Cuisine élec." },
+    { icon: "🧺", label: "Lave-linge" }, { icon: "💻", label: "Informatique" },
+    { icon: "🧊", label: "Frigo/Congél." },
+  ];
+  if (type === "Appartement") return [
+    { icon: "❄️", label: "Climatisation" }, { icon: "🔥", label: "Chauffage" },
+    { icon: "🚿", label: "Chauffe-eau" }, { icon: "🚗", label: "Véhicule élec." },
+    { icon: "🍳", label: "Cuisine élec." }, { icon: "🧺", label: "Lave-linge" },
+    { icon: "💻", label: "Informatique" }, { icon: "🧊", label: "Frigo/Congél." },
+  ];
+  if (type === "Entreprise") return [
+    { icon: "❄️", label: "Climatisation" }, { icon: "🔥", label: "Chauffage" },
+    { icon: "🚿", label: "Chauffe-eau" }, { icon: "🚗", label: "Véhicule élec." },
+    { icon: "🍳", label: "Cuisine élec." }, { icon: "💻", label: "Informatique" },
+    { icon: "🧊", label: "Frigo/Congél." }, { icon: "❄️", label: "Chambre froide" },
+    { icon: "💨", label: "Compresseur air" }, { icon: "💡", label: "Éclairage indus." },
+    { icon: "⚙️", label: "Machines-outils" },
+  ];
+  return [
+    { icon: "❄️", label: "Climatisation" }, { icon: "🔥", label: "Chauffage" },
+    { icon: "🚿", label: "Chauffe-eau" }, { icon: "🚗", label: "Véhicule élec." },
+    { icon: "🏊", label: "Piscine" }, { icon: "🍳", label: "Cuisine élec." },
+    { icon: "🧺", label: "Lave-linge" }, { icon: "💻", label: "Informatique" },
+    { icon: "🧊", label: "Frigo/Congél." }, { icon: "❄️", label: "Chambre froide" },
+    { icon: "💨", label: "Compresseur air" },
+  ];
+};
+
+const surfaces = [
+  { m2: "22 m²", pan: "8 pan.", label: "M1" },
+  { m2: "44 m²", pan: "16 pan.", label: "M2" },
+  { m2: "66 m²", pan: "24 pan.", label: "M3/T1" },
+  { m2: "132 m²", pan: "48 pan.", label: "T2" },
+  { m2: "198 m²", pan: "72 pan.", label: "T3" },
+  { m2: "264 m²", pan: "96 pan.", label: "T4" },
+  { m2: "330 m²", pan: "120 pan.", label: "T5" },
+  { m2: "396 m²", pan: "144 pan.", label: "T5+" },
 ];
 
 const Diagnostic = () => {
+  const [screen, setScreen] = useState<Screen>("landing");
+  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [objectif, setObjectif] = useState<"facture" | "autonomie" | null>(null);
+  const [typeBatiment, setTypeBatiment] = useState<"Industriel" | "Tertiaire" | null>(null);
+  const [conso, setConso] = useState("");
+  const [facture, setFacture] = useState("");
+  const [puissanceSouscrite, setPuissanceSouscrite] = useState("");
+  const [typeAbonnement, setTypeAbonnement] = useState<"Basse Tension" | "Moyenne Tension" | "Haute Tension" | null>(null);
+  const [ville, setVille] = useState("Casablanca");
+  const [villeOpen, setVilleOpen] = useState(false);
+  const [villeSearch, setVilleSearch] = useState("");
+  const villeRef = useRef<HTMLDivElement>(null);
+  const [panelAccess, setPanelAccess] = useState<string[]>([]);
+  const [selectedSurface, setSelectedSurface] = useState<string | null>(null);
+  const [selectedUsages, setSelectedUsages] = useState<string[]>([]);
+  const [descriptionProjet, setDescriptionProjet] = useState("");
+  const [adresseProjet, setAdresseProjet] = useState("");
+  const [dateDebut, setDateDebut] = useState("");
+  const [dateFin, setDateFin] = useState("");
+  const [pvExistante, setPvExistante] = useState<"Oui" | "Non" | null>(null);
+  const [extensionInstall, setExtensionInstall] = useState<"Oui" | "Non" | null>(null);
+  const [subventionRecue, setSubventionRecue] = useState<"Oui" | "Non" | null>(null);
+  const [quoteOpen, setQuoteOpen] = useState(false);
+  const [quoteRef, setQuoteRef] = useState<string | null>(null);
+  const [invoiceUploading, setInvoiceUploading] = useState(false);
+  const [invoiceUploaded, setInvoiceUploaded] = useState(false);
+  const invoiceInputRef = useRef<HTMLInputElement | null>(null);
+  const [contactNom, setContactNom] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const { toast } = useToast();
+  const [projetPlaceholderIndex, setProjetPlaceholderIndex] = useState(0);
+  const [projetPlaceholderVisible, setProjetPlaceholderVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProjetPlaceholderVisible(false);
+      setTimeout(() => {
+        setProjetPlaceholderIndex(prev => (prev + 1) % projetSuggestions.length);
+        setProjetPlaceholderVisible(true);
+      }, 400);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (villeRef.current && !villeRef.current.contains(e.target as Node)) {
+        setVilleOpen(false);
+        setVilleSearch("");
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const filteredVilles = villes.filter(v => v.toLowerCase().includes(villeSearch.toLowerCase()));
+
+  const goBack = () => {
+    const map: Record<Screen, Screen> = {
+      landing: "landing",
+      type: "landing",
+      form: "type",
+      informations: "form",
+      site: selectedType === "Entreprise" ? "informations" : "form",
+      eligibilite: "site",
+      analyse: "eligibilite",
+      solutions: "analyse",
+      merci: "solutions",
+    };
+    setScreen(map[screen] ?? "landing");
+  };
+
+  const steps = selectedType === "Entreprise"
+    ? ["Profil", "Info", "Site", "Eligib.", "Analyse", "Solut.", "Contact"]
+    : ["Profil", "Site", "Analyse", "Solutions", "Contact"];
+
+  const getStepIndex = (): number => {
+    if (selectedType === "Entreprise") {
+      return { form: 0, informations: 1, site: 2, eligibilite: 3, analyse: 4, solutions: 5, merci: 6 }[screen] ?? -1;
+    }
+    return { form: 0, site: 1, analyse: 2, solutions: 3, merci: 4 }[screen] ?? -1;
+  };
+
+  const isInForm = !["landing", "type"].includes(screen);
+
+  const Stepper = () => {
+    if (!isInForm) return null;
+    const activeIndex = getStepIndex();
+    return (
+      <div className="flex items-center justify-between px-2 py-3 border-b border-border/50">
+        {steps.map((step, i) => {
+          const isDone = i < activeIndex;
+          const isActive = i === activeIndex;
+          return (
+            <div key={step} className="flex flex-col items-center gap-0.5">
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-colors ${isDone ? "bg-success text-success-foreground" : isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
+                {isDone ? "✓" : i + 1}
+              </div>
+              <span className={`text-[9px] ${isActive || isDone ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      {/* Hero — same layout as Index */}
-      <section className="relative min-h-[90vh] flex items-center overflow-visible pt-16">
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5" />
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-2xl" />
-
-        <div className="max-w-[1600px] w-full mx-auto px-6 relative z-10">
-          <div className="grid lg:grid-cols-[7fr_3fr] gap-12 items-center overflow-visible">
+      {screen === "landing" ? (
+        /* ── Landing page ── */
+        <main className="flex-1 flex items-center justify-center pt-20 pb-16">
+          <div className="container mx-auto px-4 max-w-3xl">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-8 overflow-visible"
+              transition={{ duration: 0.5 }}
+              className="text-center space-y-8"
             >
-
-              <h1 className="font-black leading-[1.1] overflow-visible whitespace-nowrap">
-                <span className="block" style={{ fontSize: "60px", marginLeft: "2cm" }}>Vous êtes à</span>
-                <span className="block text-gradient" style={{ fontSize: "112px" }}>3 minutes</span>
-                <span className="block text-center" style={{ fontSize: "100px" }}>de grosses</span>
-                <span className="block text-gradient" style={{ fontSize: "160px" }}>économies<span className="relative inline-block"> !
-                  <svg className="absolute left-1/2 -translate-x-1/2 w-[202px] h-[202px] text-primary rotate-[20deg]" style={{ top: "-5cm" }} viewBox="0 0 110 125" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="55" cy="68" r="43" strokeWidth="3" />
-                    <circle cx="55" cy="68" r="48" strokeWidth="1" opacity="0.15" />
-                    <line x1="55" y1="25" x2="55" y2="12" strokeWidth="5" />
-                    <line x1="47" y1="12" x2="63" y2="12" strokeWidth="3" />
-                    <line x1="82" y1="35" x2="90" y2="27" strokeWidth="3" />
-                    <line x1="90" y1="27" x2="94" y2="31" strokeWidth="3" />
-                    {[...Array(12)].map((_, i) => {
-                      const angle = (i * 30 - 90) * (Math.PI / 180);
-                      return <line key={i} x1={55 + 37 * Math.cos(angle)} y1={68 + 37 * Math.sin(angle)} x2={55 + 41 * Math.cos(angle)} y2={68 + 41 * Math.sin(angle)} strokeWidth={i % 3 === 0 ? 3.5 : 1.5} />;
-                    })}
-                    <circle cx="55" cy="52" r="9" strokeWidth="1.5" />
-                    <line x1="55" y1="52" x2="55" y2="45" strokeWidth="1" className="origin-[55px_52px] animate-spin" style={{ animationDuration: "3s" }} />
-                    <circle cx="55" cy="84" r="9" strokeWidth="1.5" />
-                    <line x1="55" y1="84" x2="55" y2="77" strokeWidth="1" className="origin-[55px_84px] animate-spin" style={{ animationDuration: "6s" }} />
-                    <circle cx="55" cy="68" r="5" fill="currentColor" />
-                    <line x1="55" y1="68" x2="55" y2="45" strokeWidth="2.5" opacity="0.4" />
-                    <line x1="55" y1="68" x2="55" y2="32" strokeWidth="1.5" className="origin-[55px_68px] animate-spin" style={{ animationDuration: "4s" }} stroke="hsl(var(--primary))" />
-                  </svg>
-                </span></span>
-              </h1>
-
-              <p className="text-xl text-muted-foreground max-w-xl text-right ml-auto">
-                Particulier ou entreprise, nous vous accompagnons de A à Z : diagnostic sur mesure, dimensionnement, installation par des <strong>partenaires certifiés</strong>.
-                <br />Pour les professionnels : montage des dossiers <strong>SR500</strong> et <strong>TATWIR</strong> – Croissance Verte, avec appui financement et conformité technique.
-              </p>
-
-              <div className="flex flex-col sm:flex-row items-center gap-4">
-                <Button asChild size="lg" className="group h-14 px-8 text-base">
-                  <Link to="/diagnostic">
-                    Lancer mon diagnostic
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </Button>
-                <span className="text-sm text-muted-foreground font-medium">Gratuit • Sans engagement • Résultat instantané</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                <span className="text-sm font-medium text-primary">Diagnostic solaire gratuit</span>
               </div>
 
-              {/* Trust indicators */}
-              <div className="flex items-center gap-8 pt-8 border-t border-border">
+              <div className="space-y-4">
+                <h1 className="text-5xl lg:text-7xl font-black leading-tight">
+                  Votre diagnostic<br />
+                  <span className="text-gradient">en 3 minutes</span>
+                </h1>
+                <p className="text-xl text-muted-foreground max-w-xl mx-auto">
+                  Particulier ou entreprise, obtenez une analyse solaire sur mesure et des installateurs certifiés près de chez vous.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-6 py-4 border-y border-border">
                 <div className="text-center">
                   <div className="text-3xl font-bold">15K+</div>
                   <div className="text-sm text-muted-foreground">Diagnostics</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold">500+</div>
+                  <div className="text-3xl font-bold">30+</div>
                   <div className="text-sm text-muted-foreground">Installateurs</div>
                 </div>
                 <div className="flex items-center gap-1">
@@ -108,199 +231,520 @@ const Diagnostic = () => {
                   <span className="text-sm text-muted-foreground">/5</span>
                 </div>
               </div>
-            </motion.div>
 
-          </div>
-        </div>
-      </section>
-
-      {/* Features — same card grid as Index */}
-      <section className="py-24 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl font-bold mb-4">Comment ça marche ?</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Un diagnostic complet en quelques étapes simples.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="group p-8 bg-background rounded-2xl border border-border hover:border-primary/30 hover:shadow-xl transition-all"
+              <button
+                onClick={() => setScreen("type")}
+                className="inline-flex items-center gap-3 bg-primary text-primary-foreground h-16 px-10 rounded-2xl text-lg font-semibold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
               >
-                <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-                  <feature.icon className="w-7 h-7 text-primary" />
+                Lancer l'analyse solaire <ArrowRight className="w-5 h-5" />
+              </button>
+
+              <p className="text-sm text-muted-foreground">Gratuit • Sans engagement • Résultat instantané</p>
+            </motion.div>
+          </div>
+        </main>
+      ) : (
+        /* ── Multi-step form ── */
+        <main className="flex-1 flex flex-col pt-16">
+          {/* Top bar with back + stepper */}
+          <div className="sticky top-16 z-30 bg-background border-b border-border">
+            <div className="container mx-auto px-4 max-w-2xl">
+              <div className="flex items-center gap-3 py-3">
+                <button onClick={goBack} className="p-2 rounded-full hover:bg-muted transition-colors shrink-0">
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <div className="flex-1 flex items-center justify-between">
+                  {isInForm && steps.map((step, i) => {
+                    const activeIndex = getStepIndex();
+                    const isDone = i < activeIndex;
+                    const isActive = i === activeIndex;
+                    return (
+                      <div key={step} className="flex flex-col items-center gap-0.5">
+                        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold transition-colors ${isDone ? "bg-success text-success-foreground" : isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
+                          {isDone ? "✓" : i + 1}
+                        </div>
+                        <span className={`text-[10px] ${isActive || isDone ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
+                      </div>
+                    );
+                  })}
+                  {screen === "type" && (
+                    <span className="text-sm font-medium text-muted-foreground">Choisissez votre profil</span>
+                  )}
                 </div>
-                <h3 className="text-lg font-bold mb-2">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA — same as Index */}
-      <section className="py-24 bg-foreground text-background">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="space-y-6"
-            >
-              <h2 className="text-4xl lg:text-5xl font-bold">
-                Prêt à réduire votre facture ?
-              </h2>
-              <p className="text-xl text-background/70 max-w-lg">
-                Rejoignez des milliers de personnes qui ont fait le choix du solaire
-                avec NOORIA.
-              </p>
-              <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 h-14 px-8 text-base">
-                <Link to="/diagnostic">
-                  <Sun className="w-5 h-5 mr-2" />
-                  Diagnostic gratuit
-                </Link>
-              </Button>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="grid grid-cols-2 gap-6"
-            >
-              <div className="p-6 bg-background/5 rounded-2xl">
-                <Zap className="w-10 h-10 mb-4" />
-                <div className="text-3xl font-bold">3 min</div>
-                <div className="text-background/70">Temps du diagnostic</div>
-              </div>
-              <div className="p-6 bg-background/5 rounded-2xl">
-                <Sun className="w-10 h-10 mb-4" />
-                <div className="text-3xl font-bold">100%</div>
-                <div className="text-background/70">Gratuit</div>
-              </div>
-              <div className="p-6 bg-background/5 rounded-2xl">
-                <BarChart3 className="w-10 h-10 mb-4" />
-                <div className="text-3xl font-bold">70%</div>
-                <div className="text-background/70">Économies possibles</div>
-              </div>
-              <div className="p-6 bg-background/5 rounded-2xl">
-                <Star className="w-10 h-10 mb-4" />
-                <div className="text-3xl font-bold">4.9</div>
-                <div className="text-background/70">Note moyenne</div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* App Download Section */}
-      <section className="py-24 bg-background">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex flex-col lg:flex-row items-center justify-between gap-12 max-w-5xl mx-auto"
-          >
-            <div className="space-y-6 text-center lg:text-left">
-              <h2 className="text-4xl font-bold">
-                Téléchargez l'app <span className="text-gradient">NOORIA</span>
-              </h2>
-              <p className="text-xl text-muted-foreground max-w-md">
-                Suivez votre diagnostic, vos économies et votre installation directement depuis votre smartphone.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                {/* Apple App Store */}
-                <a
-                  href="#"
-                  className="flex items-center gap-3 bg-foreground text-background px-5 py-3 rounded-xl hover:opacity-90 transition-opacity"
-                >
-                  <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                  </svg>
-                  <div className="text-left">
-                    <div className="text-xs opacity-70">Télécharger sur</div>
-                    <div className="text-base font-semibold leading-tight">App Store</div>
-                  </div>
-                </a>
-
-                {/* Google Play */}
-                <a
-                  href="#"
-                  className="flex items-center gap-3 bg-foreground text-background px-5 py-3 rounded-xl hover:opacity-90 transition-opacity"
-                >
-                  <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3.18 23.76c.37.2.8.19 1.2-.03l12.7-7.34-2.75-2.75-11.15 10.12zM.47 1.6C.18 1.97 0 2.5 0 3.14v17.72c0 .64.18 1.17.47 1.54l.08.08 9.92-9.92v-.23L.55 1.52.47 1.6zM19.84 10.56l-2.61-1.51-3.07 3.07 3.07 3.07 2.63-1.52c.75-.43.75-1.14-.02-1.11zM4.38.27L17.08 7.6l-2.75 2.75L3.18.23c.4-.22.83-.2 1.2.04z"/>
-                  </svg>
-                  <div className="text-left">
-                    <div className="text-xs opacity-70">Disponible sur</div>
-                    <div className="text-base font-semibold leading-tight">Google Play</div>
-                  </div>
-                </a>
               </div>
             </div>
+          </div>
 
-            {/* Phone mockup */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="relative"
-            >
-              <div className="w-52 h-96 bg-foreground rounded-[2.5rem] border-4 border-foreground shadow-2xl flex flex-col overflow-hidden relative">
-                {/* Phone notch */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-foreground rounded-b-2xl z-10" />
-                {/* Screen */}
-                <div className="flex-1 bg-background m-2 mt-6 rounded-[2rem] p-4 flex flex-col gap-3">
-                  <div className="text-xs font-bold text-primary">NOORIA</div>
-                  <div className="h-2 bg-primary/20 rounded-full w-3/4" />
-                  <div className="h-2 bg-muted rounded-full w-1/2" />
-                  <div className="mt-2 p-3 bg-primary/10 rounded-xl">
-                    <div className="text-xs font-semibold mb-1">Économies estimées</div>
-                    <div className="text-xl font-black text-primary">2 400 DH/an</div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="p-2 bg-muted/50 rounded-lg">
-                      <div className="text-[9px] text-muted-foreground">Production</div>
-                      <div className="text-xs font-bold">4.2 kWc</div>
-                    </div>
-                    <div className="p-2 bg-muted/50 rounded-lg">
-                      <div className="text-[9px] text-muted-foreground">Rentabilité</div>
-                      <div className="text-xs font-bold">5 ans</div>
-                    </div>
-                  </div>
-                  <div className="mt-auto h-8 bg-primary rounded-full flex items-center justify-center">
-                    <span className="text-[10px] text-primary-foreground font-bold">Lancer mon diagnostic</span>
-                  </div>
-                </div>
-                {/* Home indicator */}
-                <div className="flex justify-center pb-2">
-                  <div className="w-16 h-1 bg-background/30 rounded-full" />
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
+          <div className="flex-1 container mx-auto px-4 max-w-2xl py-8">
+            <AnimatePresence mode="wait">
 
-      <Footer />
+              {/* ── TYPE ── */}
+              {screen === "type" && (
+                <motion.div key="type" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }} className="space-y-8">
+                  <div>
+                    <h2 className="text-3xl font-black">Vous êtes…</h2>
+                    <p className="text-muted-foreground mt-1">Sélectionnez votre profil pour un diagnostic personnalisé</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {[
+                      { icon: Home, label: "Maison", desc: "Résidentiel individuel" },
+                      { icon: Building2, label: "Appartement", desc: "Copropriété / immeuble" },
+                      { icon: Store, label: "Entreprise", desc: "PME, industrie, tertiaire" },
+                      { icon: Warehouse, label: "Ferme", desc: "Agriculture / irrigation" },
+                    ].map(({ icon: Icon, label, desc }) => (
+                      <button
+                        key={label}
+                        onClick={() => { setSelectedType(label); setScreen("form"); }}
+                        className="flex flex-col items-center gap-3 p-8 rounded-2xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all active:scale-[0.97]"
+                      >
+                        <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center">
+                          <Icon className="w-7 h-7 text-primary" />
+                        </div>
+                        <div className="text-center">
+                          <p className="font-bold text-lg">{label}</p>
+                          <p className="text-sm text-muted-foreground">{desc}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* ── FORM (Étape 1 : Profil énergie) ── */}
+              {screen === "form" && (
+                <motion.div key="form" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }} className="space-y-6">
+                  <div>
+                    <h2 className="text-2xl font-black">Votre profil énergie</h2>
+                    <p className="text-muted-foreground text-sm mt-1">Quelques informations sur votre consommation</p>
+                  </div>
+
+                  {/* Objectif */}
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold">Objectif principal</label>
+                    <div className="flex gap-3">
+                      <button onClick={() => setObjectif("facture")} className={`flex-1 flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium border-2 transition-colors ${objectif === "facture" ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-primary/50"}`}>
+                        <TrendingDown className="w-4 h-4 shrink-0" /> Réduire la facture
+                      </button>
+                      <button onClick={() => setObjectif("autonomie")} className={`flex-1 flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium border-2 transition-colors ${objectif === "autonomie" ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-primary/50"}`}>
+                        <Battery className="w-4 h-4 shrink-0" /> Autonomie totale
+                      </button>
+                    </div>
+                  </div>
+
+                  {selectedType === "Entreprise" ? (
+                    <>
+                      <div className="space-y-3">
+                        <label className="text-sm font-semibold">Type de bâtiment</label>
+                        <div className="flex gap-3">
+                          {(["Industriel", "Tertiaire"] as const).map(opt => (
+                            <button key={opt} onClick={() => setTypeBatiment(opt)} className={`flex-1 py-3 rounded-xl text-sm font-medium border-2 transition-colors ${typeBatiment === opt ? "bg-primary/10 border-primary" : "border-border hover:border-primary/50"}`}>{opt}</button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold">Consommation annuelle (kWh)</label>
+                        <div className="flex items-center gap-2 px-4 py-3 border-2 border-border rounded-xl focus-within:border-primary transition-colors">
+                          <Zap className="w-4 h-4 text-muted-foreground shrink-0" />
+                          <input type="text" inputMode="numeric" value={conso} onChange={(e) => { const raw = e.target.value.replace(/\s/g, "").replace(/\D/g, ""); setConso(raw ? Number(raw).toLocaleString("fr-FR") : ""); }} placeholder="Ex : 480 000" className="bg-transparent outline-none w-full text-sm placeholder:text-muted-foreground" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold">Facture annuelle (MAD)</label>
+                        <div className="flex items-center gap-2 px-4 py-3 border-2 border-border rounded-xl focus-within:border-primary transition-colors">
+                          <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+                          <input type="text" inputMode="numeric" value={facture} onChange={(e) => { const raw = e.target.value.replace(/\s/g, "").replace(/\D/g, ""); setFacture(raw ? Number(raw).toLocaleString("fr-FR") : ""); }} placeholder="Ex : 180 000" className="bg-transparent outline-none w-full text-sm placeholder:text-muted-foreground" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold">Puissance souscrite (kVA)</label>
+                        <div className="flex items-center gap-2 px-4 py-3 border-2 border-border rounded-xl focus-within:border-primary transition-colors">
+                          <Zap className="w-4 h-4 text-muted-foreground shrink-0" />
+                          <input type="number" value={puissanceSouscrite} onChange={e => setPuissanceSouscrite(e.target.value)} placeholder="Ex : 160" className="bg-transparent outline-none w-full text-sm placeholder:text-muted-foreground" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold">Type d'abonnement</label>
+                        <div className="flex items-center gap-2 px-4 py-3 border-2 border-border rounded-xl">
+                          <select value={typeAbonnement ?? ""} onChange={e => setTypeAbonnement(e.target.value as any)} className="bg-background outline-none w-full text-sm appearance-none cursor-pointer">
+                            <option value="" disabled>Choisir...</option>
+                            <option value="Basse Tension">Basse Tension (≤ 1 kV)</option>
+                            <option value="Moyenne Tension">Moyenne Tension (1–50 kV)</option>
+                            <option value="Haute Tension">Haute Tension (&gt; 50 kV)</option>
+                          </select>
+                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold">Facture annuelle (MAD)</label>
+                        <div className="flex items-center gap-2 px-4 py-3 border-2 border-border rounded-xl focus-within:border-primary transition-colors">
+                          <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+                          <input type="text" inputMode="numeric" value={facture} onChange={(e) => { const raw = e.target.value.replace(/\s/g, "").replace(/\D/g, ""); setFacture(raw ? Number(raw).toLocaleString("fr-FR") : ""); }} placeholder="Ex : 9 600" className="bg-transparent outline-none w-full text-sm placeholder:text-muted-foreground" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold">Consommation annuelle (kWh)</label>
+                        <div className="flex items-center gap-2 px-4 py-3 border-2 border-border rounded-xl focus-within:border-primary transition-colors">
+                          <Zap className="w-4 h-4 text-muted-foreground shrink-0" />
+                          <input type="text" inputMode="numeric" value={conso} onChange={(e) => { const raw = e.target.value.replace(/\s/g, "").replace(/\D/g, ""); setConso(raw ? Number(raw).toLocaleString("fr-FR") : ""); }} placeholder="Ex : 350" className="bg-transparent outline-none w-full text-sm placeholder:text-muted-foreground" />
+                        </div>
+                      </div>
+                      <div className="space-y-2" ref={villeRef}>
+                        <label className="text-sm font-semibold">Ville</label>
+                        <div className="relative">
+                          <div className="flex items-center gap-2 px-4 py-3 border-2 border-border rounded-xl cursor-pointer" onClick={() => setVilleOpen(v => !v)}>
+                            <MapPinned className="w-4 h-4 text-muted-foreground shrink-0" />
+                            <span className="text-sm flex-1">{ville}</span>
+                            <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                          </div>
+                          {villeOpen && (
+                            <div className="absolute top-full left-0 right-0 mt-1 border border-border rounded-xl bg-background shadow-lg z-10 max-h-48 overflow-y-auto">
+                              <div className="px-3 pt-2 pb-1 sticky top-0 bg-background">
+                                <input type="text" value={villeSearch} onChange={e => setVilleSearch(e.target.value)} placeholder="Rechercher..." className="w-full text-sm border border-border rounded-lg px-3 py-1.5 bg-background outline-none" autoFocus />
+                              </div>
+                              {filteredVilles.map(v => (
+                                <button key={v} onClick={() => { setVille(v); setVilleOpen(false); setVilleSearch(""); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-primary/5 transition-colors ${v === ville ? "text-primary font-semibold" : "text-foreground"}`}>{v}</button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      const valid = selectedType === "Entreprise"
+                        ? !!(typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement)
+                        : !!(objectif && (facture.trim() || conso.trim()));
+                      if (valid) setScreen(selectedType === "Entreprise" ? "informations" : "site");
+                    }}
+                    className={`w-full rounded-2xl h-14 font-semibold text-base flex items-center justify-center gap-2 transition-colors ${
+                      (selectedType === "Entreprise" ? !!(typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement) : !!(objectif && (facture.trim() || conso.trim())))
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"
+                    }`}
+                  >
+                    Continuer <ArrowRight className="w-4 h-4" />
+                  </button>
+                </motion.div>
+              )}
+
+              {/* ── INFORMATIONS (Entreprise seulement) ── */}
+              {screen === "informations" && (
+                <motion.div key="informations" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }} className="space-y-6">
+                  <div>
+                    <h2 className="text-2xl font-black">Informations projet</h2>
+                    <p className="text-muted-foreground text-sm mt-1">Détaillez votre projet pour un diagnostic précis</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Description du projet</label>
+                    <div className="relative">
+                      <textarea value={descriptionProjet} onChange={(e) => setDescriptionProjet(e.target.value)} rows={5} className="w-full text-sm bg-transparent outline-none border-2 border-border rounded-xl px-4 py-3 text-foreground resize-none focus:border-primary transition-colors relative z-10" />
+                      {!descriptionProjet && (
+                        <span className="absolute top-3 left-4 right-4 text-sm text-muted-foreground pointer-events-none leading-relaxed z-0" style={{ opacity: projetPlaceholderVisible ? 1 : 0, transition: "opacity 0.4s ease" }}>
+                          {projetSuggestions[projetPlaceholderIndex]}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Adresse complète du projet</label>
+                    <div className="flex items-center gap-2 px-4 py-3 border-2 border-border rounded-xl focus-within:border-primary transition-colors">
+                      <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
+                      <input type="text" value={adresseProjet} onChange={(e) => setAdresseProjet(e.target.value)} placeholder="N°, Rue, Ville..." className="bg-transparent outline-none w-full text-sm placeholder:text-muted-foreground" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Accès panneaux</label>
+                    <div className="flex gap-3">
+                      {[{ value: "sol", label: "Sol" }, { value: "toit", label: "Toit" }].map(opt => (
+                        <button key={opt.value} onClick={() => setPanelAccess(prev => prev.includes(opt.value) ? prev.filter(v => v !== opt.value) : [...prev, opt.value])} className={`flex-1 py-3 rounded-xl text-sm font-medium border-2 transition-colors ${panelAccess.includes(opt.value) ? "bg-primary/10 border-primary" : "border-border hover:border-primary/50"}`}>{opt.label}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Surface disponible</label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {surfaces.map(s => (
+                        <button key={s.label} onClick={() => setSelectedSurface(s.label)} className={`flex flex-col items-center p-2.5 rounded-xl border-2 text-center transition-colors ${selectedSurface === s.label ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}>
+                          <span className="text-xs font-bold">{s.m2}</span>
+                          <span className="text-[10px] text-muted-foreground">{s.pan}</span>
+                          <span className="text-[10px] font-medium text-primary">{s.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold">Date de début</label>
+                      <input type="date" value={dateDebut} onChange={(e) => setDateDebut(e.target.value)} className="w-full text-sm bg-transparent outline-none border-2 border-border rounded-xl px-4 py-3 text-foreground" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold">Date de fin</label>
+                      <input type="date" value={dateFin} min={dateDebut || undefined} onChange={(e) => setDateFin(e.target.value)} className="w-full text-sm bg-transparent outline-none border-2 border-border rounded-xl px-4 py-3 text-foreground" />
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      if (descriptionProjet.trim() && adresseProjet.trim() && panelAccess.length > 0 && selectedSurface) setScreen("site");
+                    }}
+                    className={`w-full rounded-2xl h-14 font-semibold text-base flex items-center justify-center gap-2 transition-colors ${descriptionProjet.trim() && adresseProjet.trim() && panelAccess.length > 0 && selectedSurface ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
+                  >
+                    Continuer <ArrowRight className="w-4 h-4" />
+                  </button>
+                </motion.div>
+              )}
+
+              {/* ── SITE ── */}
+              {screen === "site" && (
+                <motion.div key="site" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }} className="space-y-6">
+                  <div>
+                    <h2 className="text-2xl font-black">Votre site</h2>
+                    <p className="text-muted-foreground text-sm mt-1">Informations sur l'emplacement des panneaux</p>
+                  </div>
+
+                  {selectedType !== "Entreprise" && (
+                    <>
+                      <div className="space-y-3">
+                        <label className="text-sm font-semibold">Accès panneaux</label>
+                        <div className="flex gap-3">
+                          {[{ value: "toit", label: "Toit" }, { value: "sol", label: "Sol" }, { value: "terrasse", label: "Terrasse" }].map(opt => (
+                            <button key={opt.value} onClick={() => setPanelAccess(prev => prev.includes(opt.value) ? prev.filter(v => v !== opt.value) : [...prev, opt.value])} className={`flex-1 py-3 rounded-xl text-sm font-medium border-2 transition-colors ${panelAccess.includes(opt.value) ? "bg-primary/10 border-primary" : "border-border hover:border-primary/50"}`}>{opt.label}</button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <label className="text-sm font-semibold">Surface disponible</label>
+                        <div className="grid grid-cols-4 gap-2">
+                          {surfaces.map(s => (
+                            <button key={s.label} onClick={() => setSelectedSurface(s.label)} className={`flex flex-col items-center p-2.5 rounded-xl border-2 text-center transition-colors ${selectedSurface === s.label ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}>
+                              <span className="text-xs font-bold">{s.m2}</span>
+                              <span className="text-[10px] text-muted-foreground">{s.pan}</span>
+                              <span className="text-[10px] font-medium text-primary">{s.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold">Usages spécifiques</label>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                      {getUsages(selectedType).map((u) => {
+                        const isSelected = selectedUsages.includes(u.label);
+                        return (
+                          <button key={u.label} onClick={() => setSelectedUsages(prev => isSelected ? prev.filter(x => x !== u.label) : [...prev, u.label])} className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-colors ${isSelected ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}>
+                            <span className="text-xl">{u.icon}</span>
+                            <span className={`text-[11px] leading-tight text-center ${isSelected ? "text-primary font-medium" : "text-muted-foreground"}`}>{u.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {selectedType === "Entreprise" && (
+                    <div className="space-y-4">
+                      {([
+                        { label: "Installation PV existante", value: pvExistante, set: setPvExistante },
+                        { label: "Extension d'une installation ?", value: extensionInstall, set: setExtensionInstall },
+                        { label: "Subvention déjà reçue ?", value: subventionRecue, set: setSubventionRecue },
+                      ] as { label: string; value: "Oui" | "Non" | null; set: (v: "Oui" | "Non") => void }[]).map(({ label, value, set }) => (
+                        <div key={label} className="space-y-2">
+                          <label className="text-sm font-semibold">{label}</label>
+                          <div className="flex gap-3">
+                            {(["Oui", "Non"] as const).map(opt => (
+                              <button key={opt} onClick={() => set(opt)} className={`flex-1 py-3 rounded-xl text-sm font-medium border-2 transition-colors ${value === opt ? "bg-primary/10 border-primary" : "border-border hover:border-primary/50"}`}>{opt}</button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      const siteValid = selectedUsages.length > 0 && (selectedType === "Entreprise" ? (panelAccess.length > 0 && selectedSurface && pvExistante !== null && extensionInstall !== null && subventionRecue !== null) : (panelAccess.length > 0 && selectedSurface));
+                      if (!siteValid) return;
+                      if (selectedType === "Entreprise") {
+                        setScreen("eligibilite");
+                      } else {
+                        setScreen("analyse");
+                        setTimeout(() => setScreen("solutions"), 4000);
+                      }
+                    }}
+                    className={`w-full rounded-2xl h-14 font-semibold text-base flex items-center justify-center gap-2 transition-colors ${
+                      selectedUsages.length > 0 && (selectedType === "Entreprise" ? (panelAccess.length > 0 && selectedSurface && pvExistante !== null && extensionInstall !== null && subventionRecue !== null) : (panelAccess.length > 0 && selectedSurface))
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"
+                    }`}
+                  >
+                    {selectedType === "Entreprise" ? "Continuer" : "Analyser"} <ArrowRight className="w-4 h-4" />
+                  </button>
+                </motion.div>
+              )}
+
+              {/* ── ELIGIBILITE ── */}
+              {screen === "eligibilite" && (
+                <motion.div key="eligibilite" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-black">Éligibilité</h2>
+                    <p className="text-muted-foreground text-sm mt-1">Vérification de l'éligibilité aux programmes SR500 / TATWIR</p>
+                  </div>
+                  <EligibiliteScreen onContinue={() => { setScreen("analyse"); setTimeout(() => setScreen("solutions"), 4000); }} />
+                </motion.div>
+              )}
+
+              {/* ── ANALYSE ── */}
+              {screen === "analyse" && (
+                <motion.div key="analyse" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="flex flex-col items-center justify-center min-h-[50vh] gap-8">
+                  <motion.img
+                    src={nooriaLogo}
+                    alt="NOORIA"
+                    animate={{ opacity: [1, 0.1, 1] }}
+                    transition={{ duration: 0.9, repeat: Infinity, ease: "easeInOut" }}
+                    className="w-48 object-contain select-none"
+                  />
+                  <div className="text-center space-y-2">
+                    <p className="text-xl font-bold">Analyse en cours…</p>
+                    <p className="text-muted-foreground">Nous calculons votre potentiel solaire</p>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* ── SOLUTIONS ── */}
+              {screen === "solutions" && (
+                <motion.div key="solutions" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="space-y-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Sun className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-black">Solutions recommandées</h2>
+                      <p className="text-sm text-muted-foreground">Basé sur votre {selectedType?.toLowerCase() || "logement"}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {["Solution optimale identifiée", "Installateurs certifiés sélectionnés", "Aides d'état applicables détectées"].map((item) => (
+                      <div key={item} className="flex items-center gap-4 p-5 rounded-2xl bg-primary/5 border border-primary/20">
+                        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+                          <span className="text-sm text-primary-foreground font-bold">✓</span>
+                        </div>
+                        <span className="text-sm font-medium">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="p-6 rounded-2xl bg-muted/50 border border-border space-y-2 text-center">
+                    <p className="font-bold text-lg">Analyse terminée !</p>
+                    <p className="text-sm text-muted-foreground">Vos solutions personnalisées ont été préparées.<br />Nos experts vous contactent sous 24h.</p>
+                  </div>
+
+                  <button onClick={() => setQuoteOpen(true)} className="w-full bg-primary text-primary-foreground rounded-2xl h-14 font-semibold text-base flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors">
+                    Demander un devis <ArrowRight className="w-4 h-4" />
+                  </button>
+                </motion.div>
+              )}
+
+              {/* ── MERCI ── */}
+              {screen === "merci" && (
+                <motion.div key="merci" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }} className="flex flex-col items-center text-center gap-6 py-8">
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 20 }} className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
+                    <span className="text-4xl">✅</span>
+                  </motion.div>
+                  <div className="space-y-3">
+                    <h2 className="text-3xl font-black">Demande reçue !</h2>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Prochaine étape : vérification technique et estimation préliminaire.<br />
+                      Un expert NOORIA vous contacte sous <span className="font-semibold text-foreground">24h</span> (WhatsApp ou appel).
+                    </p>
+                    {quoteRef && (
+                      <div className="inline-flex items-center gap-2 bg-muted rounded-xl px-4 py-2 mt-2">
+                        <span className="text-sm text-muted-foreground font-medium">Référence :</span>
+                        <span className="text-sm font-bold font-mono">#{quoteRef.slice(0, 8).toUpperCase()}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="w-full max-w-md space-y-3">
+                    <input ref={invoiceInputRef} type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png,.webp"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const ref = quoteRef ?? crypto.randomUUID();
+                        setInvoiceUploading(true);
+                        try {
+                          const reader = new FileReader();
+                          const fileBase64 = await new Promise<string>((resolve, reject) => {
+                            reader.onload = () => resolve(reader.result as string);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(file);
+                          });
+                          const { error: fnError } = await supabase.functions.invoke("send-invoice-email", {
+                            body: { fileBase64, fileType: file.type, fileName: file.name, quoteRef: ref.slice(0, 8).toUpperCase(), clientName: contactNom || "Client", clientEmail: contactEmail || "" },
+                          });
+                          if (fnError) throw fnError;
+                          setInvoiceUploaded(true);
+                        } catch (err: any) {
+                          console.error("Invoice upload error:", err);
+                          toast({ title: "Erreur lors de l'envoi", description: err?.message ?? "Veuillez réessayer.", variant: "destructive" });
+                        } finally {
+                          setInvoiceUploading(false);
+                          e.target.value = "";
+                        }
+                      }}
+                    />
+
+                    {invoiceUploaded ? (
+                      <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 260, damping: 18 }} className="w-full rounded-2xl bg-success px-6 py-6 flex flex-col items-center gap-2 text-center shadow-lg">
+                        <span className="text-5xl">✅</span>
+                        <p className="text-xl font-black text-foreground">Facture envoyée !</p>
+                        <p className="text-sm text-foreground/80">Notre équipe l'examinera et vous recontactera rapidement.</p>
+                      </motion.div>
+                    ) : (
+                      <button onClick={() => !invoiceUploading && invoiceInputRef.current?.click()} disabled={invoiceUploading} className="w-full rounded-2xl py-4 text-sm font-semibold flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-60">
+                        {invoiceUploading ? (
+                          <><svg className="animate-spin w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>Envoi en cours…</>
+                        ) : (
+                          <>+ Téléverser une facture</>
+                        )}
+                      </button>
+                    )}
+
+                    <button onClick={() => { setScreen("landing"); setQuoteRef(null); setInvoiceUploaded(false); }} className="w-full border-2 border-border rounded-2xl py-4 text-sm font-semibold text-foreground hover:bg-muted transition-colors">
+                      Retour à l'accueil
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+            </AnimatePresence>
+          </div>
+        </main>
+      )}
+
+      {screen === "landing" && <Footer />}
+
+      <QuotePanel
+        open={quoteOpen}
+        onOpenChange={setQuoteOpen}
+        onSuccess={(id) => {
+          setQuoteRef(id);
+          setQuoteOpen(false);
+          setScreen("merci");
+        }}
+      />
     </div>
   );
 };
-
 
 export default Diagnostic;
