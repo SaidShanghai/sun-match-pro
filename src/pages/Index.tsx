@@ -623,7 +623,7 @@ const Index = () => {
                         {(() => {
                           const formValid = selectedType === "Entreprise"
                             ? !!(typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement)
-                            : !!(objectif && facture.trim());
+                            : !!(objectif && (facture.trim() || conso.trim()));
                           return (
                             <button
                               onClick={() => { if (formValid) setPhoneScreen(selectedType === "Entreprise" ? "informations" : "site"); }}
