@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CallbackModal from "@/components/CallbackModal";
+import QuotePanel from "@/components/QuotePanel";
 import EligibiliteScreen from "@/components/EligibiliteScreen";
 
 const features = [
@@ -112,6 +113,7 @@ const Index = () => {
   const [ctaBlink, setCtaBlink] = useState(false);
   const [entrepriseBlink, setEntrepriseBlink] = useState(false);
   const [callbackOpen, setCallbackOpen] = useState(false);
+  const [quoteOpen, setQuoteOpen] = useState(false);
   // Rotating placeholder for description
   const projetSuggestions = [
     "Usine textile, 380V, 3 shifts/jour, financement via programme TATWIR souhaité",
@@ -924,7 +926,7 @@ const Index = () => {
                           </div>
                         </div>
 
-                        <button className="w-full bg-primary text-primary-foreground rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors">
+                        <button onClick={() => setQuoteOpen(true)} className="w-full bg-primary text-primary-foreground rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors">
                           Demander un devis <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </motion.div>
@@ -1047,6 +1049,7 @@ const Index = () => {
 
       <Footer />
       <CallbackModal open={callbackOpen} onOpenChange={setCallbackOpen} />
+      <QuotePanel open={quoteOpen} onOpenChange={setQuoteOpen} />
     </div>
   );
 };
