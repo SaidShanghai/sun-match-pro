@@ -1032,8 +1032,8 @@ const Index = () => {
                               className="w-full rounded-2xl bg-green-500 px-4 py-5 flex flex-col items-center gap-2 text-center shadow-lg"
                             >
                               <span className="text-4xl">✅</span>
-                              <p className="text-[15px] font-black text-white tracking-tight">Facture envoyée !</p>
-                              <p className="text-[10px] text-white/80 leading-relaxed">Notre équipe l'examinera<br />et vous recontactera rapidement.</p>
+                              <p className="text-[15px] font-black text-black tracking-tight">Facture envoyée !</p>
+                              <p className="text-[10px] text-black/80 leading-relaxed">Notre équipe l'examinera<br />et vous recontactera rapidement.</p>
                             </motion.div>
                           ) : (
                             <button
