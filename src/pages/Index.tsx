@@ -485,9 +485,9 @@ const Index = () => {
                               className="text-[10px] bg-background outline-none w-full text-foreground appearance-none cursor-pointer"
                             >
                               <option value="" disabled>Choisir...</option>
-                              <option value="Basse Tension">Basse Tension</option>
-                              <option value="Moyenne Tension">Moyenne Tension</option>
-                              <option value="Haute Tension">Haute Tension</option>
+                              <option value="Basse Tension">Basse Tension (≤ 1 kV)</option>
+                              <option value="Moyenne Tension">Moyenne Tension (1 kV à 50 kV)</option>
+                              <option value="Haute Tension">Haute Tension (&gt; 50 kV)</option>
                             </select>
                             <ChevronDown className="w-3 h-3 text-muted-foreground shrink-0" />
                           </div>
