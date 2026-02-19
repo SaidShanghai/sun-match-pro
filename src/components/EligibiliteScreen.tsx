@@ -16,7 +16,6 @@ const declarations = [
 ];
 
 const EligibiliteScreen = ({ onContinue }: EligibiliteScreenProps) => {
-  const [consoAnnuelle, setConsoAnnuelle] = useState("");
   const [factureAnnuelle, setFactureAnnuelle] = useState("");
   const [puissanceSouscrite, setPuissanceSouscrite] = useState("");
   const [decl, setDecl] = useState<Record<string, "Oui" | "Non" | null>>({
@@ -24,7 +23,7 @@ const EligibiliteScreen = ({ onContinue }: EligibiliteScreenProps) => {
   });
 
   const allDeclOui = declarations.every(d => decl[d.id] === "Oui");
-  const canContinue = !!(consoAnnuelle && factureAnnuelle && puissanceSouscrite && allDeclOui);
+  const canContinue = !!(factureAnnuelle && puissanceSouscrite && allDeclOui);
 
   return (
     <motion.div
@@ -59,7 +58,6 @@ const EligibiliteScreen = ({ onContinue }: EligibiliteScreenProps) => {
       {/* Champs numériques */}
       <div className="space-y-2">
         {[
-          { label: "Consommation annuelle (kWh)", value: consoAnnuelle, set: setConsoAnnuelle, placeholder: "Ex : 150 000", format: true },
           { label: "Facture annuelle (MAD)", value: factureAnnuelle, set: setFactureAnnuelle, placeholder: "Ex : 180 000", format: true },
           { label: "Puissance souscrite (kVA)", value: puissanceSouscrite, set: setPuissanceSouscrite, placeholder: "Ex : 160", format: false },
         ].map(({ label, value, set, placeholder, format }) => (
