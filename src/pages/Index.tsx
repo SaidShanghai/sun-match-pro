@@ -283,7 +283,7 @@ const Index = () => {
                     <span className="text-[9px] text-muted-foreground">SunStone Finance</span>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto min-h-0">
+                  <div className={`flex-1 min-h-0 relative ${phoneScreen === "analyse" ? "overflow-hidden" : "overflow-y-auto"}`}>
                   <AnimatePresence mode="wait">
                     {phoneScreen === "intro" ? (
                       <motion.div
@@ -854,7 +854,7 @@ const Index = () => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
                         transition={{ duration: 0.25 }}
-                        className="flex-1 flex items-center justify-center"
+                        className="absolute inset-0 flex items-center justify-center"
                       >
                         {/* Analyse animation - NOORIA logo clignotant centré */}
                         <motion.img
