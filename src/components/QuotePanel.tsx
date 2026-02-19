@@ -9,12 +9,13 @@ interface QuotePanelProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   installerName?: string;
+  onSuccess?: () => void;
 }
 
 const phoneRegex = /^(\+212|0)([ \-]?[0-9]){9}$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const QuotePanel = ({ open, onOpenChange, installerName }: QuotePanelProps) => {
+const QuotePanel = ({ open, onOpenChange, installerName, onSuccess }: QuotePanelProps) => {
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
   const [telephone, setTelephone] = useState("");
@@ -54,6 +55,8 @@ const QuotePanel = ({ open, onOpenChange, installerName }: QuotePanelProps) => {
         status: "pending",
       });
       setSubmitted(true);
+      onOpenChange(false);
+      onSuccess?.();
     } catch {
       setError("Une erreur est survenue. Veuillez réessayer.");
     } finally {
