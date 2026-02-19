@@ -412,26 +412,6 @@ const Index = () => {
                             </button>
                           </div>
                         </div>
-
-                        {/* Tension réseau */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Tension réseau</label>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => setTension("220")}
-                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[9px] font-medium border transition-colors ${tension === "220" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
-                            >
-                              <Zap className="w-3 h-3" /> 220V
-                            </button>
-                            <button
-                              onClick={() => setTension("380")}
-                              className={`flex-1 flex items-center gap-1.5 px-3 py-2 rounded-full text-[9px] font-medium border transition-colors ${tension === "380" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
-                            >
-                              <Zap className="w-3 h-3" /> 380V
-                            </button>
-                          </div>
-                        </div>
-
                         {/* Consommation */}
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-semibold text-foreground">Consommation annuelle (kWh)</label>
