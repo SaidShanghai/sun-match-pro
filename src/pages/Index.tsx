@@ -403,7 +403,7 @@ const Index = () => {
                               <button
                                 key={opt}
                                 onClick={() => setTypeBatiment(opt)}
-                                className={`flex-1 py-1.5 rounded-full text-[10px] font-medium border transition-colors ${typeBatiment === opt ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
+                                className={`flex-1 py-1.5 rounded-full text-[12px] font-medium border transition-colors ${typeBatiment === opt ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
                               >
                                 {opt}
                               </button>
