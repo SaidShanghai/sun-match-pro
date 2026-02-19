@@ -535,7 +535,7 @@ const Index = () => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
                         transition={{ duration: 0.25 }}
-                        className="px-4 py-3 flex flex-col gap-3 overflow-y-auto flex-1"
+                        className="px-4 py-2 flex flex-col gap-2 overflow-y-auto flex-1"
                       >
                         {/* Stepper */}
                         <div className="flex items-center justify-between px-1">
@@ -554,24 +554,24 @@ const Index = () => {
                         </div>
 
                         {/* Title */}
-                        <div className="flex items-center gap-1.5 pt-1">
-                          <ChevronLeft className="w-3.5 h-3.5 text-foreground" />
-                          <h4 className="text-sm font-bold">Informations</h4>
+                        <div className="flex items-center gap-1">
+                          <ChevronLeft className="w-3 h-3 text-foreground" />
+                          <h4 className="text-[11px] font-bold">Informations</h4>
                         </div>
 
                         {/* Description du projet */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Information sur le projet</label>
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-semibold text-foreground">Information sur le projet</label>
                           <div className="relative">
                             <textarea
                               value={descriptionProjet}
                               onChange={(e) => setDescriptionProjet(e.target.value)}
                               rows={2}
-                              className="w-full text-[10px] bg-transparent outline-none border border-border rounded-xl px-3 py-2 text-foreground resize-none relative z-10"
+                              className="w-full text-[9px] bg-transparent outline-none border border-border rounded-xl px-2.5 py-1.5 text-foreground resize-none relative z-10"
                             />
                             {!descriptionProjet && (
                               <span
-                                className="absolute top-2 left-3 right-3 text-[10px] text-muted-foreground pointer-events-none leading-relaxed transition-opacity duration-400 z-0"
+                                className="absolute top-1.5 left-2.5 right-2.5 text-[9px] text-muted-foreground pointer-events-none leading-relaxed z-0"
                                 style={{ opacity: projetPlaceholderVisible ? 1 : 0, transition: "opacity 0.4s ease" }}
                               >
                                 {projetSuggestions[projetPlaceholderIndex]}
@@ -581,24 +581,24 @@ const Index = () => {
                         </div>
 
                         {/* Adresse */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Adresse complète du projet</label>
-                          <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
-                            <MapPin className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-semibold text-foreground">Adresse complète du projet</label>
+                          <div className="flex items-center gap-1.5 px-2.5 py-1.5 border border-border rounded-xl">
+                            <MapPin className="w-3 h-3 text-muted-foreground shrink-0" />
                             <input
                               type="text"
                               value={adresseProjet}
                               onChange={(e) => setAdresseProjet(e.target.value)}
                               placeholder="N°, Rue, Ville..."
-                              className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
+                              className="text-[9px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
                             />
                           </div>
                         </div>
 
                         {/* Accès Panneaux */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Accès Panneaux</label>
-                          <div className="flex gap-2">
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-semibold text-foreground">Accès Panneaux</label>
+                          <div className="flex gap-1.5">
                             {([
                               { value: "sol", label: "Sol" },
                               { value: "toit", label: "Toit" },
@@ -606,7 +606,7 @@ const Index = () => {
                               <button
                                 key={opt.value}
                                 onClick={() => setPanelAccess(prev => prev.includes(opt.value) ? prev.filter(v => v !== opt.value) : [...prev, opt.value])}
-                                className={`flex-1 py-2 rounded-full text-[10px] font-medium border transition-colors ${panelAccess.includes(opt.value) ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
+                                className={`flex-1 py-1.5 rounded-full text-[9px] font-medium border transition-colors ${panelAccess.includes(opt.value) ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
                               >
                                 {opt.label}
                               </button>
@@ -615,13 +615,13 @@ const Index = () => {
                         </div>
 
                         {/* Surface disponible */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Surface disponible (m²)</label>
-                          <div className="grid grid-cols-4 gap-1.5">
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-semibold text-foreground">Surface disponible (m²)</label>
+                          <div className="grid grid-cols-4 gap-1">
                             {[
                               { m2: "22 m²", pan: "8 pan.", label: "M1" },
                               { m2: "44 m²", pan: "16 pan.", label: "M2" },
-                              { m2: "66 m²", pan: "24 pan.", label: "M3 / T1" },
+                              { m2: "66 m²", pan: "24 pan.", label: "M3/T1" },
                               { m2: "132 m²", pan: "48 pan.", label: "T2" },
                               { m2: "198 m²", pan: "72 pan.", label: "T3" },
                               { m2: "264 m²", pan: "96 pan.", label: "T4" },
@@ -631,11 +631,11 @@ const Index = () => {
                               <button
                                 key={s.label}
                                 onClick={() => setSelectedSurface(s.label)}
-                                className={`flex flex-col items-center p-2 rounded-xl border text-center transition-colors ${selectedSurface === s.label ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}
+                                className={`flex flex-col items-center p-1.5 rounded-xl border text-center transition-colors ${selectedSurface === s.label ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}
                               >
-                                <span className="text-[10px] font-bold text-foreground">{s.m2}</span>
-                                <span className="text-[8px] text-muted-foreground">{s.pan}</span>
-                                <span className="text-[8px] font-medium text-primary">{s.label}</span>
+                                <span className="text-[9px] font-bold text-foreground">{s.m2}</span>
+                                <span className="text-[7px] text-muted-foreground">{s.pan}</span>
+                                <span className="text-[7px] font-medium text-primary">{s.label}</span>
                               </button>
                             ))}
                           </div>
@@ -646,38 +646,38 @@ const Index = () => {
                           const dateError = dateDebut && dateFin && dateFin < dateDebut;
                           return (
                             <>
-                              <div className="grid grid-cols-2 gap-2">
+                              <div className="grid grid-cols-2 gap-1.5">
                                 <div className="space-y-1">
-                                  <label className="text-[10px] font-semibold text-foreground">Date de début</label>
+                                  <label className="text-[9px] font-semibold text-foreground">Date de début</label>
                                   <input
                                     type="date"
                                     value={dateDebut}
                                     onChange={(e) => setDateDebut(e.target.value)}
-                                    className="w-full text-[10px] bg-transparent outline-none border border-border rounded-xl px-2 py-2 text-foreground"
+                                    className="w-full text-[9px] bg-transparent outline-none border border-border rounded-xl px-2 py-1.5 text-foreground"
                                   />
                                 </div>
                                 <div className="space-y-1">
-                                  <label className={`text-[10px] font-semibold ${dateError ? "text-destructive" : "text-foreground"}`}>Date de fin</label>
+                                  <label className={`text-[9px] font-semibold ${dateError ? "text-destructive" : "text-foreground"}`}>Date de fin</label>
                                   <input
                                     type="date"
                                     value={dateFin}
                                     min={dateDebut || undefined}
                                     onChange={(e) => setDateFin(e.target.value)}
-                                    className={`w-full text-[10px] bg-transparent outline-none border rounded-xl px-2 py-2 text-foreground ${dateError ? "border-destructive" : "border-border"}`}
+                                    className={`w-full text-[9px] bg-transparent outline-none border rounded-xl px-2 py-1.5 text-foreground ${dateError ? "border-destructive" : "border-border"}`}
                                   />
                                 </div>
                               </div>
                               {dateError && (
-                                <p className="text-[9px] text-destructive -mt-1">La date de fin doit être après la date de début.</p>
+                                <p className="text-[8px] text-destructive -mt-1">La date de fin doit être après la date de début.</p>
                               )}
 
                               {/* CTA */}
                               <button
                                 onClick={() => !dateError && setPhoneScreen("site")}
                                 disabled={!!dateError}
-                                className={`w-full rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 transition-colors ${dateError ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-primary text-primary-foreground hover:bg-primary/90"}`}
+                                className={`w-full rounded-full text-[10px] h-9 font-semibold flex items-center justify-center gap-1.5 transition-colors ${dateError ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-primary text-primary-foreground hover:bg-primary/90"}`}
                               >
-                                Continuer <ArrowRight className="w-3.5 h-3.5" />
+                                Continuer <ArrowRight className="w-3 h-3" />
                               </button>
                             </>
                           );
