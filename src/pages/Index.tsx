@@ -981,7 +981,7 @@ const Index = () => {
                             type="file"
                             className="hidden"
                             accept=".pdf,.jpg,.jpeg,.png,.webp"
-                            onChange={async (e) => {
+            onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (!file || !quoteRef) return;
                               setInvoiceUploading(true);
@@ -993,7 +993,11 @@ const Index = () => {
                                   .upload(filePath, file, { upsert: true });
                                 if (uploadError) throw uploadError;
 
-                                const { error: fnError } = await supabase.functions.invoke("send-invoice-email", {
+                                // Confirm upload to user immediately
+                                setInvoiceUploaded(true);
+
+                                // Try to send email notification (best-effort)
+                                supabase.functions.invoke("send-invoice-email", {
                                   body: {
                                     filePath,
                                     fileName: file.name,
@@ -1001,13 +1005,10 @@ const Index = () => {
                                     clientName: contactNom,
                                     clientEmail: contactEmail,
                                   },
-                                });
-                                if (fnError) throw fnError;
+                                }).catch(() => {/* silent — file is already uploaded */});
 
-                                setInvoiceUploaded(true);
-                                toast({ title: "Facture envoyée ✅", description: "Nous avons bien reçu votre facture." });
                               } catch (err: any) {
-                                toast({ title: "Erreur", description: err.message, variant: "destructive" });
+                                toast({ title: "Erreur lors de l'envoi", description: "Veuillez réessayer.", variant: "destructive" });
                               } finally {
                                 setInvoiceUploading(false);
                                 e.target.value = "";
