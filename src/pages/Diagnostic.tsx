@@ -674,7 +674,7 @@ const Diagnostic = () => {
                                 eligDecl[d.id] === opt
                                   ? opt === "Oui"
                                     ? "bg-emerald-100 border-emerald-400 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
-                                    : "bg-destructive/10 border-destructive/40 text-destructive"
+                                    : "bg-red-100 border-red-400 text-red-800 dark:bg-red-900/30 dark:text-red-300"
                                   : "border-border text-foreground hover:border-primary/50"
                               }`}
                             >
