@@ -62,16 +62,20 @@ const EligibiliteScreen = ({ onContinue }: EligibiliteScreenProps) => {
       {/* Champs numériques */}
       <div className="space-y-2">
         {[
-          { label: "Consommation annuelle (kWh)", value: consoAnnuelle, set: setConsoAnnuelle, placeholder: "Ex : 150 000" },
-          { label: "Facture annuelle (MAD)", value: factureAnnuelle, set: setFactureAnnuelle, placeholder: "Ex : 180 000" },
-          { label: "Puissance souscrite (kVA)", value: puissanceSouscrite, set: setPuissanceSouscrite, placeholder: "Ex : 160" },
-        ].map(({ label, value, set, placeholder }) => (
+          { label: "Consommation annuelle (kWh)", value: consoAnnuelle, set: setConsoAnnuelle, placeholder: "Ex : 150 000", format: true },
+          { label: "Facture annuelle (MAD)", value: factureAnnuelle, set: setFactureAnnuelle, placeholder: "Ex : 180 000", format: true },
+          { label: "Puissance souscrite (kVA)", value: puissanceSouscrite, set: setPuissanceSouscrite, placeholder: "Ex : 160", format: false },
+        ].map(({ label, value, set, placeholder, format }) => (
           <div key={label} className="space-y-0.5">
             <label className="text-[9px] font-semibold text-foreground">{label}</label>
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
               value={value}
-              onChange={e => set(e.target.value)}
+              onChange={e => {
+                const raw = e.target.value.replace(/\s/g, "").replace(/\D/g, "");
+                set(format && raw ? Number(raw).toLocaleString("fr-FR") : raw);
+              }}
               placeholder={placeholder}
               className="w-full text-[10px] bg-background border border-border rounded-xl px-2.5 py-1.5 outline-none focus:border-primary text-foreground placeholder:text-muted-foreground"
             />
