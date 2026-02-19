@@ -559,8 +559,6 @@ const Index = () => {
                           <h4 className="text-sm font-bold">Informations</h4>
                         </div>
 
-                        
-
                         {/* Description du projet */}
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-semibold text-foreground">Information sur le projet</label>
@@ -594,6 +592,52 @@ const Index = () => {
                               placeholder="N°, Rue, Ville..."
                               className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
                             />
+                          </div>
+                        </div>
+
+                        {/* Accès Panneaux */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Accès Panneaux</label>
+                          <div className="flex gap-2">
+                            {([
+                              { value: "sol", label: "Sol" },
+                              { value: "toit", label: "Toit" },
+                            ] as const).map((opt) => (
+                              <button
+                                key={opt.value}
+                                onClick={() => setPanelAccess(prev => prev.includes(opt.value) ? prev.filter(v => v !== opt.value) : [...prev, opt.value])}
+                                className={`flex-1 py-2 rounded-full text-[10px] font-medium border transition-colors ${panelAccess.includes(opt.value) ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
+                              >
+                                {opt.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Surface disponible */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-semibold text-foreground">Surface disponible (m²)</label>
+                          <div className="grid grid-cols-4 gap-1.5">
+                            {[
+                              { m2: "22 m²", pan: "8 pan.", label: "M1" },
+                              { m2: "44 m²", pan: "16 pan.", label: "M2" },
+                              { m2: "66 m²", pan: "24 pan.", label: "M3 / T1" },
+                              { m2: "132 m²", pan: "48 pan.", label: "T2" },
+                              { m2: "198 m²", pan: "72 pan.", label: "T3" },
+                              { m2: "264 m²", pan: "96 pan.", label: "T4" },
+                              { m2: "330 m²", pan: "120 pan.", label: "T5" },
+                              { m2: "396 m²", pan: "144 pan.", label: "T5+" },
+                            ].map((s) => (
+                              <button
+                                key={s.label}
+                                onClick={() => setSelectedSurface(s.label)}
+                                className={`flex flex-col items-center p-2 rounded-xl border text-center transition-colors ${selectedSurface === s.label ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}
+                              >
+                                <span className="text-[10px] font-bold text-foreground">{s.m2}</span>
+                                <span className="text-[8px] text-muted-foreground">{s.pan}</span>
+                                <span className="text-[8px] font-medium text-primary">{s.label}</span>
+                              </button>
+                            ))}
                           </div>
                         </div>
 
@@ -669,52 +713,6 @@ const Index = () => {
                         <div className="flex items-center gap-1.5 pt-1">
                           <ChevronLeft className="w-3.5 h-3.5 text-foreground" />
                           <h4 className="text-sm font-bold">Votre site</h4>
-                        </div>
-
-                        {/* Accès Panneaux */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Accès Panneaux</label>
-                          <div className="flex gap-2">
-                            {([
-                              { value: "toit", label: "Toit" },
-                              { value: "sol", label: "Sol" },
-                            ] as const).map((opt) => (
-                              <button
-                                key={opt.value}
-                                onClick={() => setPanelAccess(prev => prev.includes(opt.value) ? prev.filter(v => v !== opt.value) : [...prev, opt.value])}
-                                className={`flex-1 py-2 rounded-full text-[10px] font-medium border transition-colors ${panelAccess.includes(opt.value) ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
-                              >
-                                {opt.label}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Surface disponible */}
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-semibold text-foreground">Surface disponible (m²)</label>
-                          <div className="grid grid-cols-4 gap-1.5">
-                            {[
-                              { m2: "22 m²", pan: "8 pan.", label: "M1" },
-                              { m2: "44 m²", pan: "16 pan.", label: "M2" },
-                              { m2: "66 m²", pan: "24 pan.", label: "M3 / T1" },
-                              { m2: "132 m²", pan: "48 pan.", label: "T2" },
-                              { m2: "198 m²", pan: "72 pan.", label: "T3" },
-                              { m2: "264 m²", pan: "96 pan.", label: "T4" },
-                              { m2: "330 m²", pan: "120 pan.", label: "T5" },
-                              { m2: "396 m²", pan: "144 pan.", label: "T5+" },
-                            ].map((s) => (
-                              <button
-                                key={s.label}
-                                onClick={() => setSelectedSurface(s.label)}
-                                className={`flex flex-col items-center p-2 rounded-xl border text-center transition-colors ${selectedSurface === s.label ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}
-                              >
-                                <span className="text-[10px] font-bold text-foreground">{s.m2}</span>
-                                <span className="text-[8px] text-muted-foreground">{s.pan}</span>
-                                <span className="text-[8px] font-medium text-primary">{s.label}</span>
-                              </button>
-                            ))}
-                          </div>
                         </div>
 
                         {/* Usages spécifiques */}
