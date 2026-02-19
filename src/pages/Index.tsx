@@ -1014,23 +1014,31 @@ const Index = () => {
                               }
                             }}
                           />
-                          <button
-                            onClick={() => !invoiceUploaded && !invoiceUploading && invoiceInputRef.current?.click()}
-                            disabled={invoiceUploading || invoiceUploaded}
-                            className={`w-full rounded-full py-2.5 text-[10px] font-semibold flex items-center justify-center gap-1.5 transition-colors ${
-                              invoiceUploaded
-                                ? "bg-green-500/10 text-green-700 border border-green-500/20 cursor-default"
-                                : "bg-primary text-primary-foreground hover:bg-primary/90"
-                            }`}
-                          >
-                            {invoiceUploading ? (
-                              <>⏳ Envoi en cours…</>
-                            ) : invoiceUploaded ? (
-                              <>✅ Facture envoyée</>
-                            ) : (
-                              <><span className="text-[13px] font-bold leading-none">+</span> Téléverser une facture</>
-                            )}
-                          </button>
+                          {invoiceUploaded ? (
+                            <div className="w-full rounded-2xl bg-green-50 border border-green-200 px-3 py-3 flex flex-col items-center gap-1 text-center">
+                              <span className="text-xl">✅</span>
+                              <p className="text-[10px] font-bold text-green-700">Facture envoyée avec succès !</p>
+                              <p className="text-[9px] text-green-600/80 leading-relaxed">Nous avons bien reçu votre document.<br />Notre équipe l'analyse avant de vous rappeler.</p>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => !invoiceUploading && invoiceInputRef.current?.click()}
+                              disabled={invoiceUploading}
+                              className="w-full rounded-full py-2.5 text-[10px] font-semibold flex items-center justify-center gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                            >
+                              {invoiceUploading ? (
+                                <>
+                                  <svg className="animate-spin w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                                  </svg>
+                                  Envoi en cours…
+                                </>
+                              ) : (
+                                <><span className="text-[13px] font-bold leading-none">+</span> Téléverser une facture</>
+                              )}
+                            </button>
+                          )}
                           <button
                             onClick={() => { setPhoneScreen("intro"); setQuoteRef(null); setInvoiceUploaded(false); }}
                             className="w-full border border-border rounded-full py-2.5 text-[10px] font-semibold text-foreground hover:bg-muted transition-colors"
