@@ -1033,7 +1033,7 @@ const Index = () => {
                             >
                               <span className="text-4xl">✅</span>
                               <p className="text-[15px] font-black text-white tracking-tight">Facture envoyée !</p>
-                              <p className="text-[10px] text-white/80 leading-relaxed">Notre équipe va l'analyser<br />avant de vous rappeler.</p>
+                              <p className="text-[10px] text-white/80 leading-relaxed">Notre équipe l'examinera<br />et vous recontactera rapidement.</p>
                             </motion.div>
                           ) : (
                             <button
