@@ -455,9 +455,13 @@ const Index = () => {
                             <Zap className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                             <input
                               type="text"
+                              inputMode="numeric"
                               value={conso}
-                              onChange={(e) => setConso(e.target.value)}
-                              placeholder="Ex: 480"
+                              onChange={(e) => {
+                                const raw = e.target.value.replace(/\s/g, "").replace(/\D/g, "");
+                                setConso(raw ? Number(raw).toLocaleString("fr-FR") : "");
+                              }}
+                              placeholder="Ex : 480 000"
                               className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
                             />
                           </div>
@@ -469,9 +473,13 @@ const Index = () => {
                           <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-xl">
                             <FileText className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                             <input
-                              type="number"
+                              type="text"
+                              inputMode="numeric"
                               value={facture}
-                              onChange={e => setFacture(e.target.value)}
+                              onChange={(e) => {
+                                const raw = e.target.value.replace(/\s/g, "").replace(/\D/g, "");
+                                setFacture(raw ? Number(raw).toLocaleString("fr-FR") : "");
+                              }}
                               placeholder="Ex : 180 000"
                               className="text-[10px] bg-transparent outline-none w-full text-foreground placeholder:text-muted-foreground"
                             />
