@@ -535,8 +535,9 @@ const Index = () => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
                         transition={{ duration: 0.25 }}
-                        className="px-4 py-2 flex flex-col gap-2 overflow-y-auto flex-1"
+                        className="flex flex-col flex-1 overflow-hidden"
                       >
+                      <div className="px-4 py-2 flex flex-col gap-2 overflow-y-auto flex-1">
                         {/* Stepper */}
                         <div className="flex items-center justify-between px-1">
                           {["Profil", "Info", "Site", "Eligib.", "Analyse", "Solut.", "Contact"].map((step, i) => {
@@ -670,18 +671,19 @@ const Index = () => {
                               {dateError && (
                                 <p className="text-[8px] text-destructive -mt-1">La date de fin doit être après la date de début.</p>
                               )}
-
-                              {/* CTA */}
-                              <button
-                                onClick={() => !dateError && setPhoneScreen("site")}
-                                disabled={!!dateError}
-                                className={`w-full rounded-full text-[10px] h-9 font-semibold flex items-center justify-center gap-1.5 transition-colors ${dateError ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-primary text-primary-foreground hover:bg-primary/90"}`}
-                              >
-                                Continuer <ArrowRight className="w-3 h-3" />
-                              </button>
                             </>
                           );
                         })()}
+                        </div>
+                        {/* CTA — épinglé en bas, hors scroll */}
+                        <div className="px-4 pb-3 pt-2 shrink-0">
+                          <button
+                            onClick={() => setPhoneScreen("site")}
+                            className="w-full rounded-full text-[10px] h-9 font-semibold flex items-center justify-center gap-1.5 transition-colors bg-primary text-primary-foreground hover:bg-primary/90"
+                          >
+                            Continuer <ArrowRight className="w-3 h-3" />
+                          </button>
+                        </div>
                       </motion.div>
                     ) : phoneScreen === "site" ? (
                       /* Site screen */
