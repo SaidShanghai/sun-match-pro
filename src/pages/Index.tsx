@@ -373,7 +373,7 @@ const Index = () => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
                         transition={{ duration: 0.25 }}
-                        className="px-4 py-2 flex flex-col gap-1.5 overflow-y-auto flex-1"
+                        className="px-4 py-2.5 flex flex-col gap-2 overflow-y-auto flex-1"
                       >
                         {/* Stepper */}
                         <div className="flex items-center justify-between px-1">
@@ -397,18 +397,18 @@ const Index = () => {
                         </div>
 
                         {/* Objectif principal */}
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                           <label className="text-[9px] font-semibold text-foreground">Objectif principal</label>
                           <div className="flex gap-1.5">
                             <button
                               onClick={() => setObjectif("facture")}
-                              className={`flex-1 flex items-center gap-1 px-2 py-1.5 rounded-full text-[10px] font-medium border transition-colors ${objectif === "facture" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
+                              className={`flex-1 flex items-center gap-1 px-2 py-2 rounded-full text-[10px] font-medium border transition-colors ${objectif === "facture" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
                             >
                               <TrendingDown className="w-2.5 h-2.5 shrink-0" /> Réduire la facture
                             </button>
                             <button
                               onClick={() => setObjectif("autonomie")}
-                              className={`flex-1 flex items-center gap-1 px-2 py-1.5 rounded-full text-[10px] font-medium border transition-colors ${objectif === "autonomie" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
+                              className={`flex-1 flex items-center gap-1 px-2 py-2 rounded-full text-[10px] font-medium border transition-colors ${objectif === "autonomie" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
                             >
                               <Battery className="w-2.5 h-2.5 shrink-0" /> Autonomie totale
                             </button>
@@ -416,14 +416,14 @@ const Index = () => {
                         </div>
 
                         {/* Type de bâtiment */}
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                           <label className="text-[9px] font-semibold text-foreground">Type de bâtiment</label>
                           <div className="flex gap-1.5">
                             {(["Industriel", "Tertiaire"] as const).map(opt => (
                               <button
                                 key={opt}
                                 onClick={() => setTypeBatiment(opt)}
-                                className={`flex-1 py-1.5 rounded-full text-[10px] font-medium border transition-colors ${typeBatiment === opt ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
+                                className={`flex-1 py-2 rounded-full text-[10px] font-medium border transition-colors ${typeBatiment === opt ? "bg-primary/10 border-primary text-foreground" : "border-border text-foreground hover:border-primary/50"}`}
                               >
                                 {opt}
                               </button>
@@ -432,9 +432,9 @@ const Index = () => {
                         </div>
 
                         {/* Secteur d'activité */}
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                           <label className="text-[9px] font-semibold text-foreground">Secteur d'activité</label>
-                          <div className="flex items-center gap-1.5 px-2.5 py-1.5 border border-border rounded-xl bg-background">
+                          <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl bg-background">
                             <select
                               className="text-[9px] bg-background outline-none w-full text-foreground appearance-none cursor-pointer"
                               defaultValue=""
@@ -449,9 +449,9 @@ const Index = () => {
                         </div>
 
                         {/* Consommation */}
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                           <label className="text-[9px] font-semibold text-foreground">Consommation annuelle (kWh)</label>
-                          <div className="flex items-center gap-1.5 px-2.5 py-1.5 border border-border rounded-xl">
+                          <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl">
                             <Zap className="w-3 h-3 text-muted-foreground shrink-0" />
                             <input
                               type="text"
@@ -468,9 +468,9 @@ const Index = () => {
                         </div>
 
                         {/* Facture annuelle */}
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                           <label className="text-[9px] font-semibold text-foreground">Facture annuelle (MAD)</label>
-                          <div className="flex items-center gap-1.5 px-2.5 py-1.5 border border-border rounded-xl">
+                          <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl">
                             <FileText className="w-3 h-3 text-muted-foreground shrink-0" />
                             <input
                               type="text"
@@ -487,9 +487,9 @@ const Index = () => {
                         </div>
 
                         {/* Puissance souscrite */}
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                           <label className="text-[9px] font-semibold text-foreground">Puissance souscrite (kVA)</label>
-                          <div className="flex items-center gap-1.5 px-2.5 py-1.5 border border-border rounded-xl">
+                          <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl">
                             <Zap className="w-3 h-3 text-muted-foreground shrink-0" />
                             <input
                               type="number"
@@ -502,9 +502,9 @@ const Index = () => {
                         </div>
 
                         {/* Type d'abonnement */}
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                           <label className="text-[9px] font-semibold text-foreground">Type d'abonnement</label>
-                          <div className="flex items-center gap-1.5 px-2.5 py-1.5 border border-border rounded-xl bg-background">
+                          <div className="flex items-center gap-1.5 px-2.5 py-2 border border-border rounded-xl bg-background">
                             <select
                               value={typeAbonnement ?? ""}
                               onChange={e => setTypeAbonnement(e.target.value as "Basse Tension" | "Moyenne Tension" | "Haute Tension")}
@@ -523,7 +523,7 @@ const Index = () => {
                         <button
                           onClick={() => { const valid = typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement; if (valid) setPhoneScreen(selectedType === "Entreprise" ? "informations" : "site"); }}
                           disabled={!(typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement)}
-                          className={`w-full rounded-full text-[10px] h-8 font-semibold flex items-center justify-center gap-1.5 transition-colors ${typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
+                          className={`w-full rounded-full text-[10px] h-9 font-semibold flex items-center justify-center gap-1.5 transition-colors ${typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
                         >
                           Continuer <ArrowRight className="w-3 h-3" />
                         </button>
