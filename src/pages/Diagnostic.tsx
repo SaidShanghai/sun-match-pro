@@ -98,6 +98,10 @@ const Diagnostic = () => {
   const [selectedUsages, setSelectedUsages] = useState<string[]>([]);
   const [descriptionProjet, setDescriptionProjet] = useState("");
   const [adresseProjet, setAdresseProjet] = useState("");
+  const [villeProjet, setVilleProjet] = useState("");
+  const [villeProjetOpen, setVilleProjetOpen] = useState(false);
+  const [villeProjetSearch, setVilleProjetSearch] = useState("");
+  const villeProjetRef = useRef<HTMLDivElement>(null);
   const [dateDebut, setDateDebut] = useState("");
   const [dateFin, setDateFin] = useState("");
   const [pvExistante, setPvExistante] = useState<"Oui" | "Non" | null>(null);
@@ -131,12 +135,17 @@ const Diagnostic = () => {
         setVilleOpen(false);
         setVilleSearch("");
       }
+      if (villeProjetRef.current && !villeProjetRef.current.contains(e.target as Node)) {
+        setVilleProjetOpen(false);
+        setVilleProjetSearch("");
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   const filteredVilles = villes.filter(v => v.toLowerCase().includes(villeSearch.toLowerCase()));
+  const filteredVillesProjet = villes.filter(v => v.toLowerCase().includes(villeProjetSearch.toLowerCase()));
 
   const goBack = () => {
     const map: Record<Screen, Screen> = {
@@ -452,10 +461,51 @@ const Diagnostic = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold">Adresse complète du projet</label>
+                    <label className="text-sm font-semibold">Adresse du projet</label>
                     <div className="flex items-center gap-2 px-4 py-3 border-2 border-border rounded-xl focus-within:border-primary transition-colors">
                       <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
-                      <input type="text" value={adresseProjet} onChange={(e) => setAdresseProjet(e.target.value)} placeholder="N°, Rue, Ville..." className="bg-transparent outline-none w-full text-sm placeholder:text-muted-foreground" />
+                      <input type="text" value={adresseProjet} onChange={(e) => setAdresseProjet(e.target.value)} placeholder="N°, Rue" className="bg-transparent outline-none w-full text-sm placeholder:text-muted-foreground" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Ville</label>
+                    <div ref={villeProjetRef} className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setVilleProjetOpen(o => !o)}
+                        className="w-full flex items-center gap-2 px-4 py-3 border-2 border-border rounded-xl transition-colors text-sm text-left"
+                      >
+                        <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
+                        <span className={villeProjet ? "text-foreground" : "text-muted-foreground"}>{villeProjet || "Sélectionner une ville"}</span>
+                        <ChevronDown className="w-4 h-4 text-muted-foreground ml-auto" />
+                      </button>
+                      {villeProjetOpen && (
+                        <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-xl shadow-lg z-50 max-h-48 overflow-hidden flex flex-col">
+                          <div className="p-2 border-b border-border">
+                            <input
+                              autoFocus
+                              type="text"
+                              value={villeProjetSearch}
+                              onChange={(e) => setVilleProjetSearch(e.target.value)}
+                              placeholder="Rechercher..."
+                              className="w-full text-sm bg-transparent outline-none px-2 py-1"
+                            />
+                          </div>
+                          <div className="overflow-y-auto">
+                            {filteredVillesProjet.map(v => (
+                              <button
+                                key={v}
+                                type="button"
+                                onClick={() => { setVilleProjet(v); setVilleProjetOpen(false); setVilleProjetSearch(""); }}
+                                className={`w-full text-left px-4 py-2 text-sm hover:bg-muted transition-colors ${villeProjet === v ? "text-primary font-medium" : ""}`}
+                              >
+                                {v}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -494,9 +544,9 @@ const Diagnostic = () => {
 
                   <button
                     onClick={() => {
-                      if (descriptionProjet.trim() && adresseProjet.trim() && panelAccess.length > 0 && selectedSurface) setScreen("site");
+                      if (descriptionProjet.trim() && adresseProjet.trim() && villeProjet && panelAccess.length > 0 && selectedSurface) setScreen("site");
                     }}
-                    className={`w-full rounded-2xl h-14 font-semibold text-base flex items-center justify-center gap-2 transition-colors ${descriptionProjet.trim() && adresseProjet.trim() && panelAccess.length > 0 && selectedSurface ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
+                    className={`w-full rounded-2xl h-14 font-semibold text-base flex items-center justify-center gap-2 transition-colors ${descriptionProjet.trim() && adresseProjet.trim() && villeProjet && panelAccess.length > 0 && selectedSurface ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
                   >
                     Continuer <ArrowRight className="w-4 h-4" />
                   </button>
