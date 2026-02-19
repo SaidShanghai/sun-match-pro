@@ -1,4 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -115,6 +117,10 @@ const Index = () => {
   const [callbackOpen, setCallbackOpen] = useState(false);
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [quoteRef, setQuoteRef] = useState<string | null>(null);
+  const [invoiceUploading, setInvoiceUploading] = useState(false);
+  const [invoiceUploaded, setInvoiceUploaded] = useState(false);
+  const invoiceInputRef = useRef<HTMLInputElement | null>(null);
+  const { toast } = useToast();
   const [contactNom, setContactNom] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactTel, setContactTel] = useState("");
@@ -970,13 +976,63 @@ const Index = () => {
                           )}
                         </div>
                         <div className="w-full space-y-2 mt-1">
+                          <input
+                            ref={invoiceInputRef}
+                            type="file"
+                            className="hidden"
+                            accept=".pdf,.jpg,.jpeg,.png,.webp"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file || !quoteRef) return;
+                              setInvoiceUploading(true);
+                              try {
+                                const ext = file.name.split(".").pop();
+                                const filePath = `${quoteRef}.${ext}`;
+                                const { error: uploadError } = await supabase.storage
+                                  .from("client-invoices")
+                                  .upload(filePath, file, { upsert: true });
+                                if (uploadError) throw uploadError;
+
+                                const { error: fnError } = await supabase.functions.invoke("send-invoice-email", {
+                                  body: {
+                                    filePath,
+                                    fileName: file.name,
+                                    quoteRef: quoteRef.slice(0, 8).toUpperCase(),
+                                    clientName: contactNom,
+                                    clientEmail: contactEmail,
+                                  },
+                                });
+                                if (fnError) throw fnError;
+
+                                setInvoiceUploaded(true);
+                                toast({ title: "Facture envoyée ✅", description: "Nous avons bien reçu votre facture." });
+                              } catch (err: any) {
+                                toast({ title: "Erreur", description: err.message, variant: "destructive" });
+                              } finally {
+                                setInvoiceUploading(false);
+                                e.target.value = "";
+                              }
+                            }}
+                          />
                           <button
-                            className="w-full bg-primary text-primary-foreground rounded-full py-2.5 text-[10px] font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors"
+                            onClick={() => !invoiceUploaded && !invoiceUploading && invoiceInputRef.current?.click()}
+                            disabled={invoiceUploading || invoiceUploaded}
+                            className={`w-full rounded-full py-2.5 text-[10px] font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+                              invoiceUploaded
+                                ? "bg-green-500/10 text-green-700 border border-green-500/20 cursor-default"
+                                : "bg-primary text-primary-foreground hover:bg-primary/90"
+                            }`}
                           >
-                            📎 Téléverser une facture
+                            {invoiceUploading ? (
+                              <>⏳ Envoi en cours…</>
+                            ) : invoiceUploaded ? (
+                              <>✅ Facture envoyée</>
+                            ) : (
+                              <><span className="text-[13px] font-bold leading-none">+</span> Téléverser une facture</>
+                            )}
                           </button>
                           <button
-                            onClick={() => { setPhoneScreen("intro"); setQuoteRef(null); }}
+                            onClick={() => { setPhoneScreen("intro"); setQuoteRef(null); setInvoiceUploaded(false); }}
                             className="w-full border border-border rounded-full py-2.5 text-[10px] font-semibold text-foreground hover:bg-muted transition-colors"
                           >
                             Retour à l'accueil
