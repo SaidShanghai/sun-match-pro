@@ -6,6 +6,16 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version",
 };
 
+/** Escape HTML special characters to prevent XSS in email templates */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // In-memory rate limiter: ip -> { count, resetAt }
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_MAX = 5;
@@ -112,8 +122,8 @@ Deno.serve(async (req) => {
     // Send confirmation email to client (best-effort)
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     if (RESEND_API_KEY) {
-      const firstName = String(client_name).trim().split(" ")[0];
-      const refShort = data.id.slice(0, 8).toUpperCase();
+      const firstName = escapeHtml(String(client_name).trim().split(" ")[0]);
+      const refShort = escapeHtml(data.id.slice(0, 8).toUpperCase());
       await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
