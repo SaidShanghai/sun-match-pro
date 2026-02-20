@@ -121,7 +121,7 @@ const AuthPortal = () => {
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full flex items-center gap-3 bg-foreground text-background hover:bg-foreground/90 border-foreground"
+                    className="w-full flex items-center gap-3 bg-foreground text-background hover:bg-foreground/80 hover:text-background border-foreground"
                     onClick={handleAppleSignIn}
                     disabled={loading}
                   >
