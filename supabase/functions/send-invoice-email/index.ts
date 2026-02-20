@@ -16,23 +16,6 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#39;");
 }
 
-// Rate limiting: IP -> { count, resetAt }
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT_MAX = 5;
-const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return false;
-  }
-  if (entry.count >= RATE_LIMIT_MAX) return true;
-  entry.count += 1;
-  return false;
-}
-
 // Max file size: 2 MB
 const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024;
 
@@ -42,13 +25,24 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Rate limiting by IP
+    // Rate limiting by IP (persistent, DB-backed)
     const clientIp =
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
       req.headers.get("x-real-ip") ||
       "unknown";
 
-    if (isRateLimited(clientIp)) {
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    const { data: isLimited } = await supabaseAdmin.rpc("check_rate_limit", {
+      _key: `send-invoice:${clientIp}`,
+      _max_requests: 5,
+      _window_seconds: 3600,
+    });
+
+    if (isLimited) {
       return new Response(
         JSON.stringify({ error: "Trop de requêtes. Réessayez dans une heure." }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -100,10 +94,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+    // supabaseAdmin already created above for rate limiting
 
     const sanitizedRef = String(quoteRef).replace(/[^a-zA-Z0-9-]/g, "").slice(0, 20);
     const filePath = `${sanitizedRef}-${Date.now()}.pdf`;

@@ -16,27 +16,7 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#39;");
 }
 
-// In-memory rate limiter: ip -> { count, resetAt }
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT_MAX = 5;
-const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return false;
-  }
-
-  if (entry.count >= RATE_LIMIT_MAX) {
-    return true;
-  }
-
-  entry.count += 1;
-  return false;
-}
+// In-memory rate limiter removed — now using persistent DB-based rate limiting
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -44,13 +24,24 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Rate limiting by IP
+    // Rate limiting by IP (persistent, DB-backed)
     const clientIp =
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
       req.headers.get("x-real-ip") ||
       "unknown";
 
-    if (isRateLimited(clientIp)) {
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    const { data: isLimited } = await supabase.rpc("check_rate_limit", {
+      _key: `submit-quote:${clientIp}`,
+      _max_requests: 5,
+      _window_seconds: 3600,
+    });
+
+    if (isLimited) {
       return new Response(
         JSON.stringify({ error: "Trop de demandes. Veuillez réessayer dans une heure." }),
         {
@@ -78,11 +69,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Use service role to bypass RLS
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+    // Use service role client (already created above for rate limiting)
 
     // Anti-spam: check if same email submitted in the last 24 hours
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
