@@ -211,36 +211,45 @@ export type Database = {
           applicable_aids: string[] | null
           created_at: string
           description: string | null
+          fabricant: string | null
           id: string
           is_active: boolean
+          modele: string | null
           name: string
           power_kwc: number
           price_ttc: number
           profile_type: string
+          specs: Json | null
           updated_at: string
         }
         Insert: {
           applicable_aids?: string[] | null
           created_at?: string
           description?: string | null
+          fabricant?: string | null
           id?: string
           is_active?: boolean
+          modele?: string | null
           name: string
           power_kwc: number
           price_ttc: number
           profile_type: string
+          specs?: Json | null
           updated_at?: string
         }
         Update: {
           applicable_aids?: string[] | null
           created_at?: string
           description?: string | null
+          fabricant?: string | null
           id?: string
           is_active?: boolean
+          modele?: string | null
           name?: string
           power_kwc?: number
           price_ttc?: number
           profile_type?: string
+          specs?: Json | null
           updated_at?: string
         }
         Relationships: []

@@ -1,0 +1,5 @@
+
+ALTER TABLE public.packages
+  ADD COLUMN IF NOT EXISTS fabricant TEXT,
+  ADD COLUMN IF NOT EXISTS modele TEXT,
+  ADD COLUMN IF NOT EXISTS specs JSONB DEFAULT '{}'::jsonb;
