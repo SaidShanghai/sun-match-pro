@@ -774,10 +774,20 @@ const Diagnostic = () => {
                   </div>
 
                   <div className="w-full max-w-md space-y-3">
-                    <input ref={invoiceInputRef} type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png,.webp"
+                    <input ref={invoiceInputRef} type="file" className="hidden" accept=".pdf"
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (!file) return;
+                        if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+                          toast({ title: "Format non accepté", description: "Seuls les fichiers PDF sont acceptés.", variant: "destructive" });
+                          e.target.value = "";
+                          return;
+                        }
+                        if (file.size > 2 * 1024 * 1024) {
+                          toast({ title: "Fichier trop volumineux", description: "La taille maximale est de 2 Mo.", variant: "destructive" });
+                          e.target.value = "";
+                          return;
+                        }
                         const ref = quoteRef ?? crypto.randomUUID();
                         setInvoiceUploading(true);
                         try {
