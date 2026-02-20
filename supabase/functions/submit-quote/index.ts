@@ -6,16 +6,63 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version",
 };
 
+// In-memory rate limiter: ip -> { count, resetAt }
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+
+  if (entry.count >= RATE_LIMIT_MAX) {
+    return true;
+  }
+
+  entry.count += 1;
+  return false;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
+    // Rate limiting by IP
+    const clientIp =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("x-real-ip") ||
+      "unknown";
+
+    if (isRateLimited(clientIp)) {
+      return new Response(
+        JSON.stringify({ error: "Trop de demandes. Veuillez réessayer dans une heure." }),
+        {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
     const { client_name, client_email, client_phone, city } = await req.json();
 
     if (!client_name || !client_email) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(String(client_email).trim())) {
+      return new Response(JSON.stringify({ error: "Invalid email address" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -27,11 +74,32 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    // Anti-spam: check if same email submitted in the last 24 hours
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const { data: existing } = await supabase
+      .from("quote_requests")
+      .select("id")
+      .eq("client_email", String(client_email).trim().toLowerCase())
+      .gte("created_at", since)
+      .maybeSingle();
+
+    if (existing) {
+      return new Response(
+        JSON.stringify({
+          error: "Une demande avec cet email a déjà été soumise dans les dernières 24h.",
+        }),
+        {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
     const { data, error } = await supabase
       .from("quote_requests")
       .insert({
         client_name: String(client_name).trim().slice(0, 100),
-        client_email: String(client_email).trim().slice(0, 255),
+        client_email: String(client_email).trim().toLowerCase().slice(0, 255),
         client_phone: client_phone ? String(client_phone).trim().slice(0, 20) : null,
         city: city ? String(city).trim().slice(0, 100) : null,
         status: "new",
