@@ -6,6 +6,16 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version",
 };
 
+/** Escape HTML special characters to prevent XSS in email templates */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // Rate limiting: IP -> { count, resetAt }
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_MAX = 5;
@@ -116,9 +126,10 @@ Deno.serve(async (req) => {
     // Send email via Resend (best-effort)
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     if (RESEND_API_KEY) {
-      const safeName = String(clientName).trim().slice(0, 100);
-      const safeEmail = String(clientEmail).trim().slice(0, 255);
-      const safeRef = sanitizedRef || "N/A";
+      const safeName = escapeHtml(String(clientName).trim().slice(0, 100));
+      const safeEmail = escapeHtml(String(clientEmail).trim().slice(0, 255));
+      const safeRef = escapeHtml(sanitizedRef || "N/A");
+      const safeFileName = escapeHtml(String(fileName).slice(0, 100));
 
       await fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -135,7 +146,7 @@ Deno.serve(async (req) => {
             <p><strong>Client :</strong> ${safeName}</p>
             <p><strong>Email :</strong> ${safeEmail}</p>
             <p><strong>Référence :</strong> #${safeRef}</p>
-            <p><strong>Fichier :</strong> ${String(fileName).slice(0, 100)}</p>
+            <p><strong>Fichier :</strong> ${safeFileName}</p>
             <br/>
             <p>
               <a href="${signedUrl}" style="background:#f97316;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold;">
