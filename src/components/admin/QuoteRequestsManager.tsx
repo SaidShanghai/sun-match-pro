@@ -251,13 +251,10 @@ const QuoteRequestsManager = () => {
                               <MapPin className="w-3.5 h-3.5" />Localisation toiture
                             </p>
                             <div className="rounded-xl overflow-hidden border border-border">
-                              <iframe
-                                width="100%"
-                                height="250"
-                                style={{ border: 0 }}
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                                src={`https://www.google.com/maps/embed/v1/place?key=${mapsKey}&q=${req.gps_lat},${req.gps_lng}&zoom=19&maptype=satellite`}
+                              <img
+                                src={`https://maps.googleapis.com/maps/api/staticmap?center=${req.gps_lat},${req.gps_lng}&zoom=19&size=600x250&maptype=satellite&markers=color:red%7C${req.gps_lat},${req.gps_lng}&key=${mapsKey}`}
+                                alt="Localisation toiture"
+                                className="w-full h-[250px] object-cover bg-muted"
                               />
                             </div>
                             <p className="text-xs text-muted-foreground mt-1">
