@@ -50,6 +50,9 @@ const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
           });
         }
 
+        // Ensure marker library is loaded
+        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
+
         const coords = cityCoords[city] || cityCoords["Casablanca"];
 
         const map = new google.maps.Map(mapRef.current!, {
@@ -60,16 +63,13 @@ const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
           disableDefaultUI: true,
           zoomControl: true,
           gestureHandling: "greedy",
-          styles: [
-            { elementType: "labels", stylers: [{ visibility: "off" }] },
-          ],
         });
 
         // Custom large marker for easy mobile dragging
         const pinEl = document.createElement("div");
         pinEl.style.cssText = "width:40px;height:40px;background:#EF4444;border:4px solid white;border-radius:50%;box-shadow:0 2px 10px rgba(0,0,0,0.5);cursor:grab;touch-action:none;";
 
-        const marker = new google.maps.marker.AdvancedMarkerElement({
+        const marker = new AdvancedMarkerElement({
           map,
           position: coords,
           gmpDraggable: true,
@@ -97,7 +97,7 @@ const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
               const dot = document.createElement("div");
               dot.style.cssText = "width:16px;height:16px;background:#4285F4;border:3px solid white;border-radius:50%;box-shadow:0 0 6px rgba(66,133,244,0.6);";
 
-              const geoMarker = new google.maps.marker.AdvancedMarkerElement({
+              const geoMarker = new AdvancedMarkerElement({
                 map,
                 position: geoPos,
                 content: dot,
