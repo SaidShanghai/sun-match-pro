@@ -6,12 +6,25 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export interface DiagnosticData {
   housing_type?: string;
+  objectif?: string;
   roof_type?: string;
   roof_orientation?: string;
   roof_surface?: string;
   annual_consumption?: string;
   budget?: string;
   project_type?: string;
+  type_abonnement?: string;
+  puissance_souscrite?: string;
+  selected_usages?: string[];
+  description_projet?: string;
+  adresse_projet?: string;
+  ville_projet?: string;
+  date_debut?: string;
+  date_fin?: string;
+  pv_existante?: string;
+  extension_install?: string;
+  subvention_recue?: string;
+  elig_decl?: Record<string, string | null>;
 }
 
 interface QuotePanelProps {

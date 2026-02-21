@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { client_name, client_email, client_phone, city, housing_type, roof_type, roof_orientation, roof_surface, annual_consumption, budget, project_type } = await req.json();
+    const { client_name, client_email, client_phone, city, housing_type, roof_type, roof_orientation, roof_surface, annual_consumption, budget, project_type, objectif, type_abonnement, puissance_souscrite, selected_usages, description_projet, adresse_projet, ville_projet, date_debut, date_fin, pv_existante, extension_install, subvention_recue, elig_decl } = await req.json();
 
     if (!client_name || !client_email) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
@@ -100,12 +100,25 @@ Deno.serve(async (req) => {
         client_phone: client_phone ? String(client_phone).trim().slice(0, 20) : null,
         city: city ? String(city).trim().slice(0, 100) : null,
         housing_type: housing_type ? String(housing_type).trim().slice(0, 100) : null,
+        objectif: objectif ? String(objectif).trim().slice(0, 100) : null,
         roof_type: roof_type ? String(roof_type).trim().slice(0, 100) : null,
         roof_orientation: roof_orientation ? String(roof_orientation).trim().slice(0, 200) : null,
         roof_surface: roof_surface ? String(roof_surface).trim().slice(0, 100) : null,
         annual_consumption: annual_consumption ? String(annual_consumption).trim().slice(0, 100) : null,
         budget: budget ? String(budget).trim().slice(0, 100) : null,
         project_type: project_type ? String(project_type).trim().slice(0, 500) : null,
+        type_abonnement: type_abonnement ? String(type_abonnement).trim().slice(0, 50) : null,
+        puissance_souscrite: puissance_souscrite ? String(puissance_souscrite).trim().slice(0, 50) : null,
+        selected_usages: Array.isArray(selected_usages) ? selected_usages.map((u: string) => String(u).trim().slice(0, 50)) : null,
+        description_projet: description_projet ? String(description_projet).trim().slice(0, 1000) : null,
+        adresse_projet: adresse_projet ? String(adresse_projet).trim().slice(0, 200) : null,
+        ville_projet: ville_projet ? String(ville_projet).trim().slice(0, 100) : null,
+        date_debut: date_debut ? String(date_debut).trim().slice(0, 20) : null,
+        date_fin: date_fin ? String(date_fin).trim().slice(0, 20) : null,
+        pv_existante: pv_existante ? String(pv_existante).trim().slice(0, 10) : null,
+        extension_install: extension_install ? String(extension_install).trim().slice(0, 10) : null,
+        subvention_recue: subvention_recue ? String(subvention_recue).trim().slice(0, 10) : null,
+        elig_decl: elig_decl ?? null,
         status: "new",
       })
       .select("id")
