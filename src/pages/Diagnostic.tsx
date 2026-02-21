@@ -115,9 +115,6 @@ const Diagnostic = () => {
   });
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [quoteRef, setQuoteRef] = useState<string | null>(null);
-  const [invoiceUploading, setInvoiceUploading] = useState(false);
-  const [invoiceUploaded, setInvoiceUploaded] = useState(false);
-  const invoiceInputRef = useRef<HTMLInputElement | null>(null);
   const [contactNom, setContactNom] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [solarData, setSolarData] = useState<SolarData | null>(null);
@@ -946,61 +943,7 @@ const Diagnostic = () => {
                   </div>
 
                   <div className="w-full max-w-md space-y-3">
-                    <input ref={invoiceInputRef} type="file" className="hidden" accept=".pdf"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
-                          toast({ title: "Format non accepté", description: "Seuls les fichiers PDF sont acceptés.", variant: "destructive" });
-                          e.target.value = "";
-                          return;
-                        }
-                        if (file.size > 2 * 1024 * 1024) {
-                          toast({ title: "Fichier trop volumineux", description: "La taille maximale est de 2 Mo.", variant: "destructive" });
-                          e.target.value = "";
-                          return;
-                        }
-                        const ref = quoteRef ?? crypto.randomUUID();
-                        setInvoiceUploading(true);
-                        try {
-                          const reader = new FileReader();
-                          const fileBase64 = await new Promise<string>((resolve, reject) => {
-                            reader.onload = () => resolve(reader.result as string);
-                            reader.onerror = reject;
-                            reader.readAsDataURL(file);
-                          });
-                          const { error: fnError } = await supabase.functions.invoke("send-invoice-email", {
-                            body: { fileBase64, fileType: file.type, fileName: file.name, quoteRef: ref.slice(0, 8).toUpperCase(), clientName: contactNom || "Client", clientEmail: contactEmail || "" },
-                          });
-                          if (fnError) throw fnError;
-                          setInvoiceUploaded(true);
-                        } catch (err: any) {
-                          console.error("Invoice upload error:", err);
-                          toast({ title: "Erreur lors de l'envoi", description: err?.message ?? "Veuillez réessayer.", variant: "destructive" });
-                        } finally {
-                          setInvoiceUploading(false);
-                          e.target.value = "";
-                        }
-                      }}
-                    />
-
-                    {invoiceUploaded ? (
-                      <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 260, damping: 18 }} className="w-full rounded-2xl bg-success px-6 py-6 flex flex-col items-center gap-2 text-center shadow-lg">
-                        <span className="text-5xl">✅</span>
-                        <p className="text-xl font-black text-foreground">Facture envoyée !</p>
-                        <p className="text-sm text-foreground/80">Notre équipe l'examinera et vous recontactera rapidement.</p>
-                      </motion.div>
-                    ) : (
-                      <button onClick={() => !invoiceUploading && invoiceInputRef.current?.click()} disabled={invoiceUploading} className="w-full rounded-2xl py-4 text-sm font-semibold flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-60">
-                        {invoiceUploading ? (
-                          <><svg className="animate-spin w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>Envoi en cours…</>
-                        ) : (
-                          <>+ Téléverser une facture</>
-                        )}
-                      </button>
-                    )}
-
-                    <button onClick={() => { setScreen("landing"); setQuoteRef(null); setInvoiceUploaded(false); }} className="w-full border-2 border-border rounded-2xl py-4 text-sm font-semibold text-foreground hover:bg-muted transition-colors">
+                    <button onClick={() => { setScreen("landing"); setQuoteRef(null); }} className="w-full border-2 border-border rounded-2xl py-4 text-sm font-semibold text-foreground hover:bg-muted transition-colors">
                       Retour à l'accueil
                     </button>
                   </div>
