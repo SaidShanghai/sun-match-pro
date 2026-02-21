@@ -35,6 +35,8 @@ interface QuoteRequest {
   extension_install: string | null;
   subvention_recue: string | null;
   elig_decl: Record<string, string | null> | null;
+  gps_lat: number | null;
+  gps_lng: number | null;
   status: string;
   admin_notes: string | null;
   recommended_package_id: string | null;
@@ -67,8 +69,6 @@ const DIAGNOSTIC_LABELS: Record<string, string> = {
   pv_existante: "Installation PV existante",
   extension_install: "Extension installation",
   subvention_recue: "Subvention reçue",
-  gps_lat: "GPS Latitude",
-  gps_lng: "GPS Longitude",
 };
 
 const QuoteRequestsManager = () => {
@@ -235,6 +235,31 @@ const QuoteRequestsManager = () => {
                             </div>
                           )}
                         </div>
+
+                        {/* GPS Map preview */}
+                        {req.gps_lat && req.gps_lng && (
+                          <div className="mt-3">
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1">
+                              <MapPin className="w-3.5 h-3.5" />Localisation toiture
+                            </p>
+                            <div className="rounded-xl overflow-hidden border border-border">
+                              <iframe
+                                width="100%"
+                                height="250"
+                                style={{ border: 0 }}
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                                src={`https://maps.google.com/maps?q=${req.gps_lat},${req.gps_lng}&z=19&t=k&output=embed`}
+                              />
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              GPS : {req.gps_lat.toFixed(6)}, {req.gps_lng.toFixed(6)} ·{" "}
+                              <a href={`https://www.google.com/maps?q=${req.gps_lat},${req.gps_lng}`} target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                                Ouvrir dans Google Maps
+                              </a>
+                            </p>
+                          </div>
+                        )}
                       </div>
 
                       {/* Notes admin */}
