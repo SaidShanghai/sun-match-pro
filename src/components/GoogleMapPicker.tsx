@@ -83,11 +83,16 @@ const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
           ],
         });
 
+        // Custom large marker for easy mobile dragging
+        const pinEl = document.createElement("div");
+        pinEl.style.cssText = "width:40px;height:40px;background:#EF4444;border:4px solid white;border-radius:50%;box-shadow:0 2px 10px rgba(0,0,0,0.5);cursor:grab;touch-action:none;";
+
         const marker = new google.maps.marker.AdvancedMarkerElement({
           map,
           position: coords,
           gmpDraggable: true,
           title: "Déplacez vers votre toit",
+          content: pinEl,
         });
 
         marker.addListener("dragend", () => {
