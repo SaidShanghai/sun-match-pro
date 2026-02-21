@@ -909,7 +909,7 @@ const Diagnostic = () => {
                           </div>
                           <span className="text-sm font-medium">{item}</span>
                         </div>
-                        <Lock className="w-7 h-7 text-primary/60 shrink-0" />
+                        <Lock className="w-8 h-8 text-primary shrink-0" strokeWidth={2.5} />
                       </div>
                     ))}
                   </div>
