@@ -79,9 +79,17 @@ const QuoteRequestsManager = () => {
   const [noteText, setNoteText] = useState("");
   const [savingNote, setSavingNote] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [mapsKey, setMapsKey] = useState<string | null>(null);
   const { toast } = useToast();
 
-  useEffect(() => { fetchRequests(); }, []);
+  useEffect(() => { fetchRequests(); fetchMapsKey(); }, []);
+
+  const fetchMapsKey = async () => {
+    try {
+      const { data } = await supabase.functions.invoke("get-maps-key");
+      if (data?.key) setMapsKey(data.key);
+    } catch {}
+  };
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -237,7 +245,7 @@ const QuoteRequestsManager = () => {
                         </div>
 
                         {/* GPS Map preview */}
-                        {req.gps_lat && req.gps_lng && (
+                        {req.gps_lat && req.gps_lng && mapsKey && (
                           <div className="mt-3">
                             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1">
                               <MapPin className="w-3.5 h-3.5" />Localisation toiture
@@ -249,7 +257,7 @@ const QuoteRequestsManager = () => {
                                 style={{ border: 0 }}
                                 loading="lazy"
                                 referrerPolicy="no-referrer-when-downgrade"
-                                src={`https://maps.google.com/maps?q=${req.gps_lat},${req.gps_lng}&z=19&t=s&output=embed`}
+                                src={`https://www.google.com/maps/embed/v1/place?key=${mapsKey}&q=${req.gps_lat},${req.gps_lng}&zoom=19&maptype=satellite`}
                               />
                             </div>
                             <p className="text-xs text-muted-foreground mt-1">
