@@ -23,6 +23,7 @@ import {
   Building2,
   Store,
   Warehouse,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -1148,11 +1149,14 @@ const Index = () => {
                           </div>
                           <div className="w-full space-y-2 mt-1">
                             {["Solution optimale identifiée", "Installateurs certifiés sélectionnés", "Aides d'état applicables détectées"].map((item) => (
-                              <div key={item} className="flex items-center gap-2 p-2 rounded-lg bg-primary/5 border border-primary/20">
-                                <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center shrink-0">
-                                  <span className="text-[8px] text-primary-foreground font-bold">✓</span>
+                              <div key={item} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-primary/5 border border-primary/20">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center shrink-0">
+                                    <span className="text-[8px] text-primary-foreground font-bold">✓</span>
+                                  </div>
+                                  <span className="text-[9px] text-foreground font-medium">{item}</span>
                                 </div>
-                                <span className="text-[9px] text-foreground font-medium">{item}</span>
+                                <Lock className="w-4 h-4 text-primary/60 shrink-0" />
                               </div>
                             ))}
                           </div>
