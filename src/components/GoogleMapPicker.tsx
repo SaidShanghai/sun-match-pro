@@ -1,5 +1,5 @@
 /// <reference types="google.maps" />
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, MapPin } from "lucide-react";
 
@@ -32,121 +32,112 @@ const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const geoMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
+  const onLocationSelectRef = useRef(onLocationSelect);
+  const initedRef = useRef(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const addGeoMarker = useCallback((map: google.maps.Map) => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const geoPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-
-        // Create blue dot element
-        const dot = document.createElement("div");
-        dot.style.cssText = "width:16px;height:16px;background:#4285F4;border:3px solid white;border-radius:50%;box-shadow:0 0 6px rgba(66,133,244,0.6);";
-
-        // Remove old geo marker if exists
-        if (geoMarkerRef.current) {
-          geoMarkerRef.current.map = null;
-        }
-
-        const geoMarker = new google.maps.marker.AdvancedMarkerElement({
-          map,
-          position: geoPos,
-          content: dot,
-          title: "Votre position",
-        });
-        geoMarkerRef.current = geoMarker;
-
-        // Center map on user location and move pin there too
-        map.setCenter(geoPos);
-        if (markerRef.current) {
-          markerRef.current.position = geoPos;
-        }
-        onLocationSelect?.(geoPos.lat, geoPos.lng);
-      },
-      () => {
-        // Geolocation denied or failed - silently ignore, use city center
-      },
-      { enableHighAccuracy: true, timeout: 8000 }
-    );
+  // Keep callback ref up to date without triggering re-renders
+  useEffect(() => {
+    onLocationSelectRef.current = onLocationSelect;
   }, [onLocationSelect]);
 
-  const initMap = useCallback(async () => {
-    if (!mapRef.current) return;
-
-    try {
-      // Fetch API key
-      const { data, error: fnError } = await supabase.functions.invoke("get-maps-key");
-      if (fnError || !data?.key) {
-        setError("Impossible de charger la carte");
-        setLoading(false);
-        return;
-      }
-
-      // Load Google Maps script if not already loaded
-      if (!(window as any).google?.maps) {
-        await new Promise<void>((resolve, reject) => {
-          const script = document.createElement("script");
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=marker`;
-          script.async = true;
-          script.onload = () => resolve();
-          script.onerror = () => reject(new Error("Failed to load Google Maps"));
-          document.head.appendChild(script);
-        });
-      }
-
-      const coords = cityCoords[city] || cityCoords["Casablanca"];
-
-      const map = new google.maps.Map(mapRef.current, {
-        center: coords,
-        zoom: 18,
-        mapTypeId: "satellite",
-        mapId: "NOORIA_MAP",
-        disableDefaultUI: true,
-        zoomControl: true,
-        gestureHandling: "greedy",
-      });
-
-      const marker = new google.maps.marker.AdvancedMarkerElement({
-        map,
-        position: coords,
-        gmpDraggable: true,
-        title: "Déplacez vers votre toit",
-      });
-
-      marker.addListener("dragend", () => {
-        const pos = marker.position;
-        if (pos && typeof pos === 'object' && 'lat' in pos && 'lng' in pos) {
-          onLocationSelect?.(pos.lat as number, pos.lng as number);
-        }
-      });
-
-      mapInstanceRef.current = map;
-      markerRef.current = marker;
-      onLocationSelect?.(coords.lat, coords.lng);
-      setLoading(false);
-
-      // Try to geolocate the user and show blue dot
-      addGeoMarker(map);
-    } catch (e) {
-      console.error("Map init error:", e);
-      setError("Erreur lors du chargement de la carte");
-      setLoading(false);
-    }
-  }, [city, onLocationSelect, addGeoMarker]);
-
+  // Init map only once
   useEffect(() => {
-    initMap();
-  }, [initMap]);
+    if (initedRef.current || !mapRef.current) return;
+    initedRef.current = true;
 
-  // Update map center when city changes
+    (async () => {
+      try {
+        const { data, error: fnError } = await supabase.functions.invoke("get-maps-key");
+        if (fnError || !data?.key) {
+          setError("Impossible de charger la carte");
+          setLoading(false);
+          return;
+        }
+
+        // Load Google Maps script if not already loaded
+        if (!(window as any).google?.maps) {
+          await new Promise<void>((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=marker`;
+            script.async = true;
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error("Failed to load Google Maps"));
+            document.head.appendChild(script);
+          });
+        }
+
+        const coords = cityCoords[city] || cityCoords["Casablanca"];
+
+        const map = new google.maps.Map(mapRef.current!, {
+          center: coords,
+          zoom: 18,
+          mapTypeId: "satellite",
+          mapId: "NOORIA_MAP",
+          disableDefaultUI: true,
+          zoomControl: true,
+          gestureHandling: "greedy",
+        });
+
+        const marker = new google.maps.marker.AdvancedMarkerElement({
+          map,
+          position: coords,
+          gmpDraggable: true,
+          title: "Déplacez vers votre toit",
+        });
+
+        marker.addListener("dragend", () => {
+          const pos = marker.position;
+          if (pos && typeof pos === "object" && "lat" in pos && "lng" in pos) {
+            onLocationSelectRef.current?.(pos.lat as number, pos.lng as number);
+          }
+        });
+
+        mapInstanceRef.current = map;
+        markerRef.current = marker;
+        onLocationSelectRef.current?.(coords.lat, coords.lng);
+        setLoading(false);
+
+        // Try geolocation for blue dot
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              const geoPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+              const dot = document.createElement("div");
+              dot.style.cssText = "width:16px;height:16px;background:#4285F4;border:3px solid white;border-radius:50%;box-shadow:0 0 6px rgba(66,133,244,0.6);";
+
+              const geoMarker = new google.maps.marker.AdvancedMarkerElement({
+                map,
+                position: geoPos,
+                content: dot,
+                title: "Votre position",
+              });
+              geoMarkerRef.current = geoMarker;
+
+              map.setCenter(geoPos);
+              marker.position = geoPos;
+              onLocationSelectRef.current?.(geoPos.lat, geoPos.lng);
+            },
+            () => { /* silently ignore */ },
+            { enableHighAccuracy: true, timeout: 8000 }
+          );
+        }
+      } catch (e) {
+        console.error("Map init error:", e);
+        setError("Erreur lors du chargement de la carte");
+        setLoading(false);
+      }
+    })();
+  }, []); // Run once only
+
+  // Update map center when city changes (after init)
   useEffect(() => {
     if (mapInstanceRef.current && markerRef.current) {
       const coords = cityCoords[city] || cityCoords["Casablanca"];
       mapInstanceRef.current.setCenter(coords);
       markerRef.current.position = coords;
-      onLocationSelect?.(coords.lat, coords.lng);
+      onLocationSelectRef.current?.(coords.lat, coords.lng);
     }
   }, [city]);
 
