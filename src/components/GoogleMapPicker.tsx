@@ -78,6 +78,9 @@ const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
           disableDefaultUI: true,
           zoomControl: true,
           gestureHandling: "greedy",
+          styles: [
+            { elementType: "labels", stylers: [{ visibility: "off" }] },
+          ],
         });
 
         const marker = new google.maps.marker.AdvancedMarkerElement({
