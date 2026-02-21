@@ -16,12 +16,25 @@ interface QuoteRequest {
   client_phone: string | null;
   city: string | null;
   housing_type: string | null;
+  objectif: string | null;
   roof_type: string | null;
   roof_orientation: string | null;
   roof_surface: string | null;
   annual_consumption: string | null;
   budget: string | null;
   project_type: string | null;
+  type_abonnement: string | null;
+  puissance_souscrite: string | null;
+  selected_usages: string[] | null;
+  description_projet: string | null;
+  adresse_projet: string | null;
+  ville_projet: string | null;
+  date_debut: string | null;
+  date_fin: string | null;
+  pv_existante: string | null;
+  extension_install: string | null;
+  subvention_recue: string | null;
+  elig_decl: Record<string, string | null> | null;
   status: string;
   admin_notes: string | null;
   recommended_package_id: string | null;
@@ -37,12 +50,23 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
 
 const DIAGNOSTIC_LABELS: Record<string, string> = {
   housing_type: "Type de logement",
-  roof_type: "Type de toiture",
-  roof_orientation: "Orientation",
+  objectif: "Objectif",
+  roof_type: "Type de bâtiment",
+  roof_orientation: "Orientation toiture",
   roof_surface: "Surface disponible",
   annual_consumption: "Consommation annuelle",
-  budget: "Budget envisagé",
+  budget: "Facture",
   project_type: "Type de projet",
+  type_abonnement: "Type d'abonnement",
+  puissance_souscrite: "Puissance souscrite",
+  description_projet: "Description du projet",
+  adresse_projet: "Adresse du projet",
+  ville_projet: "Ville du projet",
+  date_debut: "Date début souhaitée",
+  date_fin: "Date fin souhaitée",
+  pv_existante: "Installation PV existante",
+  extension_install: "Extension installation",
+  subvention_recue: "Subvention reçue",
 };
 
 const QuoteRequestsManager = () => {
@@ -63,7 +87,7 @@ const QuoteRequestsManager = () => {
       .from("quote_requests")
       .select("*")
       .order("created_at", { ascending: false });
-    if (!error) setRequests(data || []);
+    if (!error) setRequests((data || []) as unknown as QuoteRequest[]);
     setLoading(false);
   };
 
@@ -196,6 +220,18 @@ const QuoteRequestsManager = () => {
                               </div>
                             ) : null;
                           })}
+                          {req.selected_usages && req.selected_usages.length > 0 && (
+                            <div className="text-sm sm:col-span-2">
+                              <span className="text-muted-foreground">Usages :</span>{" "}
+                              <span className="font-medium">{req.selected_usages.join(", ")}</span>
+                            </div>
+                          )}
+                          {req.elig_decl && (
+                            <div className="text-sm sm:col-span-2">
+                              <span className="text-muted-foreground">Éligibilité :</span>{" "}
+                              <span className="font-medium">{Object.entries(req.elig_decl).filter(([,v]) => v).map(([k,v]) => `${k}: ${v}`).join(" · ")}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
 

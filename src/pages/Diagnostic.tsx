@@ -847,12 +847,25 @@ const Diagnostic = () => {
         onOpenChange={setQuoteOpen}
         diagnosticData={{
           housing_type: selectedType || undefined,
+          objectif: objectif || undefined,
           roof_type: typeBatiment || undefined,
           roof_orientation: panelAccess.length > 0 ? panelAccess.join(", ") : undefined,
           roof_surface: selectedSurface || undefined,
           annual_consumption: conso || facture || undefined,
-          budget: puissanceSouscrite || undefined,
-          project_type: descriptionProjet || objectif || undefined,
+          budget: facture || undefined,
+          project_type: selectedType === "Entreprise" ? "Entreprise" : selectedType || undefined,
+          type_abonnement: typeAbonnement || undefined,
+          puissance_souscrite: puissanceSouscrite || undefined,
+          selected_usages: selectedUsages.length > 0 ? selectedUsages : undefined,
+          description_projet: descriptionProjet || undefined,
+          adresse_projet: adresseProjet || undefined,
+          ville_projet: villeProjet || ville || undefined,
+          date_debut: dateDebut || undefined,
+          date_fin: dateFin || undefined,
+          pv_existante: pvExistante || undefined,
+          extension_install: extensionInstall || undefined,
+          subvention_recue: subventionRecue || undefined,
+          elig_decl: Object.values(eligDecl).some(v => v !== null) ? eligDecl : undefined,
         }}
         onSuccess={(id) => {
           setQuoteRef(id);

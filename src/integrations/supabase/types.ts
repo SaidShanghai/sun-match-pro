@@ -331,6 +331,7 @@ export type Database = {
       quote_requests: {
         Row: {
           admin_notes: string | null
+          adresse_projet: string | null
           annual_consumption: string | null
           budget: string | null
           city: string | null
@@ -338,18 +339,31 @@ export type Database = {
           client_name: string
           client_phone: string | null
           created_at: string
+          date_debut: string | null
+          date_fin: string | null
+          description_projet: string | null
+          elig_decl: Json | null
+          extension_install: string | null
           housing_type: string | null
           id: string
+          objectif: string | null
           project_type: string | null
+          puissance_souscrite: string | null
+          pv_existante: string | null
           recommended_package_id: string | null
           roof_orientation: string | null
           roof_surface: string | null
           roof_type: string | null
+          selected_usages: string[] | null
           status: string
+          subvention_recue: string | null
+          type_abonnement: string | null
           updated_at: string
+          ville_projet: string | null
         }
         Insert: {
           admin_notes?: string | null
+          adresse_projet?: string | null
           annual_consumption?: string | null
           budget?: string | null
           city?: string | null
@@ -357,18 +371,31 @@ export type Database = {
           client_name: string
           client_phone?: string | null
           created_at?: string
+          date_debut?: string | null
+          date_fin?: string | null
+          description_projet?: string | null
+          elig_decl?: Json | null
+          extension_install?: string | null
           housing_type?: string | null
           id?: string
+          objectif?: string | null
           project_type?: string | null
+          puissance_souscrite?: string | null
+          pv_existante?: string | null
           recommended_package_id?: string | null
           roof_orientation?: string | null
           roof_surface?: string | null
           roof_type?: string | null
+          selected_usages?: string[] | null
           status?: string
+          subvention_recue?: string | null
+          type_abonnement?: string | null
           updated_at?: string
+          ville_projet?: string | null
         }
         Update: {
           admin_notes?: string | null
+          adresse_projet?: string | null
           annual_consumption?: string | null
           budget?: string | null
           city?: string | null
@@ -376,15 +403,27 @@ export type Database = {
           client_name?: string
           client_phone?: string | null
           created_at?: string
+          date_debut?: string | null
+          date_fin?: string | null
+          description_projet?: string | null
+          elig_decl?: Json | null
+          extension_install?: string | null
           housing_type?: string | null
           id?: string
+          objectif?: string | null
           project_type?: string | null
+          puissance_souscrite?: string | null
+          pv_existante?: string | null
           recommended_package_id?: string | null
           roof_orientation?: string | null
           roof_surface?: string | null
           roof_type?: string | null
+          selected_usages?: string[] | null
           status?: string
+          subvention_recue?: string | null
+          type_abonnement?: string | null
           updated_at?: string
+          ville_projet?: string | null
         }
         Relationships: [
           {
