@@ -71,19 +71,18 @@ Deno.serve(async (req) => {
 
     // Use service role client (already created above for rate limiting)
 
-    // Anti-spam: check if same email submitted in the last 24 hours
-    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    // Anti-spam: max 2 submissions per email per hour
+    const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
     const { data: existing } = await supabase
       .from("quote_requests")
       .select("id")
       .eq("client_email", String(client_email).trim().toLowerCase())
-      .gte("created_at", since)
-      .maybeSingle();
+      .gte("created_at", since);
 
-    if (existing) {
+    if (existing && existing.length >= 2) {
       return new Response(
         JSON.stringify({
-          error: "Une demande avec cet email a déjà été soumise dans les dernières 24h.",
+          error: "Vous avez déjà soumis 2 demandes cette heure. Veuillez réessayer plus tard.",
         }),
         {
           status: 429,
