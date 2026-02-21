@@ -60,7 +60,7 @@ const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
         if (!(window as any).google?.maps) {
           await new Promise<void>((resolve, reject) => {
             const script = document.createElement("script");
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=marker`;
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=marker,places`;
             script.async = true;
             script.onload = () => resolve();
             script.onerror = () => reject(new Error("Failed to load Google Maps"));

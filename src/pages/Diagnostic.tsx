@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 import QuotePanel from "@/components/QuotePanel";
 import EligibiliteScreen from "@/components/EligibiliteScreen";
 import GoogleMapPicker from "@/components/GoogleMapPicker";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 import SolarResults, { type SolarData } from "@/components/SolarResults";
 
 type Screen =
@@ -478,10 +479,11 @@ const Diagnostic = () => {
 
                   <div className="space-y-2">
                     <label className="text-sm font-semibold">Adresse du projet</label>
-                    <div className="flex items-center gap-2 px-4 py-3 border-2 border-border rounded-xl focus-within:border-primary transition-colors">
-                      <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
-                      <input type="text" value={adresseProjet} onChange={(e) => setAdresseProjet(e.target.value)} placeholder="N°, Rue" className="bg-transparent outline-none w-full text-sm placeholder:text-muted-foreground" />
-                    </div>
+                    <AddressAutocomplete
+                      value={adresseProjet}
+                      onChange={setAdresseProjet}
+                      placeholder="N°, Rue"
+                    />
                   </div>
 
                   <div className="space-y-2">
