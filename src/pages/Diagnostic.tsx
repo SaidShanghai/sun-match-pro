@@ -399,8 +399,8 @@ const Diagnostic = () => {
                     </div>
                   </div>
 
-                  {/* Facture upload with AI OCR — non-Entreprise only */}
-                  {selectedType !== "Entreprise" && (
+                  {/* Facture upload with AI OCR */}
+                  {(
                     <FactureUpload
                       onDataExtracted={(ocrData) => {
                         // Store raw OCR data for PIC
