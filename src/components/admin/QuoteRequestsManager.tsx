@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,8 +6,19 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { FileText, Loader2, Mail, Phone, MapPin, Calendar, ChevronDown, ChevronUp, StickyNote } from "lucide-react";
+import { FileText, Loader2, Mail, Phone, MapPin, Calendar, ChevronDown, ChevronUp, StickyNote, Sun, Zap, Leaf, LayoutGrid } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+interface SolarResult {
+  maxSunshineHoursPerYear?: number;
+  maxAreaMeters2?: number;
+  maxPanelCount?: number;
+  maxRawSolarGeneration?: number;
+  carbonOffsetFactorKgPerKwh?: number;
+  estimatedSavingsMad?: number;
+  error?: string;
+  message?: string;
+}
 
 interface QuoteRequest {
   id: string;
@@ -80,9 +91,25 @@ const QuoteRequestsManager = () => {
   const [savingNote, setSavingNote] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
   const [mapsKey, setMapsKey] = useState<string | null>(null);
+  const [solarCache, setSolarCache] = useState<Record<string, SolarResult | "loading" | null>>({});
   const { toast } = useToast();
 
   useEffect(() => { fetchRequests(); fetchMapsKey(); }, []);
+
+  const fetchSolarForRequest = useCallback(async (reqId: string, lat: number, lng: number) => {
+    if (solarCache[reqId]) return;
+    setSolarCache(prev => ({ ...prev, [reqId]: "loading" }));
+    try {
+      const { data, error } = await supabase.functions.invoke("get-solar-data", { body: { lat, lng } });
+      if (error || data?.error) {
+        setSolarCache(prev => ({ ...prev, [reqId]: { error: data?.error || "error", message: data?.message } }));
+      } else {
+        setSolarCache(prev => ({ ...prev, [reqId]: data as SolarResult }));
+      }
+    } catch {
+      setSolarCache(prev => ({ ...prev, [reqId]: { error: "error", message: "Erreur réseau" } }));
+    }
+  }, [solarCache]);
 
   const fetchMapsKey = async () => {
     try {
@@ -208,7 +235,14 @@ const QuoteRequestsManager = () => {
                           ))}
                         </SelectContent>
                       </Select>
-                      <Button variant="ghost" size="sm" onClick={() => setExpanded(isExpanded ? null : req.id)}>
+                      <Button variant="ghost" size="sm" onClick={() => {
+                        if (!isExpanded) {
+                          setExpanded(req.id);
+                          if (req.gps_lat && req.gps_lng) fetchSolarForRequest(req.id, req.gps_lat, req.gps_lng);
+                        } else {
+                          setExpanded(null);
+                        }
+                      }}>
                         {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                       </Button>
                     </div>
@@ -287,7 +321,72 @@ const QuoteRequestsManager = () => {
                                 {savingNote && <Loader2 className="w-3 h-3 animate-spin mr-1" />}Enregistrer
                               </Button>
                               <Button size="sm" variant="outline" onClick={() => setEditingNote(null)}>Annuler</Button>
+                      </div>
+
+                      {/* Données Solar API */}
+                      <div>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1">
+                          <Sun className="w-3.5 h-3.5" />Analyse Google Solar API
+                        </p>
+                        {(() => {
+                          if (!req.gps_lat || !req.gps_lng) {
+                            return <p className="text-sm text-muted-foreground italic">Aucune coordonnée GPS — analyse impossible.</p>;
+                          }
+                          const solar = solarCache[req.id];
+                          if (solar === "loading") {
+                            return <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="w-4 h-4 animate-spin" />Interrogation Solar API…</div>;
+                          }
+                          if (!solar || solar.error) {
+                            return <p className="text-sm text-muted-foreground italic">Aucune donnée Solar disponible pour cette zone.</p>;
+                          }
+                          return (
+                            <div className="grid sm:grid-cols-2 gap-2 text-sm">
+                              {solar.maxSunshineHoursPerYear != null && (
+                                <div className="flex items-center gap-2">
+                                  <Sun className="w-3.5 h-3.5 text-amber-500" />
+                                  <span className="text-muted-foreground">Ensoleillement :</span>
+                                  <span className="font-medium">{Math.round(solar.maxSunshineHoursPerYear)} h/an</span>
+                                </div>
+                              )}
+                              {solar.maxAreaMeters2 != null && (
+                                <div className="flex items-center gap-2">
+                                  <LayoutGrid className="w-3.5 h-3.5 text-blue-500" />
+                                  <span className="text-muted-foreground">Surface exploitable :</span>
+                                  <span className="font-medium">{Math.round(solar.maxAreaMeters2)} m²</span>
+                                </div>
+                              )}
+                              {solar.maxPanelCount != null && (
+                                <div className="flex items-center gap-2">
+                                  <LayoutGrid className="w-3.5 h-3.5 text-primary" />
+                                  <span className="text-muted-foreground">Panneaux max :</span>
+                                  <span className="font-medium">{solar.maxPanelCount}</span>
+                                </div>
+                              )}
+                              {solar.maxRawSolarGeneration != null && (
+                                <div className="flex items-center gap-2">
+                                  <Zap className="w-3.5 h-3.5 text-yellow-500" />
+                                  <span className="text-muted-foreground">Production max :</span>
+                                  <span className="font-medium">{Math.round(solar.maxRawSolarGeneration).toLocaleString("fr-FR")} kWh/an</span>
+                                </div>
+                              )}
+                              {solar.carbonOffsetFactorKgPerKwh != null && solar.maxRawSolarGeneration != null && (
+                                <div className="flex items-center gap-2">
+                                  <Leaf className="w-3.5 h-3.5 text-green-500" />
+                                  <span className="text-muted-foreground">CO₂ évité :</span>
+                                  <span className="font-medium">{Math.round(solar.carbonOffsetFactorKgPerKwh * solar.maxRawSolarGeneration).toLocaleString("fr-FR")} kg/an</span>
+                                </div>
+                              )}
+                              {solar.estimatedSavingsMad != null && (
+                                <div className="flex items-center gap-2">
+                                  <Zap className="w-3.5 h-3.5 text-emerald-500" />
+                                  <span className="text-muted-foreground">Économies :</span>
+                                  <span className="font-medium">{Math.round(solar.estimatedSavingsMad).toLocaleString("fr-FR")} MAD/an</span>
+                                </div>
+                              )}
                             </div>
+                          );
+                        })()}
+                      </div>
                           </div>
                         ) : (
                           <p className="text-sm text-muted-foreground italic">
