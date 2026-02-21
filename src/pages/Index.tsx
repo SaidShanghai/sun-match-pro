@@ -1151,9 +1151,7 @@ const Index = () => {
                             {["Solution optimale identifiée", "Installateurs certifiés sélectionnés", "Aides d'état applicables détectées"].map((item) => (
                               <div key={item} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-primary/5 border border-primary/20">
                                 <div className="flex items-center gap-2">
-                                  <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center shrink-0">
-                                    <span className="text-[8px] text-primary-foreground font-bold">✓</span>
-                                  </div>
+                                  <span className="text-base font-black text-primary">✓</span>
                                   <span className="text-[9px] text-foreground font-medium">{item}</span>
                                 </div>
                                 <Lock className="w-5 h-5 text-primary shrink-0" strokeWidth={2.5} />
