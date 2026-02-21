@@ -97,14 +97,19 @@ const MultiToggle = ({
   options,
   selected,
   onChange,
+  highlighted,
 }: {
   label: string;
   options: string[];
   selected: string[];
   onChange: (v: string[]) => void;
+  highlighted?: boolean;
 }) => (
   <div className="space-y-1.5">
-    <Label>{label}</Label>
+    <Label className={highlighted ? "text-red-600 font-semibold" : ""}>
+      {label}
+      {highlighted && <span className="ml-1 text-[10px] font-normal text-red-500">● IA</span>}
+    </Label>
     <div className="flex gap-2 flex-wrap">
       {options.map((opt) => (
         <button
@@ -119,7 +124,9 @@ const MultiToggle = ({
           }
           className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
             selected.includes(opt)
-              ? "bg-primary/10 text-primary border-primary/30"
+              ? highlighted
+                ? "bg-red-500/10 text-red-700 border-red-500/30"
+                : "bg-primary/10 text-primary border-primary/30"
               : "border-border text-muted-foreground hover:border-primary/50"
           }`}
         >
@@ -136,23 +143,27 @@ const NumField = ({
   value,
   onChange,
   placeholder,
+  highlighted,
 }: {
   label: string;
   unit?: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
+  highlighted?: boolean;
 }) => (
   <div className="space-y-1.5">
-    <Label>
+    <Label className={highlighted ? "text-red-600 font-semibold" : ""}>
       {label}
       {unit && <span className="text-muted-foreground font-normal ml-1">({unit})</span>}
+      {highlighted && <span className="ml-1 text-[10px] font-normal text-red-500">● IA</span>}
     </Label>
     <Input
       type="number"
       placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      className={highlighted ? "border-red-400 bg-red-50/50 text-red-900" : ""}
     />
   </div>
 );
@@ -167,6 +178,7 @@ const PackagesManager = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [ocrLoading, setOcrLoading] = useState(false);
+  const [ocrFields, setOcrFields] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
   useEffect(() => { fetchPackages(); }, []);
@@ -185,6 +197,7 @@ const PackagesManager = () => {
   const openCreate = () => {
     setEditingId(null);
     setForm(emptyForm);
+    setOcrFields(new Set());
     setDialogOpen(true);
   };
 
@@ -221,6 +234,24 @@ const PackagesManager = () => {
       const toStr = (v: unknown) => (v !== undefined && v !== null ? String(v) : "");
       const toArr = (v: unknown) => (Array.isArray(v) ? v : []);
       const s = d.specs || {};
+
+      // Track which fields were filled by OCR
+      const filled = new Set<string>();
+      if (d.name) filled.add("name");
+      if (d.fabricant) filled.add("fabricant");
+      if (d.modele) filled.add("modele");
+      if (d.profile_type) filled.add("profile_type");
+      if (d.power_kwc) filled.add("power_kwc");
+      if (d.price_ttc) filled.add("price_ttc");
+      if (d.description) filled.add("description");
+      const specKeys = Object.keys(s) as string[];
+      specKeys.forEach((k) => {
+        const v = s[k];
+        if (Array.isArray(v) ? v.length > 0 : v !== null && v !== undefined && v !== "") {
+          filled.add(`specs.${k}`);
+        }
+      });
+      setOcrFields(filled);
 
       setForm((f) => ({
         ...f,
@@ -269,6 +300,7 @@ const PackagesManager = () => {
 
   const openEdit = (pkg: PackageRow) => {
     setEditingId(pkg.id);
+    setOcrFields(new Set());
     const s = (pkg.specs || {}) as Record<string, unknown>;
     const toStr = (v: unknown) => (v !== undefined && v !== null ? String(v) : "");
     const toArr = (v: unknown) => (Array.isArray(v) ? v : []);
@@ -541,6 +573,13 @@ const PackagesManager = () => {
             </label>
           </div>
 
+          {ocrFields.size > 0 && (
+            <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
+              <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
+              Les champs en rouge ont été pré-remplis par l'IA depuis la brochure
+            </p>
+          )}
+
           <Tabs defaultValue="general" className="mt-2">
             <TabsList className="w-full grid grid-cols-4">
               <TabsTrigger value="general">Général</TabsTrigger>
@@ -553,23 +592,35 @@ const PackagesManager = () => {
             <TabsContent value="general" className="space-y-4 pt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label>Fabricant</Label>
-                  <Input placeholder="Ex: Blue Carbon" value={form.fabricant} onChange={(e) => setForm((f) => ({ ...f, fabricant: e.target.value }))} />
+                  <Label className={ocrFields.has("fabricant") ? "text-red-600 font-semibold" : ""}>
+                    Fabricant
+                    {ocrFields.has("fabricant") && <span className="ml-1 text-[10px] font-normal text-red-500">● IA</span>}
+                  </Label>
+                  <Input placeholder="Ex: Blue Carbon" value={form.fabricant} onChange={(e) => setForm((f) => ({ ...f, fabricant: e.target.value }))} className={ocrFields.has("fabricant") ? "border-red-400 bg-red-50/50 text-red-900" : ""} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Modèle</Label>
-                  <Input placeholder="Ex: 350kWh C&I Cabinet" value={form.modele} onChange={(e) => setForm((f) => ({ ...f, modele: e.target.value }))} />
+                  <Label className={ocrFields.has("modele") ? "text-red-600 font-semibold" : ""}>
+                    Modèle
+                    {ocrFields.has("modele") && <span className="ml-1 text-[10px] font-normal text-red-500">● IA</span>}
+                  </Label>
+                  <Input placeholder="Ex: 350kWh C&I Cabinet" value={form.modele} onChange={(e) => setForm((f) => ({ ...f, modele: e.target.value }))} className={ocrFields.has("modele") ? "border-red-400 bg-red-50/50 text-red-900" : ""} />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label>Nom commercial *</Label>
-                <Input placeholder="Ex: Pack Stockage Industrie 350kWh" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
+                <Label className={ocrFields.has("name") ? "text-red-600 font-semibold" : ""}>
+                  Nom commercial *
+                  {ocrFields.has("name") && <span className="ml-1 text-[10px] font-normal text-red-500">● IA</span>}
+                </Label>
+                <Input placeholder="Ex: Pack Stockage Industrie 350kWh" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className={ocrFields.has("name") ? "border-red-400 bg-red-50/50 text-red-900" : ""} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label>Profil cible *</Label>
+                  <Label className={ocrFields.has("profile_type") ? "text-red-600 font-semibold" : ""}>
+                    Profil cible *
+                    {ocrFields.has("profile_type") && <span className="ml-1 text-[10px] font-normal text-red-500">● IA</span>}
+                  </Label>
                   <Select value={form.profile_type} onValueChange={(v) => setForm((f) => ({ ...f, profile_type: v }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger className={ocrFields.has("profile_type") ? "border-red-400 bg-red-50/50 text-red-900" : ""}><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="residential">Résidentiel</SelectItem>
                       <SelectItem value="commercial">Commercial</SelectItem>
@@ -577,9 +628,9 @@ const PackagesManager = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <NumField label="Prix de base" unit="MAD" value={form.price_ttc} onChange={(v) => setForm((f) => ({ ...f, price_ttc: v }))} placeholder="Ex: 850000" />
+                <NumField label="Prix de base" unit="MAD" value={form.price_ttc} onChange={(v) => setForm((f) => ({ ...f, price_ttc: v }))} placeholder="Ex: 850000" highlighted={ocrFields.has("price_ttc")} />
               </div>
-              <NumField label="Prix installation" unit="MAD" value={form.specs.prix_installation_dh} onChange={(v) => setSpec("prix_installation_dh", v)} placeholder="Ex: 50000" />
+              <NumField label="Prix installation" unit="MAD" value={form.specs.prix_installation_dh} onChange={(v) => setSpec("prix_installation_dh", v)} placeholder="Ex: 50000" highlighted={ocrFields.has("specs.prix_installation_dh")} />
               <div className="space-y-1.5">
                 <Label>Aides d'état applicables</Label>
                 <div className="flex gap-2 flex-wrap">
@@ -592,8 +643,11 @@ const PackagesManager = () => {
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label>Notes internes</Label>
-                <Textarea placeholder="Conditions, remarques..." value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} rows={2} />
+                <Label className={ocrFields.has("description") ? "text-red-600 font-semibold" : ""}>
+                  Notes internes
+                  {ocrFields.has("description") && <span className="ml-1 text-[10px] font-normal text-red-500">● IA</span>}
+                </Label>
+                <Textarea placeholder="Conditions, remarques..." value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} rows={2} className={ocrFields.has("description") ? "border-red-400 bg-red-50/50 text-red-900" : ""} />
               </div>
               <div className="flex items-center justify-between">
                 <Label>Produit actif</Label>
@@ -605,45 +659,51 @@ const PackagesManager = () => {
             <TabsContent value="niveau1" className="space-y-4 pt-4">
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">⚡ Énergie & Puissance</p>
               <div className="grid grid-cols-2 gap-4">
-                <NumField label="Capacité totale" unit="kWh" value={form.specs.capacite_kwh} onChange={(v) => setSpec("capacite_kwh", v)} placeholder="350" />
-                <NumField label="Capacité utilisable" unit="kWh" value={form.specs.capacite_utilisable_kwh} onChange={(v) => setSpec("capacite_utilisable_kwh", v)} placeholder="332.5" />
-                <NumField label="Puissance décharge jour" unit="kW" value={form.specs.puissance_decharge_jour_kw} onChange={(v) => setSpec("puissance_decharge_jour_kw", v)} placeholder="430" />
-                <NumField label="Puissance décharge nuit" unit="kW" value={form.specs.puissance_decharge_nuit_kw} onChange={(v) => setSpec("puissance_decharge_nuit_kw", v)} placeholder="210" />
-                <NumField label="Puissance charge" unit="kW" value={form.specs.puissance_charge_kw} onChange={(v) => setSpec("puissance_charge_kw", v)} placeholder="160" />
-                <NumField label="Depth of Discharge" unit="%" value={form.specs.depth_of_discharge} onChange={(v) => setSpec("depth_of_discharge", v)} placeholder="95" />
+                <NumField label="Capacité totale" unit="kWh" value={form.specs.capacite_kwh} onChange={(v) => setSpec("capacite_kwh", v)} placeholder="350" highlighted={ocrFields.has("specs.capacite_kwh")} />
+                <NumField label="Capacité utilisable" unit="kWh" value={form.specs.capacite_utilisable_kwh} onChange={(v) => setSpec("capacite_utilisable_kwh", v)} placeholder="332.5" highlighted={ocrFields.has("specs.capacite_utilisable_kwh")} />
+                <NumField label="Puissance décharge jour" unit="kW" value={form.specs.puissance_decharge_jour_kw} onChange={(v) => setSpec("puissance_decharge_jour_kw", v)} placeholder="430" highlighted={ocrFields.has("specs.puissance_decharge_jour_kw")} />
+                <NumField label="Puissance décharge nuit" unit="kW" value={form.specs.puissance_decharge_nuit_kw} onChange={(v) => setSpec("puissance_decharge_nuit_kw", v)} placeholder="210" highlighted={ocrFields.has("specs.puissance_decharge_nuit_kw")} />
+                <NumField label="Puissance charge" unit="kW" value={form.specs.puissance_charge_kw} onChange={(v) => setSpec("puissance_charge_kw", v)} placeholder="160" highlighted={ocrFields.has("specs.puissance_charge_kw")} />
+                <NumField label="Depth of Discharge" unit="%" value={form.specs.depth_of_discharge} onChange={(v) => setSpec("depth_of_discharge", v)} placeholder="95" highlighted={ocrFields.has("specs.depth_of_discharge")} />
               </div>
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide pt-2">🔋 Durée de vie</p>
               <div className="grid grid-cols-2 gap-4">
-                <NumField label="Cycles de vie" unit="cycles" value={form.specs.cycle_vie} onChange={(v) => setSpec("cycle_vie", v)} placeholder="6600" />
-                <NumField label="Durée de vie" unit="ans" value={form.specs.duree_vie_ans} onChange={(v) => setSpec("duree_vie_ans", v)} placeholder="10" />
+                <NumField label="Cycles de vie" unit="cycles" value={form.specs.cycle_vie} onChange={(v) => setSpec("cycle_vie", v)} placeholder="6600" highlighted={ocrFields.has("specs.cycle_vie")} />
+                <NumField label="Durée de vie" unit="ans" value={form.specs.duree_vie_ans} onChange={(v) => setSpec("duree_vie_ans", v)} placeholder="10" highlighted={ocrFields.has("specs.duree_vie_ans")} />
               </div>
-              <MultiToggle label="Type de système" options={MULTI_OPTIONS.type_systeme} selected={form.specs.type_systeme} onChange={(v) => setSpec("type_systeme", v)} />
-              <MultiToggle label="Type de client" options={MULTI_OPTIONS.type_client} selected={form.specs.type_client} onChange={(v) => setSpec("type_client", v)} />
+              <MultiToggle label="Type de système" options={MULTI_OPTIONS.type_systeme} selected={form.specs.type_systeme} onChange={(v) => setSpec("type_systeme", v)} highlighted={ocrFields.has("specs.type_systeme")} />
+              <MultiToggle label="Type de client" options={MULTI_OPTIONS.type_client} selected={form.specs.type_client} onChange={(v) => setSpec("type_client", v)} highlighted={ocrFields.has("specs.type_client")} />
             </TabsContent>
 
             {/* ── TECHNIQUE NIVEAU 2 & 3 ── */}
             <TabsContent value="niveau2" className="space-y-4 pt-4">
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">📊 Performances</p>
               <div className="grid grid-cols-2 gap-4">
-                <NumField label="Efficacité round-trip" unit="%" value={form.specs.efficacite_roundtrip} onChange={(v) => setSpec("efficacite_roundtrip", v)} placeholder="98.5" />
+                <NumField label="Efficacité round-trip" unit="%" value={form.specs.efficacite_roundtrip} onChange={(v) => setSpec("efficacite_roundtrip", v)} placeholder="98.5" highlighted={ocrFields.has("specs.efficacite_roundtrip")} />
                 <div className="space-y-1.5">
-                  <Label>IP Rating</Label>
-                  <Input placeholder="Ex: IP55" value={form.specs.ip_rating} onChange={(e) => setSpec("ip_rating", e.target.value)} />
+                  <Label className={ocrFields.has("specs.ip_rating") ? "text-red-600 font-semibold" : ""}>
+                    IP Rating
+                    {ocrFields.has("specs.ip_rating") && <span className="ml-1 text-[10px] font-normal text-red-500">● IA</span>}
+                  </Label>
+                  <Input placeholder="Ex: IP55" value={form.specs.ip_rating} onChange={(e) => setSpec("ip_rating", e.target.value)} className={ocrFields.has("specs.ip_rating") ? "border-red-400 bg-red-50/50 text-red-900" : ""} />
                 </div>
-                <NumField label="Temp. min" unit="°C" value={form.specs.temp_min_celsius} onChange={(v) => setSpec("temp_min_celsius", v)} placeholder="-30" />
-                <NumField label="Temp. max" unit="°C" value={form.specs.temp_max_celsius} onChange={(v) => setSpec("temp_max_celsius", v)} placeholder="50" />
+                <NumField label="Temp. min" unit="°C" value={form.specs.temp_min_celsius} onChange={(v) => setSpec("temp_min_celsius", v)} placeholder="-30" highlighted={ocrFields.has("specs.temp_min_celsius")} />
+                <NumField label="Temp. max" unit="°C" value={form.specs.temp_max_celsius} onChange={(v) => setSpec("temp_max_celsius", v)} placeholder="50" highlighted={ocrFields.has("specs.temp_max_celsius")} />
               </div>
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide pt-2">📐 Dimensions</p>
               <div className="grid grid-cols-2 gap-4">
-                <NumField label="Largeur" unit="mm" value={form.specs.largeur_mm} onChange={(v) => setSpec("largeur_mm", v)} placeholder="2660" />
-                <NumField label="Hauteur" unit="mm" value={form.specs.hauteur_mm} onChange={(v) => setSpec("hauteur_mm", v)} placeholder="2160" />
+                <NumField label="Largeur" unit="mm" value={form.specs.largeur_mm} onChange={(v) => setSpec("largeur_mm", v)} placeholder="2660" highlighted={ocrFields.has("specs.largeur_mm")} />
+                <NumField label="Hauteur" unit="mm" value={form.specs.hauteur_mm} onChange={(v) => setSpec("hauteur_mm", v)} placeholder="2160" highlighted={ocrFields.has("specs.hauteur_mm")} />
               </div>
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide pt-2">🔩 Technologie</p>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label>Type de batterie</Label>
+                  <Label className={ocrFields.has("specs.type_batterie") ? "text-red-600 font-semibold" : ""}>
+                    Type de batterie
+                    {ocrFields.has("specs.type_batterie") && <span className="ml-1 text-[10px] font-normal text-red-500">● IA</span>}
+                  </Label>
                   <Select value={form.specs.type_batterie} onValueChange={(v) => setSpec("type_batterie", v)}>
-                    <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                    <SelectTrigger className={ocrFields.has("specs.type_batterie") ? "border-red-400 bg-red-50/50 text-red-900" : ""}><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="LFP">LFP (LiFePO4)</SelectItem>
                       <SelectItem value="NMC">NMC</SelectItem>
@@ -653,9 +713,12 @@ const PackagesManager = () => {
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Refroidissement</Label>
+                  <Label className={ocrFields.has("specs.type_refroidissement") ? "text-red-600 font-semibold" : ""}>
+                    Refroidissement
+                    {ocrFields.has("specs.type_refroidissement") && <span className="ml-1 text-[10px] font-normal text-red-500">● IA</span>}
+                  </Label>
                   <Select value={form.specs.type_refroidissement} onValueChange={(v) => setSpec("type_refroidissement", v)}>
-                    <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                    <SelectTrigger className={ocrFields.has("specs.type_refroidissement") ? "border-red-400 bg-red-50/50 text-red-900" : ""}><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="forced_air">Air forcé</SelectItem>
                       <SelectItem value="natural_convection">Convection naturelle</SelectItem>
@@ -664,16 +727,16 @@ const PackagesManager = () => {
                   </Select>
                 </div>
               </div>
-              <MultiToggle label="Protocoles de communication" options={MULTI_OPTIONS.communication} selected={form.specs.communication} onChange={(v) => setSpec("communication", v)} />
+              <MultiToggle label="Protocoles de communication" options={MULTI_OPTIONS.communication} selected={form.specs.communication} onChange={(v) => setSpec("communication", v)} highlighted={ocrFields.has("specs.communication")} />
             </TabsContent>
 
             {/* ── MÉTIER ── */}
             <TabsContent value="metier" className="space-y-4 pt-4">
-              <MultiToggle label="Cas d'usage" options={MULTI_OPTIONS.use_cases} selected={form.specs.use_cases} onChange={(v) => setSpec("use_cases", v)} />
-              <MultiToggle label="Secteurs cibles" options={MULTI_OPTIONS.secteurs_cibles} selected={form.specs.secteurs_cibles} onChange={(v) => setSpec("secteurs_cibles", v)} />
+              <MultiToggle label="Cas d'usage" options={MULTI_OPTIONS.use_cases} selected={form.specs.use_cases} onChange={(v) => setSpec("use_cases", v)} highlighted={ocrFields.has("specs.use_cases")} />
+              <MultiToggle label="Secteurs cibles" options={MULTI_OPTIONS.secteurs_cibles} selected={form.specs.secteurs_cibles} onChange={(v) => setSpec("secteurs_cibles", v)} highlighted={ocrFields.has("specs.secteurs_cibles")} />
               <div className="grid grid-cols-2 gap-4">
-                <NumField label="Puissance site min." unit="kW" value={form.specs.puissance_min_site_kw} onChange={(v) => setSpec("puissance_min_site_kw", v)} placeholder="100" />
-                <NumField label="Conso. min. site" unit="kWh/mois" value={form.specs.conso_min_kwh_mois} onChange={(v) => setSpec("conso_min_kwh_mois", v)} placeholder="15000" />
+                <NumField label="Puissance site min." unit="kW" value={form.specs.puissance_min_site_kw} onChange={(v) => setSpec("puissance_min_site_kw", v)} placeholder="100" highlighted={ocrFields.has("specs.puissance_min_site_kw")} />
+                <NumField label="Conso. min. site" unit="kWh/mois" value={form.specs.conso_min_kwh_mois} onChange={(v) => setSpec("conso_min_kwh_mois", v)} placeholder="15000" highlighted={ocrFields.has("specs.conso_min_kwh_mois")} />
               </div>
             </TabsContent>
           </Tabs>
