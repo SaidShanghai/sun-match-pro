@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { client_name, client_email, client_phone, city } = await req.json();
+    const { client_name, client_email, client_phone, city, housing_type, roof_type, roof_orientation, roof_surface, annual_consumption, budget, project_type } = await req.json();
 
     if (!client_name || !client_email) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
@@ -99,6 +99,13 @@ Deno.serve(async (req) => {
         client_email: String(client_email).trim().toLowerCase().slice(0, 255),
         client_phone: client_phone ? String(client_phone).trim().slice(0, 20) : null,
         city: city ? String(city).trim().slice(0, 100) : null,
+        housing_type: housing_type ? String(housing_type).trim().slice(0, 100) : null,
+        roof_type: roof_type ? String(roof_type).trim().slice(0, 100) : null,
+        roof_orientation: roof_orientation ? String(roof_orientation).trim().slice(0, 200) : null,
+        roof_surface: roof_surface ? String(roof_surface).trim().slice(0, 100) : null,
+        annual_consumption: annual_consumption ? String(annual_consumption).trim().slice(0, 100) : null,
+        budget: budget ? String(budget).trim().slice(0, 100) : null,
+        project_type: project_type ? String(project_type).trim().slice(0, 500) : null,
         status: "new",
       })
       .select("id")

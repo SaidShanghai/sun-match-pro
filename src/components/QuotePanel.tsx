@@ -4,17 +4,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 
+export interface DiagnosticData {
+  housing_type?: string;
+  roof_type?: string;
+  roof_orientation?: string;
+  roof_surface?: string;
+  annual_consumption?: string;
+  budget?: string;
+  project_type?: string;
+}
+
 interface QuotePanelProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   installerName?: string;
   onSuccess?: (id: string) => void;
+  diagnosticData?: DiagnosticData;
 }
 
 const phoneRegex = /^(\+212|0)([ \-]?[0-9]){9}$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const QuotePanel = ({ open, onOpenChange, installerName, onSuccess }: QuotePanelProps) => {
+const QuotePanel = ({ open, onOpenChange, installerName, onSuccess, diagnosticData }: QuotePanelProps) => {
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
   const [telephone, setTelephone] = useState("");
@@ -59,6 +70,7 @@ const QuotePanel = ({ open, onOpenChange, installerName, onSuccess }: QuotePanel
             client_email: email.trim().slice(0, 255),
             client_phone: telephone.trim().slice(0, 20),
             city: ville.trim().slice(0, 100),
+            ...(diagnosticData || {}),
           }),
         }
       );

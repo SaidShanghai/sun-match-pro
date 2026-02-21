@@ -845,6 +845,15 @@ const Diagnostic = () => {
       <QuotePanel
         open={quoteOpen}
         onOpenChange={setQuoteOpen}
+        diagnosticData={{
+          housing_type: selectedType || undefined,
+          roof_type: typeBatiment || undefined,
+          roof_orientation: panelAccess.length > 0 ? panelAccess.join(", ") : undefined,
+          roof_surface: selectedSurface || undefined,
+          annual_consumption: conso || facture || undefined,
+          budget: puissanceSouscrite || undefined,
+          project_type: descriptionProjet || objectif || undefined,
+        }}
         onSuccess={(id) => {
           setQuoteRef(id);
           setQuoteOpen(false);
