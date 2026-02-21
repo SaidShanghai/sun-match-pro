@@ -2,30 +2,12 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, MapPin } from "lucide-react";
+import { cityCoords } from "@/data/moroccanCities";
 
 interface GoogleMapPickerProps {
   city: string;
   onLocationSelect?: (lat: number, lng: number) => void;
 }
-
-// City coordinates for Morocco
-const cityCoords: Record<string, { lat: number; lng: number }> = {
-  "Casablanca": { lat: 33.5731, lng: -7.5898 },
-  "Rabat": { lat: 34.0209, lng: -6.8416 },
-  "Marrakech": { lat: 31.6295, lng: -7.9811 },
-  "Fès": { lat: 34.0331, lng: -5.0003 },
-  "Tanger": { lat: 35.7595, lng: -5.8340 },
-  "Agadir": { lat: 30.4278, lng: -9.5981 },
-  "Meknès": { lat: 33.8935, lng: -5.5473 },
-  "Oujda": { lat: 34.6814, lng: -1.9086 },
-  "Kénitra": { lat: 34.2610, lng: -6.5802 },
-  "Tétouan": { lat: 35.5889, lng: -5.3626 },
-  "Safi": { lat: 32.2994, lng: -9.2372 },
-  "El Jadida": { lat: 33.2316, lng: -8.5007 },
-  "Nador": { lat: 35.1688, lng: -2.9287 },
-  "Béni Mellal": { lat: 32.3373, lng: -6.3498 },
-  "Mohammedia": { lat: 33.6861, lng: -7.3830 },
-};
 
 const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
