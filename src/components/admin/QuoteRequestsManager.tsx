@@ -323,79 +323,7 @@ const QuoteRequestsManager = () => {
                                 {savingNote && <Loader2 className="w-3 h-3 animate-spin mr-1" />}Enregistrer
                               </Button>
                               <Button size="sm" variant="outline" onClick={() => setEditingNote(null)}>Annuler</Button>
-                      </div>
-
-                      {/* Données Solar API */}
-                      <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1">
-                          <Sun className="w-3.5 h-3.5" />Analyse Google Solar API
-                        </p>
-                        {(() => {
-                          if (!req.gps_lat || !req.gps_lng) {
-                            return <p className="text-sm text-muted-foreground italic">Aucune coordonnée GPS — analyse impossible.</p>;
-                          }
-                          const solar = solarCache[req.id];
-                          if (solar === "loading") {
-                            return <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="w-4 h-4 animate-spin" />Interrogation Solar API…</div>;
-                          }
-                          if (!solar || solar.error) {
-                            return <p className="text-sm text-muted-foreground italic">Aucune donnée Solar disponible pour cette zone.</p>;
-                          }
-                          return (
-                            <div className="grid sm:grid-cols-2 gap-2 text-sm">
-                              {solar.maxSunshineHoursPerYear != null && (
-                                <div className="flex items-center gap-2">
-                                  <Sun className="w-3.5 h-3.5 text-amber-500" />
-                                  <span className="text-muted-foreground">Ensoleillement :</span>
-                                  <span className="font-medium">{Math.round(solar.maxSunshineHoursPerYear)} h/an</span>
-                                </div>
-                              )}
-                              {solar.maxArrayAreaMeters2 != null && (
-                                <div className="flex items-center gap-2">
-                                  <LayoutGrid className="w-3.5 h-3.5 text-blue-500" />
-                                  <span className="text-muted-foreground">Surface exploitable :</span>
-                                  <span className="font-medium">{Math.round(solar.maxArrayAreaMeters2)} m²</span>
-                                </div>
-                              )}
-                              {solar.maxArrayPanelsCount != null && (
-                                <div className="flex items-center gap-2">
-                                  <LayoutGrid className="w-3.5 h-3.5 text-primary" />
-                                  <span className="text-muted-foreground">Panneaux max :</span>
-                                  <span className="font-medium">{solar.maxArrayPanelsCount}</span>
-                                </div>
-                              )}
-                              {solar.bestConfig?.yearlyEnergyDcKwh != null && (
-                                <div className="flex items-center gap-2">
-                                  <Zap className="w-3.5 h-3.5 text-yellow-500" />
-                                  <span className="text-muted-foreground">Production max :</span>
-                                  <span className="font-medium">{Math.round(solar.bestConfig.yearlyEnergyDcKwh).toLocaleString("fr-FR")} kWh/an</span>
-                                </div>
-                              )}
-                              {solar.recommendedConfig?.yearlyEnergyDcKwh != null && (
-                                <div className="flex items-center gap-2">
-                                  <Zap className="w-3.5 h-3.5 text-emerald-500" />
-                                  <span className="text-muted-foreground">Production recommandée :</span>
-                                  <span className="font-medium">{Math.round(solar.recommendedConfig.yearlyEnergyDcKwh).toLocaleString("fr-FR")} kWh/an</span>
-                                </div>
-                              )}
-                              {solar.carbonOffsetFactorKgPerMwh != null && solar.bestConfig?.yearlyEnergyDcKwh != null && (
-                                <div className="flex items-center gap-2">
-                                  <Leaf className="w-3.5 h-3.5 text-green-500" />
-                                  <span className="text-muted-foreground">CO₂ évité :</span>
-                                  <span className="font-medium">{Math.round(solar.carbonOffsetFactorKgPerMwh * solar.bestConfig.yearlyEnergyDcKwh / 1000).toLocaleString("fr-FR")} kg/an</span>
-                                </div>
-                              )}
-                              {solar.roofSegmentCount != null && (
-                                <div className="flex items-center gap-2">
-                                  <LayoutGrid className="w-3.5 h-3.5 text-muted-foreground" />
-                                  <span className="text-muted-foreground">Segments toiture :</span>
-                                  <span className="font-medium">{solar.roofSegmentCount}</span>
-                                </div>
-                              )}
                             </div>
-                          );
-                        })()}
-                      </div>
                           </div>
                         ) : (
                           <p className="text-sm text-muted-foreground italic">
@@ -403,6 +331,77 @@ const QuoteRequestsManager = () => {
                           </p>
                         )}
                       </div>
+
+                      {/* Données Solar API */}
+                      {req.gps_lat && req.gps_lng && (
+                        <div>
+                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1">
+                            <Sun className="w-3.5 h-3.5" />Analyse Google Solar API
+                          </p>
+                          {(() => {
+                            const solar = solarCache[req.id];
+                            if (solar === "loading") {
+                              return <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="w-4 h-4 animate-spin" />Interrogation Solar API…</div>;
+                            }
+                            if (!solar || solar.error) {
+                              return <p className="text-sm text-muted-foreground italic">{solar && typeof solar === 'object' && solar.message ? solar.message : "Aucune donnée Solar disponible pour cette zone."}</p>;
+                            }
+                            return (
+                              <div className="grid sm:grid-cols-2 gap-2 text-sm">
+                                {solar.maxSunshineHoursPerYear != null && (
+                                  <div className="flex items-center gap-2">
+                                    <Sun className="w-3.5 h-3.5 text-amber-500" />
+                                    <span className="text-muted-foreground">Ensoleillement :</span>
+                                    <span className="font-medium">{Math.round(solar.maxSunshineHoursPerYear)} h/an</span>
+                                  </div>
+                                )}
+                                {solar.maxArrayAreaMeters2 != null && (
+                                  <div className="flex items-center gap-2">
+                                    <LayoutGrid className="w-3.5 h-3.5 text-blue-500" />
+                                    <span className="text-muted-foreground">Surface exploitable :</span>
+                                    <span className="font-medium">{Math.round(solar.maxArrayAreaMeters2)} m²</span>
+                                  </div>
+                                )}
+                                {solar.maxArrayPanelsCount != null && (
+                                  <div className="flex items-center gap-2">
+                                    <LayoutGrid className="w-3.5 h-3.5 text-primary" />
+                                    <span className="text-muted-foreground">Panneaux max :</span>
+                                    <span className="font-medium">{solar.maxArrayPanelsCount}</span>
+                                  </div>
+                                )}
+                                {solar.bestConfig?.yearlyEnergyDcKwh != null && (
+                                  <div className="flex items-center gap-2">
+                                    <Zap className="w-3.5 h-3.5 text-yellow-500" />
+                                    <span className="text-muted-foreground">Production max :</span>
+                                    <span className="font-medium">{Math.round(solar.bestConfig.yearlyEnergyDcKwh).toLocaleString("fr-FR")} kWh/an</span>
+                                  </div>
+                                )}
+                                {solar.recommendedConfig?.yearlyEnergyDcKwh != null && (
+                                  <div className="flex items-center gap-2">
+                                    <Zap className="w-3.5 h-3.5 text-emerald-500" />
+                                    <span className="text-muted-foreground">Production recommandée :</span>
+                                    <span className="font-medium">{Math.round(solar.recommendedConfig.yearlyEnergyDcKwh).toLocaleString("fr-FR")} kWh/an</span>
+                                  </div>
+                                )}
+                                {solar.carbonOffsetFactorKgPerMwh != null && solar.bestConfig?.yearlyEnergyDcKwh != null && (
+                                  <div className="flex items-center gap-2">
+                                    <Leaf className="w-3.5 h-3.5 text-green-500" />
+                                    <span className="text-muted-foreground">CO₂ évité :</span>
+                                    <span className="font-medium">{Math.round(solar.carbonOffsetFactorKgPerMwh * solar.bestConfig.yearlyEnergyDcKwh / 1000).toLocaleString("fr-FR")} kg/an</span>
+                                  </div>
+                                )}
+                                {solar.roofSegmentCount != null && (
+                                  <div className="flex items-center gap-2">
+                                    <LayoutGrid className="w-3.5 h-3.5 text-muted-foreground" />
+                                    <span className="text-muted-foreground">Segments toiture :</span>
+                                    <span className="font-medium">{solar.roofSegmentCount}</span>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      )}
                     </div>
                   )}
                 </CardContent>
