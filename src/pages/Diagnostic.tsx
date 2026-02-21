@@ -904,9 +904,7 @@ const Diagnostic = () => {
                     {["Solution optimale identifiée", "Installateurs certifiés sélectionnés", "Aides d'état applicables détectées"].map((item) => (
                       <div key={item} className="flex items-center justify-between gap-4 p-5 rounded-2xl bg-primary/5 border border-primary/20">
                         <div className="flex items-center gap-4">
-                          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
-                            <span className="text-sm text-primary-foreground font-bold">✓</span>
-                          </div>
+                          <span className="text-2xl font-black text-primary">✓</span>
                           <span className="text-sm font-medium">{item}</span>
                         </div>
                         <Lock className="w-8 h-8 text-primary shrink-0" strokeWidth={2.5} />
