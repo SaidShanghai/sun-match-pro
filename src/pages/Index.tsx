@@ -30,6 +30,7 @@ import Footer from "@/components/Footer";
 import CallbackModal from "@/components/CallbackModal";
 import QuotePanel from "@/components/QuotePanel";
 import EligibiliteScreen from "@/components/EligibiliteScreen";
+import { villesMaroc } from "@/data/moroccanCities";
 
 const features = [
   {
@@ -104,7 +105,7 @@ const Index = () => {
   const [facture, setFacture] = useState("");
   const [puissanceSouscrite, setPuissanceSouscrite] = useState("");
   const [typeAbonnement, setTypeAbonnement] = useState<"Basse Tension" | "Moyenne Tension" | "Haute Tension" | null>(null);
-  const [ville, setVille] = useState("Casablanca");
+  const [ville, setVille] = useState("");
   const [villeOpen, setVilleOpen] = useState(false);
   const [villeSearch, setVilleSearch] = useState("");
   const [panelAccess, setPanelAccess] = useState<string[]>([]);
@@ -186,8 +187,7 @@ const Index = () => {
     }, 2000);
   };
 
-  const villes = ["Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", "Oujda", "Kénitra", "Tétouan", "Safi", "El Jadida", "Nador", "Béni Mellal", "Mohammedia"];
-  const filteredVilles = villes.filter(v => v.toLowerCase().includes(villeSearch.toLowerCase()));
+  const filteredVilles = villesMaroc.filter(v => v.toLowerCase().includes(villeSearch.toLowerCase()));
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -602,7 +602,7 @@ const Index = () => {
                                 onClick={() => setVilleOpen(v => !v)}
                               >
                                 <MapPinned className="w-3 h-3 text-muted-foreground shrink-0" />
-                                <span className="text-[9px] text-foreground flex-1">{ville}</span>
+                                <span className={`text-[9px] flex-1 ${ville ? "text-foreground" : "text-muted-foreground"}`}>{ville || "Sélectionnez une ville"}</span>
                                 <ChevronDown className="w-2.5 h-2.5 text-muted-foreground shrink-0" />
                               </div>
                               {villeOpen && (
@@ -745,7 +745,7 @@ const Index = () => {
                                   />
                                 </div>
                                 <div className="overflow-y-auto">
-                                  {villes.filter(v => v.toLowerCase().includes(villeProjetSearch.toLowerCase())).map(v => (
+                                  {villesMaroc.filter(v => v.toLowerCase().includes(villeProjetSearch.toLowerCase())).map(v => (
                                     <button
                                       key={v}
                                       type="button"

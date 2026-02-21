@@ -27,11 +27,7 @@ type Screen =
   | "solutions"
   | "merci";
 
-const villes = [
-  "Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir",
-  "Meknès", "Oujda", "Kénitra", "Tétouan", "Safi", "El Jadida",
-  "Nador", "Béni Mellal", "Mohammedia",
-];
+import { villesMaroc } from "@/data/moroccanCities";
 
 const projetSuggestions = [
   "Usine textile, 380V, 3 shifts/jour, financement via programme TATWIR souhaité",
@@ -92,7 +88,7 @@ const Diagnostic = () => {
   const [facture, setFacture] = useState("");
   const [puissanceSouscrite, setPuissanceSouscrite] = useState("");
   const [typeAbonnement, setTypeAbonnement] = useState<"Basse Tension" | "Moyenne Tension" | "Haute Tension" | null>(null);
-  const [ville, setVille] = useState("Casablanca");
+  const [ville, setVille] = useState("");
   const [villeOpen, setVilleOpen] = useState(false);
   const [villeSearch, setVilleSearch] = useState("");
   const villeRef = useRef<HTMLDivElement>(null);
@@ -155,8 +151,8 @@ const Diagnostic = () => {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const filteredVilles = villes.filter(v => v.toLowerCase().includes(villeSearch.toLowerCase()));
-  const filteredVillesProjet = villes.filter(v => v.toLowerCase().includes(villeProjetSearch.toLowerCase()));
+  const filteredVilles = villesMaroc.filter(v => v.toLowerCase().includes(villeSearch.toLowerCase()));
+  const filteredVillesProjet = villesMaroc.filter(v => v.toLowerCase().includes(villeProjetSearch.toLowerCase()));
 
   const goBack = () => {
     const map: Record<Screen, Screen> = {
@@ -416,7 +412,7 @@ const Diagnostic = () => {
                         <div className="relative">
                           <div className="flex items-center gap-2 px-4 py-3 border-2 border-border rounded-xl cursor-pointer" onClick={() => setVilleOpen(v => !v)}>
                             <MapPinned className="w-4 h-4 text-muted-foreground shrink-0" />
-                            <span className="text-sm flex-1">{ville}</span>
+                            <span className={`text-sm flex-1 ${ville ? "" : "text-muted-foreground"}`}>{ville || "Sélectionnez une ville"}</span>
                             <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
                           </div>
                           {villeOpen && (
@@ -433,10 +429,12 @@ const Diagnostic = () => {
                       </div>
 
                       {/* Google Maps Picker */}
-                      <GoogleMapPicker
-                        city={ville}
-                        onLocationSelect={(lat, lng) => { setRoofLat(lat); setRoofLng(lng); }}
-                      />
+                      {ville && (
+                        <GoogleMapPicker
+                          city={ville}
+                          onLocationSelect={(lat, lng) => { setRoofLat(lat); setRoofLng(lng); }}
+                        />
+                      )}
                     </>
                   )}
 

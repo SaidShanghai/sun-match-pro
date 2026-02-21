@@ -1,0 +1,78 @@
+/**
+ * 100 villes du Maroc classées par population / importance.
+ * Utilisé dans les sélecteurs de ville du diagnostic et la carte Google Maps.
+ */
+export const villesMaroc = [
+  "Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir",
+  "Meknès", "Oujda", "Kénitra", "Tétouan", "Safi", "El Jadida",
+  "Nador", "Béni Mellal", "Mohammedia", "Taza", "Khémisset", "Settat",
+  "Berrechid", "Khouribga", "Larache", "Guelmim", "Khénifra", "Errachidia",
+  "Salé", "Témara", "Bouskoura", "Ouarzazate", "Taroudant", "Essaouira",
+  "Tiznit", "Tan-Tan", "Ifrane", "Azrou", "Midelt", "Chefchaouen",
+  "Al Hoceima", "Fnideq", "Martil", "M'diq", "Asilah", "Berkane",
+  "Taourirt", "Jerada", "Bouarfa", "Figuig", "Sidi Kacem", "Sidi Slimane",
+  "Souk El Arbaa", "Ouezzane", "Chichaoua", "Kelaat Sraghna", "Youssoufia",
+  "Ben Guerir", "Sidi Bennour", "Azemmour", "Zemamra", "Tan-Tan Plage",
+  "Ait Melloul", "Inezgane", "Dcheira El Jihadia", "Biougra", "Aït Ourir",
+  "Tahanaout", "Amizmiz", "Skhirat", "Harhoura", "Ain Atiq", "Tiflet",
+  "Rommani", "Beni Yakhlef", "Ain Harrouda", "Médiouna", "Tit Mellil",
+  "Benslimane", "Bouznika", "Ain Aouda", "Sidi Rahal", "Sidi Taibi",
+  "Oulad Teima", "Lqliaa", "Drargua", "Tamesna", "Sidi Yahia El Gharb",
+  "Mechraa Bel Ksiri", "Sefrou", "Moulay Yacoub", "Missour", "Boulemane",
+  "Imzouren", "Bni Bouayach", "Driouch", "Zagora", "Tinghir",
+  "Boujdour", "Laâyoune", "Dakhla", "Smara", "Es-Semara",
+] as const;
+
+export type VilleMaroc = typeof villesMaroc[number];
+
+/**
+ * Coordonnées GPS pour les principales villes (utilisées par GoogleMapPicker).
+ * Les villes non listées ici utiliseront un fallback geocoding ou centre Maroc.
+ */
+export const cityCoords: Record<string, { lat: number; lng: number }> = {
+  "Casablanca": { lat: 33.5731, lng: -7.5898 },
+  "Rabat": { lat: 34.0209, lng: -6.8416 },
+  "Marrakech": { lat: 31.6295, lng: -7.9811 },
+  "Fès": { lat: 34.0331, lng: -5.0003 },
+  "Tanger": { lat: 35.7595, lng: -5.8340 },
+  "Agadir": { lat: 30.4278, lng: -9.5981 },
+  "Meknès": { lat: 33.8935, lng: -5.5473 },
+  "Oujda": { lat: 34.6814, lng: -1.9086 },
+  "Kénitra": { lat: 34.2610, lng: -6.5802 },
+  "Tétouan": { lat: 35.5889, lng: -5.3626 },
+  "Safi": { lat: 32.2994, lng: -9.2372 },
+  "El Jadida": { lat: 33.2316, lng: -8.5007 },
+  "Nador": { lat: 35.1688, lng: -2.9287 },
+  "Béni Mellal": { lat: 32.3373, lng: -6.3498 },
+  "Mohammedia": { lat: 33.6861, lng: -7.3830 },
+  "Taza": { lat: 34.2133, lng: -4.0103 },
+  "Khémisset": { lat: 33.8241, lng: -6.0664 },
+  "Settat": { lat: 33.0014, lng: -7.6196 },
+  "Berrechid": { lat: 33.2654, lng: -7.5877 },
+  "Khouribga": { lat: 32.8811, lng: -6.9063 },
+  "Larache": { lat: 35.1932, lng: -6.1563 },
+  "Guelmim": { lat: 28.9870, lng: -10.0574 },
+  "Khénifra": { lat: 32.9340, lng: -5.6700 },
+  "Errachidia": { lat: 31.9314, lng: -4.4343 },
+  "Salé": { lat: 34.0531, lng: -6.7986 },
+  "Témara": { lat: 33.9275, lng: -6.9068 },
+  "Bouskoura": { lat: 33.4489, lng: -7.6486 },
+  "Ouarzazate": { lat: 30.9202, lng: -6.8936 },
+  "Taroudant": { lat: 30.4727, lng: -8.8748 },
+  "Essaouira": { lat: 31.5085, lng: -9.7595 },
+  "Tiznit": { lat: 29.6974, lng: -9.8022 },
+  "Tan-Tan": { lat: 28.4380, lng: -11.1033 },
+  "Ifrane": { lat: 33.5228, lng: -5.1109 },
+  "Azrou": { lat: 33.4340, lng: -5.2214 },
+  "Midelt": { lat: 32.6800, lng: -4.7340 },
+  "Chefchaouen": { lat: 35.1688, lng: -5.2636 },
+  "Al Hoceima": { lat: 35.2517, lng: -3.9372 },
+  "Fnideq": { lat: 35.8503, lng: -5.3570 },
+  "Berkane": { lat: 34.9200, lng: -2.3200 },
+  "Sidi Kacem": { lat: 34.2260, lng: -5.7100 },
+  "Ouezzane": { lat: 34.7956, lng: -5.5788 },
+  "Laâyoune": { lat: 27.1536, lng: -13.2033 },
+  "Dakhla": { lat: 23.6848, lng: -15.9580 },
+  "Zagora": { lat: 30.3289, lng: -5.8406 },
+  "Tinghir": { lat: 31.5147, lng: -5.5327 },
+};
