@@ -249,7 +249,7 @@ const QuoteRequestsManager = () => {
                                 style={{ border: 0 }}
                                 loading="lazy"
                                 referrerPolicy="no-referrer-when-downgrade"
-                                src={`https://maps.google.com/maps?q=${req.gps_lat},${req.gps_lng}&z=19&t=k&output=embed`}
+                                src={`https://maps.google.com/maps?q=${req.gps_lat},${req.gps_lng}&z=19&t=s&output=embed`}
                               />
                             </div>
                             <p className="text-xs text-muted-foreground mt-1">
