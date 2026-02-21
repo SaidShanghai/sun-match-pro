@@ -344,6 +344,8 @@ export type Database = {
           description_projet: string | null
           elig_decl: Json | null
           extension_install: string | null
+          gps_lat: number | null
+          gps_lng: number | null
           housing_type: string | null
           id: string
           objectif: string | null
@@ -376,6 +378,8 @@ export type Database = {
           description_projet?: string | null
           elig_decl?: Json | null
           extension_install?: string | null
+          gps_lat?: number | null
+          gps_lng?: number | null
           housing_type?: string | null
           id?: string
           objectif?: string | null
@@ -408,6 +412,8 @@ export type Database = {
           description_projet?: string | null
           elig_decl?: Json | null
           extension_install?: string | null
+          gps_lat?: number | null
+          gps_lng?: number | null
           housing_type?: string | null
           id?: string
           objectif?: string | null

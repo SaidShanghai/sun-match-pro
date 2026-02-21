@@ -875,6 +875,8 @@ const Diagnostic = () => {
           extension_install: extensionInstall || undefined,
           subvention_recue: subventionRecue || undefined,
           elig_decl: Object.values(eligDecl).some(v => v !== null) ? eligDecl : undefined,
+          gps_lat: roofLat ?? undefined,
+          gps_lng: roofLng ?? undefined,
         }}
         onSuccess={(id, clientName, clientEmail) => {
           setQuoteRef(id);
