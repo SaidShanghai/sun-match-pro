@@ -87,7 +87,7 @@ serve(async (req) => {
             ],
           },
         ],
-        max_tokens: 2000,
+        max_tokens: 4000,
       }),
     });
 
@@ -126,11 +126,18 @@ serve(async (req) => {
     try {
       parsed = JSON.parse(jsonStr);
     } catch {
-      console.error("Failed to parse AI response as JSON:", content);
-      return new Response(
-        JSON.stringify({ error: "parse_error", message: "Impossible de lire la facture. Essayez avec une photo plus nette.", raw: content }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      // Try to fix truncated JSON by closing braces
+      try {
+        let fixed = jsonStr.replace(/,\s*$/, '');
+        if (!fixed.endsWith('}')) fixed += '}';
+        parsed = JSON.parse(fixed);
+      } catch {
+        console.error("Failed to parse AI response as JSON:", content);
+        return new Response(
+          JSON.stringify({ error: "parse_error", message: "Impossible de lire la facture. Essayez avec une photo plus nette.", raw: content }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
     }
 
     return new Response(JSON.stringify({ success: true, data: parsed }), {
