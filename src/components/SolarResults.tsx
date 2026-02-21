@@ -1,18 +1,22 @@
 import { motion } from "framer-motion";
-import { Sun, Zap, Ruler, PanelTop, Leaf, BarChart3, AlertTriangle } from "lucide-react";
+import { Sun, Zap, Ruler, Leaf, BarChart3, AlertTriangle, Calendar, TrendingUp } from "lucide-react";
 
 export interface SolarData {
-  maxSunshineHoursPerYear: number;
-  maxArrayAreaMeters2: number;
-  maxArrayPanelsCount: number;
-  totalRoofAreaMeters2: number;
-  panelCapacityWatts: number;
-  carbonOffsetFactorKgPerMwh: number;
-  roofSegmentCount: number;
-  imageryQuality?: string;
-  bestConfig?: { panelsCount: number; yearlyEnergyDcKwh: number } | null;
-  recommendedConfig?: { panelsCount: number; yearlyEnergyDcKwh: number } | null;
-  roofSegments?: { pitchDegrees: number; azimuthDegrees: number; areaMeters2: number; sunshineHoursPerYear: number }[];
+  source: string;
+  yearlyProductionKwh: number;
+  yearlyIrradiationKwhM2: number;
+  optimalInclination: number;
+  optimalAzimuth: number;
+  peakpowerKwp: number;
+  systemLoss: number;
+  co2SavedKg: number;
+  savingsMad: number;
+  sdYearly: number;
+  monthlyData?: { month: number; productionKwh: number; irradiationKwhM2: number; sdMonthly: number }[];
+  latitude?: number;
+  longitude?: number;
+  elevation?: number;
+  database?: string;
   error?: string;
 }
 
@@ -24,17 +28,18 @@ interface SolarResultsProps {
 }
 
 const azimuthToDirection = (deg: number): string => {
-  if (deg >= 337.5 || deg < 22.5) return "Nord";
-  if (deg < 67.5) return "Nord-Est";
-  if (deg < 112.5) return "Est";
-  if (deg < 157.5) return "Sud-Est";
-  if (deg < 202.5) return "Sud";
-  if (deg < 247.5) return "Sud-Ouest";
-  if (deg < 292.5) return "Ouest";
+  // PVGIS uses 0=south, 90=west, -90=east
+  const normalized = ((deg + 180) % 360 + 360) % 360;
+  if (normalized >= 337.5 || normalized < 22.5) return "Nord";
+  if (normalized < 67.5) return "Nord-Est";
+  if (normalized < 112.5) return "Est";
+  if (normalized < 157.5) return "Sud-Est";
+  if (normalized < 202.5) return "Sud";
+  if (normalized < 247.5) return "Sud-Ouest";
+  if (normalized < 292.5) return "Ouest";
   return "Nord-Ouest";
 };
 
-// Morocco electricity price ~1.2 MAD/kWh average
 const ELECTRICITY_PRICE_MAD = 1.2;
 
 const SolarResults = ({ data, loading, error, factureMad }: SolarResultsProps) => {
@@ -52,61 +57,46 @@ const SolarResults = ({ data, loading, error, factureMad }: SolarResultsProps) =
           <p className="font-semibold text-sm">Données solaires non disponibles</p>
         </div>
         <p className="text-xs text-muted-foreground">
-          Google Solar API ne couvre pas encore cette zone. Le diagnostic continue avec vos informations manuelles.
+          Les données PVGIS ne sont pas disponibles pour cette localisation. Le diagnostic continue avec vos informations manuelles.
         </p>
       </motion.div>
     );
   }
 
-  const config = data.recommendedConfig || data.bestConfig;
-  const yearlyKwh = config?.yearlyEnergyDcKwh || 0;
-  const savingsMad = yearlyKwh * ELECTRICITY_PRICE_MAD;
+  const yearlyKwh = data.yearlyProductionKwh;
+  const savingsMad = data.savingsMad || Math.round(yearlyKwh * ELECTRICITY_PRICE_MAD);
   const annualBill = factureMad || 0;
   const savingsPercent = annualBill > 0 ? Math.min(Math.round((savingsMad / annualBill) * 100), 100) : null;
-
-  const co2Saved = data.carbonOffsetFactorKgPerMwh > 0
-    ? Math.round((yearlyKwh / 1000) * data.carbonOffsetFactorKgPerMwh)
-    : Math.round(yearlyKwh * 0.5); // fallback: 0.5 kg/kWh for Morocco grid
-
-  const mainSegment = data.roofSegments?.[0];
 
   const cards = [
     {
       icon: Sun,
-      label: "Ensoleillement",
-      value: `${Math.round(data.maxSunshineHoursPerYear).toLocaleString("fr-FR")}`,
-      unit: "h/an",
+      label: "Irradiation annuelle",
+      value: `${data.yearlyIrradiationKwhM2.toLocaleString("fr-FR")}`,
+      unit: "kWh/m²/an",
       color: "text-amber-500",
       bgColor: "bg-amber-500/10",
     },
     {
-      icon: Ruler,
-      label: "Surface exploitable",
-      value: `${Math.round(data.maxArrayAreaMeters2)}`,
-      unit: "m²",
-      color: "text-blue-500",
-      bgColor: "bg-blue-500/10",
-    },
-    {
-      icon: PanelTop,
-      label: "Panneaux recommandés",
-      value: `${config?.panelsCount || data.maxArrayPanelsCount}`,
-      unit: "panneaux",
-      color: "text-primary",
-      bgColor: "bg-primary/10",
-    },
-    {
       icon: Zap,
       label: "Production estimée",
-      value: `${Math.round(yearlyKwh).toLocaleString("fr-FR")}`,
-      unit: "kWh/an",
+      value: `${yearlyKwh.toLocaleString("fr-FR")}`,
+      unit: `kWh/an (${data.peakpowerKwp} kWc)`,
       color: "text-emerald-500",
       bgColor: "bg-emerald-500/10",
     },
     {
+      icon: TrendingUp,
+      label: "Inclinaison optimale",
+      value: `${data.optimalInclination}°`,
+      unit: azimuthToDirection(data.optimalAzimuth),
+      color: "text-blue-500",
+      bgColor: "bg-blue-500/10",
+    },
+    {
       icon: BarChart3,
       label: "Économies estimées",
-      value: `${Math.round(savingsMad).toLocaleString("fr-FR")}`,
+      value: `${savingsMad.toLocaleString("fr-FR")}`,
       unit: "MAD/an",
       color: "text-green-600",
       bgColor: "bg-green-600/10",
@@ -115,12 +105,24 @@ const SolarResults = ({ data, loading, error, factureMad }: SolarResultsProps) =
     {
       icon: Leaf,
       label: "CO₂ évité",
-      value: `${co2Saved.toLocaleString("fr-FR")}`,
+      value: `${data.co2SavedKg.toLocaleString("fr-FR")}`,
       unit: "kg/an",
       color: "text-teal-500",
       bgColor: "bg-teal-500/10",
     },
+    {
+      icon: Ruler,
+      label: "Altitude",
+      value: `${data.elevation ?? "—"}`,
+      unit: "m",
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+    },
   ];
+
+  // Best & worst production months
+  const monthNames = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
+  const monthlyData = data.monthlyData || [];
 
   return (
     <motion.div
@@ -131,14 +133,13 @@ const SolarResults = ({ data, loading, error, factureMad }: SolarResultsProps) =
     >
       <div className="flex items-center gap-2">
         <Sun className="w-5 h-5 text-primary" />
-        <h3 className="text-lg font-black">Potentiel solaire de votre toit</h3>
+        <h3 className="text-lg font-black">Potentiel solaire de votre site</h3>
       </div>
 
-      {data.imageryQuality && (
-        <p className="text-xs text-muted-foreground">
-          Qualité d'imagerie : <span className="font-semibold">{data.imageryQuality}</span>
-        </p>
-      )}
+      <p className="text-xs text-muted-foreground">
+        Source : <span className="font-semibold">PVGIS ({data.database || "SARAH3"})</span>
+        {data.latitude && ` · ${data.latitude.toFixed(2)}°N, ${data.longitude?.toFixed(2)}°W`}
+      </p>
 
       <div className="grid grid-cols-2 gap-3">
         {cards.map((card, i) => (
@@ -164,14 +165,33 @@ const SolarResults = ({ data, loading, error, factureMad }: SolarResultsProps) =
         ))}
       </div>
 
-      {mainSegment && (
-        <div className="rounded-2xl bg-muted/50 border border-border p-4 space-y-1">
-          <p className="text-xs font-semibold">Orientation principale du toit</p>
-          <p className="text-sm">
-            <span className="font-bold">{azimuthToDirection(mainSegment.azimuthDegrees)}</span>
-            {" · "}Inclinaison {Math.round(mainSegment.pitchDegrees)}°
-            {" · "}{Math.round(mainSegment.areaMeters2)} m²
-          </p>
+      {/* Monthly production bar chart */}
+      {monthlyData.length > 0 && (
+        <div className="rounded-2xl bg-muted/50 border border-border p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-primary" />
+            <p className="text-xs font-semibold">Production mensuelle (kWh)</p>
+          </div>
+          <div className="flex items-end gap-1 h-24">
+            {monthlyData.map((m, i) => {
+              const maxProd = Math.max(...monthlyData.map(d => d.productionKwh));
+              const height = maxProd > 0 ? (m.productionKwh / maxProd) * 100 : 0;
+              return (
+                <div key={m.month} className="flex-1 flex flex-col items-center gap-1">
+                  <span className="text-[8px] text-muted-foreground font-medium">
+                    {Math.round(m.productionKwh)}
+                  </span>
+                  <div
+                    className="w-full bg-primary/20 rounded-t-sm relative overflow-hidden"
+                    style={{ height: `${height}%`, minHeight: 2 }}
+                  >
+                    <div className="absolute inset-0 bg-primary rounded-t-sm" />
+                  </div>
+                  <span className="text-[8px] text-muted-foreground">{monthNames[i]}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </motion.div>
