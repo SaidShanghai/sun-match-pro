@@ -1379,7 +1379,7 @@ const Index = () => {
 
       <Footer />
       <CallbackModal open={callbackOpen} onOpenChange={setCallbackOpen} />
-      <QuotePanel open={quoteOpen} onOpenChange={setQuoteOpen} onSuccess={(id) => { setQuoteRef(id); setPhoneScreen("merci"); }} />
+      <QuotePanel open={quoteOpen} onOpenChange={setQuoteOpen} onSuccess={(id, name, email) => { setQuoteRef(id); setContactNom(name); setContactEmail(email); setPhoneScreen("merci"); }} />
     </div>
   );
 };

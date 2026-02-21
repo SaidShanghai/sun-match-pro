@@ -867,8 +867,10 @@ const Diagnostic = () => {
           subvention_recue: subventionRecue || undefined,
           elig_decl: Object.values(eligDecl).some(v => v !== null) ? eligDecl : undefined,
         }}
-        onSuccess={(id) => {
+        onSuccess={(id, clientName, clientEmail) => {
           setQuoteRef(id);
+          setContactNom(clientName);
+          setContactEmail(clientEmail);
           setQuoteOpen(false);
           setScreen("merci");
         }}

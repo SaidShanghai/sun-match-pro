@@ -31,7 +31,7 @@ interface QuotePanelProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   installerName?: string;
-  onSuccess?: (id: string) => void;
+  onSuccess?: (id: string, clientName: string, clientEmail: string) => void;
   diagnosticData?: DiagnosticData;
 }
 
@@ -93,7 +93,7 @@ const QuotePanel = ({ open, onOpenChange, installerName, onSuccess, diagnosticDa
 
       const id = json.id ?? crypto.randomUUID();
       onOpenChange(false);
-      onSuccess?.(id);
+      onSuccess?.(id, nom.trim(), email.trim());
     } catch (err: any) {
       console.error("QuotePanel error:", err);
       setError("Une erreur est survenue. Veuillez réessayer.");
