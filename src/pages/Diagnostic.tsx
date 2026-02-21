@@ -12,6 +12,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import QuotePanel from "@/components/QuotePanel";
 import EligibiliteScreen from "@/components/EligibiliteScreen";
+import GoogleMapPicker from "@/components/GoogleMapPicker";
 
 type Screen =
   | "landing"
@@ -99,6 +100,8 @@ const Diagnostic = () => {
   const [descriptionProjet, setDescriptionProjet] = useState("");
   const [adresseProjet, setAdresseProjet] = useState("");
   const [villeProjet, setVilleProjet] = useState("");
+  const [roofLat, setRoofLat] = useState<number | null>(null);
+  const [roofLng, setRoofLng] = useState<number | null>(null);
   const [villeProjetOpen, setVilleProjetOpen] = useState(false);
   const [villeProjetSearch, setVilleProjetSearch] = useState("");
   const villeProjetRef = useRef<HTMLDivElement>(null);
@@ -423,6 +426,12 @@ const Diagnostic = () => {
                           )}
                         </div>
                       </div>
+
+                      {/* Google Maps Picker */}
+                      <GoogleMapPicker
+                        city={ville}
+                        onLocationSelect={(lat, lng) => { setRoofLat(lat); setRoofLng(lng); }}
+                      />
                     </>
                   )}
 
