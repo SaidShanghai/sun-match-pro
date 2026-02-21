@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Sun, Zap, Ruler, Leaf, BarChart3, AlertTriangle, Calendar, TrendingUp } from "lucide-react";
+import { Sun, Zap, Ruler, Leaf, BarChart3, AlertTriangle, Calendar, TrendingUp, Receipt } from "lucide-react";
+import { calcSolarSavings, getEffectivePricePerKwh, getTarifDetails, getDistributeur } from "@/data/oneeTariffs";
 
 export interface SolarData {
   source: string;
@@ -25,10 +26,11 @@ interface SolarResultsProps {
   loading: boolean;
   error?: string | null;
   factureMad?: number;
+  consoKwh?: number;
+  city?: string;
 }
 
 const azimuthToDirection = (deg: number): string => {
-  // PVGIS uses 0=south, 90=west, -90=east
   const normalized = ((deg + 180) % 360 + 360) % 360;
   if (normalized >= 337.5 || normalized < 22.5) return "Nord";
   if (normalized < 67.5) return "Nord-Est";
@@ -40,9 +42,7 @@ const azimuthToDirection = (deg: number): string => {
   return "Nord-Ouest";
 };
 
-const ELECTRICITY_PRICE_MAD = 1.2;
-
-const SolarResults = ({ data, loading, error, factureMad }: SolarResultsProps) => {
+const SolarResults = ({ data, loading, error, factureMad, consoKwh, city }: SolarResultsProps) => {
   if (loading) return null;
 
   if (error || !data || data.error) {
@@ -64,9 +64,29 @@ const SolarResults = ({ data, loading, error, factureMad }: SolarResultsProps) =
   }
 
   const yearlyKwh = data.yearlyProductionKwh;
-  const savingsMad = data.savingsMad || Math.round(yearlyKwh * ELECTRICITY_PRICE_MAD);
-  const annualBill = factureMad || 0;
-  const savingsPercent = annualBill > 0 ? Math.min(Math.round((savingsMad / annualBill) * 100), 100) : null;
+
+  // Estimate annual consumption from bill if not provided directly
+  // Use effective price to reverse-engineer consumption
+  let annualConsoKwh = consoKwh || 0;
+  if (!annualConsoKwh && factureMad) {
+    // Iterative estimation: find kWh that matches the bill
+    let estimatedKwh = factureMad; // start rough
+    for (let i = 0; i < 10; i++) {
+      const effectivePrice = getEffectivePricePerKwh(estimatedKwh);
+      if (effectivePrice <= 0) break;
+      estimatedKwh = Math.round(factureMad / effectivePrice);
+    }
+    annualConsoKwh = estimatedKwh;
+  }
+
+  // Calculate real savings using ONEE tranches
+  const savings = annualConsoKwh > 0
+    ? calcSolarSavings(annualConsoKwh, yearlyKwh)
+    : { billBefore: 0, billAfter: 0, savingsMad: Math.round(yearlyKwh * getEffectivePricePerKwh(yearlyKwh || 3000)), savingsPercent: 0 };
+
+  const monthlyConsoKwh = annualConsoKwh / 12;
+  const tarifInfo = getTarifDetails(monthlyConsoKwh || 250);
+  const distributeur = city ? getDistributeur(city) : "ONEE";
 
   const cards = [
     {
@@ -96,11 +116,11 @@ const SolarResults = ({ data, loading, error, factureMad }: SolarResultsProps) =
     {
       icon: BarChart3,
       label: "Économies estimées",
-      value: `${savingsMad.toLocaleString("fr-FR")}`,
+      value: `${savings.savingsMad.toLocaleString("fr-FR")}`,
       unit: "MAD/an",
       color: "text-green-600",
       bgColor: "bg-green-600/10",
-      extra: savingsPercent ? `≈ ${savingsPercent}% de votre facture` : undefined,
+      extra: savings.savingsPercent > 0 ? `≈ ${savings.savingsPercent}% de votre facture` : undefined,
     },
     {
       icon: Leaf,
@@ -111,16 +131,16 @@ const SolarResults = ({ data, loading, error, factureMad }: SolarResultsProps) =
       bgColor: "bg-teal-500/10",
     },
     {
-      icon: Ruler,
-      label: "Altitude",
-      value: `${data.elevation ?? "—"}`,
-      unit: "m",
+      icon: Receipt,
+      label: "Prix moyen kWh",
+      value: `${getEffectivePricePerKwh(annualConsoKwh || 3000).toFixed(2)}`,
+      unit: "MAD TTC",
       color: "text-primary",
       bgColor: "bg-primary/10",
+      extra: `Mode ${tarifInfo.mode}`,
     },
   ];
 
-  // Best & worst production months
   const monthNames = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
   const monthlyData = data.monthlyData || [];
 
@@ -139,6 +159,7 @@ const SolarResults = ({ data, loading, error, factureMad }: SolarResultsProps) =
       <p className="text-xs text-muted-foreground">
         Source : <span className="font-semibold">PVGIS ({data.database || "SARAH3"})</span>
         {data.latitude && ` · ${data.latitude.toFixed(2)}°N, ${data.longitude?.toFixed(2)}°W`}
+        {` · Distributeur : ${distributeur}`}
       </p>
 
       <div className="grid grid-cols-2 gap-3">
@@ -165,6 +186,39 @@ const SolarResults = ({ data, loading, error, factureMad }: SolarResultsProps) =
         ))}
       </div>
 
+      {/* Tariff breakdown */}
+      {annualConsoKwh > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="rounded-2xl border border-border bg-muted/30 p-4 space-y-3"
+        >
+          <div className="flex items-center gap-2">
+            <Receipt className="w-4 h-4 text-primary" />
+            <p className="text-xs font-semibold">Détail tarification ONEE — {tarifInfo.mode}</p>
+          </div>
+          <div className="space-y-1">
+            {tarifInfo.tranches.map((t, i) => (
+              <div key={i} className="flex items-center justify-between text-[11px]">
+                <span className="text-muted-foreground">
+                  {t.to ? `${t.from}–${t.to} kWh` : `> ${t.from} kWh`}
+                </span>
+                <span className="font-semibold">{t.priceTTC.toFixed(4)} MAD/kWh TTC</span>
+              </div>
+            ))}
+          </div>
+          <div className="pt-2 border-t border-border flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Facture avant solaire</span>
+            <span className="font-bold">{savings.billBefore.toLocaleString("fr-FR")} MAD/an</span>
+          </div>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Facture après solaire</span>
+            <span className="font-bold text-emerald-600">{savings.billAfter.toLocaleString("fr-FR")} MAD/an</span>
+          </div>
+        </motion.div>
+      )}
+
       {/* Monthly production bar chart */}
       {monthlyData.length > 0 && (
         <div className="rounded-2xl bg-muted/50 border border-border p-4 space-y-3">
@@ -182,7 +236,7 @@ const SolarResults = ({ data, loading, error, factureMad }: SolarResultsProps) =
                     {Math.round(m.productionKwh)}
                   </span>
                   <div
-                    className="w-full bg-primary/20 rounded-t-sm relative overflow-hidden"
+                    className="w-full rounded-t-sm relative overflow-hidden bg-primary/20"
                     style={{ height: `${height}%`, minHeight: 2 }}
                   >
                     <div className="absolute inset-0 bg-primary rounded-t-sm" />

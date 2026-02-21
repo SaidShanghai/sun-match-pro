@@ -797,6 +797,8 @@ const Diagnostic = () => {
                     loading={solarLoading}
                     error={solarError}
                     factureMad={facture ? Number(facture.replace(/\s/g, "")) : undefined}
+                    consoKwh={conso ? Number(conso.replace(/\s/g, "")) : undefined}
+                    city={ville || villeProjet || undefined}
                   />
 
                   <div className="flex items-center gap-3">
