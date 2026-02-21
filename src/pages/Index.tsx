@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
-import satellitePlaceholder from "@/assets/satellite-placeholder.jpg";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -161,6 +160,13 @@ const Index = () => {
   const [extensionInstall, setExtensionInstall] = useState<"Oui" | "Non" | null>(null);
   const [subventionRecue, setSubventionRecue] = useState<"Oui" | "Non" | null>(null);
   const villeRef = useRef<HTMLDivElement>(null);
+  const [mapsKey, setMapsKey] = useState("");
+
+  useEffect(() => {
+    supabase.functions.invoke("get-maps-key").then(({ data }) => {
+      if (data?.key) setMapsKey(data.key);
+    });
+  }, []);
 
   const handleAideCTA = () => {
     setPhoneScreen("intro");
@@ -883,9 +889,10 @@ const Index = () => {
                         </div>
 
                         {/* Mini carte satellite */}
+                        {mapsKey && (
                         <div className="rounded-xl overflow-hidden border border-border">
                           <img
-                            src={satellitePlaceholder}
+                            src={`https://maps.googleapis.com/maps/api/staticmap?center=${ville || "Casablanca"},Morocco&zoom=14&size=340x120&maptype=satellite&key=${mapsKey}`}
                             alt="Localisation"
                             className="w-full h-[100px] object-cover bg-muted"
                           />
@@ -894,6 +901,7 @@ const Index = () => {
                             <span className="text-[8px] text-muted-foreground">{ville || "Casablanca"}, Maroc</span>
                           </div>
                         </div>
+                        )}
 
                         {/* Accès Panneaux + Surface — non-Entreprise uniquement */}
                         {selectedType !== "Entreprise" && (
