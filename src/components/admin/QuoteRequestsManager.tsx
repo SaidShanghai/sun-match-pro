@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { FileText, Loader2, Mail, Phone, MapPin, Calendar, ChevronDown, ChevronUp, StickyNote, Sun, Zap, Leaf, LayoutGrid } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import SatelliteMapPreview from "@/components/admin/SatelliteMapPreview";
 
 interface SolarResult {
   maxSunshineHoursPerYear?: number;
@@ -287,14 +288,7 @@ const QuoteRequestsManager = () => {
                               <MapPin className="w-3.5 h-3.5" />Localisation toiture
                             </p>
                             <div className="rounded-xl overflow-hidden border border-border">
-                              <iframe
-                                src={`https://www.google.com/maps/embed/v1/place?key=${mapsKey}&q=${req.gps_lat},${req.gps_lng}&zoom=19&maptype=satellite`}
-                                className="w-full h-[300px] border-0"
-                                allowFullScreen
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                                title="Localisation toiture"
-                              />
+                              <SatelliteMapPreview lat={req.gps_lat} lng={req.gps_lng} apiKey={mapsKey} />
                             </div>
                             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1 flex-wrap">
                               <span>GPS : {req.gps_lat.toFixed(6)}, {req.gps_lng.toFixed(6)}</span>
