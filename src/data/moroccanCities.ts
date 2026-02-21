@@ -17,7 +17,7 @@ export const villesMaroc = [
   "Mechraa Bel Ksiri", "Meknès", "Midelt", "Missour", "Mohammedia",
   "Moulay Yacoub", "Médiouna", "Nador", "Ouarzazate", "Ouezzane",
   "Oujda", "Oulad Teima", "Rabat", "Rommani", "Safi",
-  "Salé", "Sefrou", "Settat", "Sidi Bennour", "Sidi Kacem",
+  "Salé", "Sebbah", "Sefrou", "Settat", "Sidi Bennour", "Sidi Kacem",
   "Sidi Rahal", "Sidi Slimane", "Sidi Taibi", "Sidi Yahia El Gharb",
   "Skhirat", "Smara", "Souk El Arbaa", "Tan-Tan", "Tan-Tan Plage",
   "Tamesna", "Tanger", "Taourirt", "Taroudant", "Taza",
