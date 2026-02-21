@@ -31,8 +31,46 @@ const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
+  const geoMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const addGeoMarker = useCallback((map: google.maps.Map) => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const geoPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+
+        // Create blue dot element
+        const dot = document.createElement("div");
+        dot.style.cssText = "width:16px;height:16px;background:#4285F4;border:3px solid white;border-radius:50%;box-shadow:0 0 6px rgba(66,133,244,0.6);";
+
+        // Remove old geo marker if exists
+        if (geoMarkerRef.current) {
+          geoMarkerRef.current.map = null;
+        }
+
+        const geoMarker = new google.maps.marker.AdvancedMarkerElement({
+          map,
+          position: geoPos,
+          content: dot,
+          title: "Votre position",
+        });
+        geoMarkerRef.current = geoMarker;
+
+        // Center map on user location and move pin there too
+        map.setCenter(geoPos);
+        if (markerRef.current) {
+          markerRef.current.position = geoPos;
+        }
+        onLocationSelect?.(geoPos.lat, geoPos.lng);
+      },
+      () => {
+        // Geolocation denied or failed - silently ignore, use city center
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  }, [onLocationSelect]);
 
   const initMap = useCallback(async () => {
     if (!mapRef.current) return;
@@ -88,12 +126,15 @@ const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
       markerRef.current = marker;
       onLocationSelect?.(coords.lat, coords.lng);
       setLoading(false);
+
+      // Try to geolocate the user and show blue dot
+      addGeoMarker(map);
     } catch (e) {
       console.error("Map init error:", e);
       setError("Erreur lors du chargement de la carte");
       setLoading(false);
     }
-  }, [city, onLocationSelect]);
+  }, [city, onLocationSelect, addGeoMarker]);
 
   useEffect(() => {
     initMap();
