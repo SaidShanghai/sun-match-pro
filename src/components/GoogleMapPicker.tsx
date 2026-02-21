@@ -165,13 +165,13 @@ const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
         Localisez votre toit
       </label>
       <p className="text-xs text-muted-foreground">Déplacez le marqueur ROUGE au centre de votre toiture</p>
-      <div className="relative rounded-xl overflow-hidden border-2 border-border">
+      <div className="relative rounded-xl overflow-hidden border-2 border-border touch-none">
         {loading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-muted/60">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
           </div>
         )}
-        <div ref={mapRef} className="w-full h-[280px] md:h-[350px]" />
+        <div ref={mapRef} className="w-full h-[350px] md:h-[400px]" style={{ touchAction: "none" }} />
       </div>
     </div>
   );
