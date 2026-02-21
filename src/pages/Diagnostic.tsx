@@ -748,7 +748,9 @@ const Diagnostic = () => {
                         setSolarData(null);
                         const lat = roofLat || 33.5731;
                         const lng = roofLng || -7.5898;
-                        supabase.functions.invoke("get-solar-data", { body: { lat, lng } })
+                        const surfaceM2 = selectedSurface ? parseInt(surfaces.find(s => s.label === selectedSurface)?.m2 || "22") : 22;
+                        const estimatedKwp = Math.max(1, Math.round((surfaceM2 / 2) * 0.5));
+                        supabase.functions.invoke("get-solar-data", { body: { lat, lng, peakpower: estimatedKwp } })
                           .then(({ data, error: fnErr }) => {
                             if (fnErr || data?.error === "no_coverage" || data?.error) {
                               setSolarError(data?.message || "Données non disponibles");
