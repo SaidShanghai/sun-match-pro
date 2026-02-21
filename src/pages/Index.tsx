@@ -118,9 +118,6 @@ const Index = () => {
   const [callbackOpen, setCallbackOpen] = useState(false);
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [quoteRef, setQuoteRef] = useState<string | null>(null);
-  const [invoiceUploading, setInvoiceUploading] = useState(false);
-  const [invoiceUploaded, setInvoiceUploaded] = useState(false);
-  const invoiceInputRef = useRef<HTMLInputElement | null>(null);
   const { toast } = useToast();
   const [contactNom, setContactNom] = useState("");
   const [contactEmail, setContactEmail] = useState("");
@@ -1199,90 +1196,8 @@ const Index = () => {
                           )}
                         </div>
                         <div className="w-full space-y-2 mt-1">
-                          <input
-                            ref={invoiceInputRef}
-                            type="file"
-                            className="hidden"
-                            accept=".pdf"
-            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-                              if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
-                                toast({ title: "Format non accepté", description: "Seuls les fichiers PDF sont acceptés.", variant: "destructive" });
-                                e.target.value = "";
-                                return;
-                              }
-                              if (file.size > 2 * 1024 * 1024) {
-                                toast({ title: "Fichier trop volumineux", description: "La taille maximale est de 2 Mo.", variant: "destructive" });
-                                e.target.value = "";
-                                return;
-                              }
-                              const ref = quoteRef ?? crypto.randomUUID();
-                              setInvoiceUploading(true);
-                              try {
-                                // Convert file to base64 and send via edge function (uses service role — no RLS issue)
-                                const reader = new FileReader();
-                                const fileBase64 = await new Promise<string>((resolve, reject) => {
-                                  reader.onload = () => resolve(reader.result as string);
-                                  reader.onerror = reject;
-                                  reader.readAsDataURL(file);
-                                });
-
-                                const { error: fnError } = await supabase.functions.invoke("send-invoice-email", {
-                                  body: {
-                                    fileBase64,
-                                    fileType: file.type,
-                                    fileName: file.name,
-                                    quoteRef: ref.slice(0, 8).toUpperCase(),
-                                    clientName: contactNom || "Client",
-                                    clientEmail: contactEmail || "",
-                                  },
-                                });
-
-                                if (fnError) throw fnError;
-                                setInvoiceUploaded(true);
-
-                              } catch (err: any) {
-                                console.error("Invoice upload error:", err);
-                                toast({ title: "Erreur lors de l'envoi", description: err?.message ?? "Veuillez réessayer.", variant: "destructive" });
-                              } finally {
-                                setInvoiceUploading(false);
-                                e.target.value = "";
-                              }
-                            }}
-                          />
-                          {invoiceUploaded ? (
-                            <motion.div
-                              initial={{ scale: 0.8, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              transition={{ type: "spring", stiffness: 260, damping: 18 }}
-                              className="w-full rounded-2xl bg-green-500 px-4 py-5 flex flex-col items-center gap-2 text-center shadow-lg"
-                            >
-                              <span className="text-4xl">✅</span>
-                              <p className="text-[15px] font-black text-black tracking-tight">Facture envoyée !</p>
-                              <p className="text-[10px] text-black/80 leading-relaxed">Notre équipe l'examinera<br />et vous recontactera rapidement.</p>
-                            </motion.div>
-                          ) : (
-                            <button
-                              onClick={() => !invoiceUploading && invoiceInputRef.current?.click()}
-                              disabled={invoiceUploading}
-                              className="w-full rounded-full py-2.5 text-[10px] font-semibold flex items-center justify-center gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-                            >
-                              {invoiceUploading ? (
-                                <>
-                                  <svg className="animate-spin w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                                  </svg>
-                                  Envoi en cours…
-                                </>
-                              ) : (
-                                <><span className="text-[13px] font-bold leading-none">+</span> Téléverser une facture</>
-                              )}
-                            </button>
-                          )}
                           <button
-                            onClick={() => { setPhoneScreen("intro"); setQuoteRef(null); setInvoiceUploaded(false); }}
+                            onClick={() => { setPhoneScreen("intro"); setQuoteRef(null); }}
                             className="w-full border border-border rounded-full py-2.5 text-[10px] font-semibold text-foreground hover:bg-muted transition-colors"
                           >
                             Retour à l'accueil
