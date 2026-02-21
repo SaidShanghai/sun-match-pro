@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Package, Loader2, Zap, Sun } from "lucide-react";
+import { Plus, Pencil, Trash2, Package, Loader2, Zap, Sun, Upload, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface PackageRow {
@@ -166,6 +166,7 @@ const PackagesManager = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [ocrLoading, setOcrLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => { fetchPackages(); }, []);
@@ -185,6 +186,85 @@ const PackagesManager = () => {
     setEditingId(null);
     setForm(emptyForm);
     setDialogOpen(true);
+  };
+
+  const handleBrochureUpload = async (file: File) => {
+    const MAX_SIZE = 4 * 1024 * 1024;
+    const ALLOWED = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+    if (!ALLOWED.includes(file.type)) {
+      toast({ title: "Format non supporté", description: "JPG, PNG, WebP ou PDF uniquement.", variant: "destructive" });
+      return;
+    }
+    if (file.size > MAX_SIZE) {
+      toast({ title: "Fichier trop volumineux", description: "4 Mo maximum.", variant: "destructive" });
+      return;
+    }
+    setOcrLoading(true);
+    try {
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve((reader.result as string).split(",")[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const { data, error } = await supabase.functions.invoke("ocr-brochure", {
+        body: { imageBase64: base64, mimeType: file.type },
+      });
+
+      if (error || !data?.success) {
+        toast({ title: "Erreur d'analyse", description: data?.message || "Impossible de lire la brochure.", variant: "destructive" });
+        return;
+      }
+
+      const d = data.data;
+      const toStr = (v: unknown) => (v !== undefined && v !== null ? String(v) : "");
+      const toArr = (v: unknown) => (Array.isArray(v) ? v : []);
+      const s = d.specs || {};
+
+      setForm((f) => ({
+        ...f,
+        name: d.name || f.name,
+        fabricant: d.fabricant || f.fabricant,
+        modele: d.modele || f.modele,
+        profile_type: d.profile_type || f.profile_type,
+        power_kwc: d.power_kwc ? String(d.power_kwc) : f.power_kwc,
+        price_ttc: d.price_ttc ? String(d.price_ttc) : f.price_ttc,
+        description: d.description || f.description,
+        specs: {
+          capacite_kwh: toStr(s.capacite_kwh) || f.specs.capacite_kwh,
+          capacite_utilisable_kwh: toStr(s.capacite_utilisable_kwh) || f.specs.capacite_utilisable_kwh,
+          puissance_decharge_jour_kw: toStr(s.puissance_decharge_jour_kw) || f.specs.puissance_decharge_jour_kw,
+          puissance_decharge_nuit_kw: toStr(s.puissance_decharge_nuit_kw) || f.specs.puissance_decharge_nuit_kw,
+          puissance_charge_kw: toStr(s.puissance_charge_kw) || f.specs.puissance_charge_kw,
+          cycle_vie: toStr(s.cycle_vie) || f.specs.cycle_vie,
+          duree_vie_ans: toStr(s.duree_vie_ans) || f.specs.duree_vie_ans,
+          depth_of_discharge: toStr(s.depth_of_discharge) || f.specs.depth_of_discharge,
+          type_systeme: toArr(s.type_systeme).length > 0 ? toArr(s.type_systeme) : f.specs.type_systeme,
+          type_client: toArr(s.type_client).length > 0 ? toArr(s.type_client) : f.specs.type_client,
+          prix_installation_dh: toStr(s.prix_installation_dh) || f.specs.prix_installation_dh,
+          efficacite_roundtrip: toStr(s.efficacite_roundtrip) || f.specs.efficacite_roundtrip,
+          temp_min_celsius: toStr(s.temp_min_celsius) || f.specs.temp_min_celsius,
+          temp_max_celsius: toStr(s.temp_max_celsius) || f.specs.temp_max_celsius,
+          ip_rating: toStr(s.ip_rating) || f.specs.ip_rating,
+          largeur_mm: toStr(s.largeur_mm) || f.specs.largeur_mm,
+          hauteur_mm: toStr(s.hauteur_mm) || f.specs.hauteur_mm,
+          type_batterie: toStr(s.type_batterie) || f.specs.type_batterie,
+          type_refroidissement: toStr(s.type_refroidissement) || f.specs.type_refroidissement,
+          communication: toArr(s.communication).length > 0 ? toArr(s.communication) : f.specs.communication,
+          use_cases: toArr(s.use_cases).length > 0 ? toArr(s.use_cases) : f.specs.use_cases,
+          puissance_min_site_kw: toStr(s.puissance_min_site_kw) || f.specs.puissance_min_site_kw,
+          conso_min_kwh_mois: toStr(s.conso_min_kwh_mois) || f.specs.conso_min_kwh_mois,
+          secteurs_cibles: toArr(s.secteurs_cibles).length > 0 ? toArr(s.secteurs_cibles) : f.specs.secteurs_cibles,
+        },
+      }));
+
+      toast({ title: "Brochure analysée ✓", description: "Vérifiez et complétez les champs pré-remplis." });
+    } catch (err) {
+      toast({ title: "Erreur", description: "Échec de l'analyse de la brochure.", variant: "destructive" });
+    } finally {
+      setOcrLoading(false);
+    }
   };
 
   const openEdit = (pkg: PackageRow) => {
@@ -422,6 +502,44 @@ const PackagesManager = () => {
           <DialogHeader>
             <DialogTitle>{editingId ? "Modifier le produit" : "Nouveau produit"}</DialogTitle>
           </DialogHeader>
+
+          {/* Brochure upload zone */}
+          <div className="mt-2 mb-4">
+            <label
+              htmlFor="brochure-upload"
+              className={`flex items-center justify-center gap-3 border-2 border-dashed rounded-lg p-4 cursor-pointer transition-colors ${
+                ocrLoading
+                  ? "border-primary/40 bg-primary/5"
+                  : "border-border hover:border-primary/50 hover:bg-muted/50"
+              }`}
+            >
+              {ocrLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                  <span className="text-sm text-primary font-medium">Analyse de la brochure en cours…</span>
+                </>
+              ) : (
+                <>
+                  <Upload className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
+                    <span className="font-medium text-foreground">Importer une brochure</span> pour pré-remplir le formulaire (JPG, PNG, PDF)
+                  </span>
+                </>
+              )}
+              <input
+                id="brochure-upload"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,application/pdf"
+                className="hidden"
+                disabled={ocrLoading}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleBrochureUpload(file);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+          </div>
 
           <Tabs defaultValue="general" className="mt-2">
             <TabsList className="w-full grid grid-cols-4">
