@@ -259,9 +259,9 @@ const QuoteRequestsManager = () => {
                             </div>
                             <p className="text-xs text-muted-foreground mt-1">
                               GPS : {req.gps_lat.toFixed(6)}, {req.gps_lng.toFixed(6)} ·{" "}
-                              <a href={`https://www.google.com/maps?q=${req.gps_lat},${req.gps_lng}`} target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                              <button type="button" onClick={() => window.open(`https://www.google.com/maps?q=${req.gps_lat},${req.gps_lng}`, '_blank')} className="text-primary underline hover:text-primary/80 transition-colors">
                                 Ouvrir dans Google Maps
-                              </a>
+                              </button>
                             </p>
                           </div>
                         )}
