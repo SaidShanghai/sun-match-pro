@@ -1156,7 +1156,7 @@ const Index = () => {
                                   </div>
                                   <span className="text-[9px] text-foreground font-medium">{item}</span>
                                 </div>
-                                <Lock className="w-4 h-4 text-primary/60 shrink-0" />
+                                <Lock className="w-5 h-5 text-primary shrink-0" strokeWidth={2.5} />
                               </div>
                             ))}
                           </div>
