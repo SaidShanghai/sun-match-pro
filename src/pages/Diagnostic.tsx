@@ -383,10 +383,18 @@ const Diagnostic = () => {
                     <label className="text-sm font-semibold">Objectif principal</label>
                     <div className="flex gap-3">
                       <button onClick={() => setObjectif("facture")} className={`flex-1 flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium border-2 transition-colors ${objectif === "facture" ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-primary/50"}`}>
-                        <TrendingDown className="w-4 h-4 shrink-0" /> Réduire la facture
+                        <TrendingDown className="w-4 h-4 shrink-0" />
+                        <span className="flex flex-col items-start leading-tight">
+                          <span>Réduire la facture</span>
+                          <span className="text-[10px] font-normal opacity-75">Sans stockage d'énergie</span>
+                        </span>
                       </button>
                       <button onClick={() => setObjectif("autonomie")} className={`flex-1 flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium border-2 transition-colors ${objectif === "autonomie" ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-primary/50"}`}>
-                        <Battery className="w-4 h-4 shrink-0" /> Autonomie totale
+                        <Battery className="w-4 h-4 shrink-0" />
+                        <span className="flex flex-col items-start leading-tight">
+                          <span>Autonomie totale</span>
+                          <span className="text-[10px] font-normal opacity-75">Avec stockage d'énergie</span>
+                        </span>
                       </button>
                     </div>
                   </div>
