@@ -16,6 +16,7 @@ import EligibiliteScreen from "@/components/EligibiliteScreen";
 import GoogleMapPicker from "@/components/GoogleMapPicker";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import SolarResults, { type SolarData } from "@/components/SolarResults";
+import type { PIC, PICM, PICA, PICE, PICF, OcrFactureData } from "@/types/pic";
 
 type Screen =
   | "landing"
@@ -122,9 +123,51 @@ const Diagnostic = () => {
   const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [solarLoading, setSolarLoading] = useState(false);
   const [solarError, setSolarError] = useState<string | null>(null);
+  const [ocrRawData, setOcrRawData] = useState<OcrFactureData | null>(null);
   const { toast } = useToast();
   const [projetPlaceholderIndex, setProjetPlaceholderIndex] = useState(0);
   const [projetPlaceholderVisible, setProjetPlaceholderVisible] = useState(true);
+
+  /** Build the current PIC object from all state */
+  const buildPic = (): PIC | null => {
+    const segment = selectedType as PIC["segment"] | null;
+    if (!segment) return null;
+
+    const base = {
+      objectif,
+      consommation_annuelle_kwh: conso ? Number(conso.replace(/\s/g, "")) : null,
+      facture_annuelle_mad: facture ? Number(facture.replace(/\s/g, "")) : null,
+      ville: ville || villeProjet || null,
+      gps: roofLat && roofLng ? { lat: roofLat, lng: roofLng } : null,
+      usages: selectedUsages,
+      acces_panneaux: panelAccess,
+      surface: selectedSurface,
+      ocr_brut: ocrRawData,
+      distributeur: ocrRawData?.distributeur ?? null,
+      type_abonnement: typeAbonnement ?? ocrRawData?.type_abonnement ?? null,
+      puissance_souscrite_kva: puissanceSouscrite ? Number(puissanceSouscrite) : ocrRawData?.puissance_souscrite_kva ?? null,
+      tranche_tarifaire: ocrRawData?.tranche_tarifaire ?? null,
+    };
+
+    if (segment === "Entreprise") {
+      return {
+        ...base,
+        segment: "Entreprise",
+        type_batiment: typeBatiment,
+        description_projet: descriptionProjet || null,
+        adresse_projet: adresseProjet || null,
+        ville_projet: villeProjet || null,
+        date_debut: dateDebut || null,
+        date_fin: dateFin || null,
+        pv_existante: pvExistante,
+        extension_install: extensionInstall,
+        subvention_recue: subventionRecue,
+        elig_decl: Object.values(eligDecl).some(v => v !== null) ? eligDecl : null,
+      } as PICE;
+    }
+
+    return { ...base, segment } as PICM | PICA | PICF;
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -352,6 +395,8 @@ const Diagnostic = () => {
                   {selectedType !== "Entreprise" && (
                     <FactureUpload
                       onDataExtracted={(ocrData) => {
+                        // Store raw OCR data for PIC
+                        setOcrRawData(ocrData as OcrFactureData);
                         // Auto-fill form fields from OCR
                         if (ocrData.montant_ttc) {
                           // Estimate annual from period
@@ -988,6 +1033,7 @@ const Diagnostic = () => {
           gps_lat: roofLat ?? undefined,
           gps_lng: roofLng ?? undefined,
         }}
+        pic={buildPic()}
         onSuccess={(id, clientName, clientEmail) => {
           setQuoteRef(id);
           setContactNom(clientName);
