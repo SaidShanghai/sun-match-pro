@@ -437,13 +437,21 @@ const Index = () => {
                               onClick={() => setObjectif("facture")}
                               className={`flex-1 flex items-center gap-1 px-2 py-2 rounded-full text-[10px] font-medium border transition-colors ${objectif === "facture" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
                             >
-                              <TrendingDown className="w-2.5 h-2.5 shrink-0" /> Réduire la facture
+                              <TrendingDown className="w-2.5 h-2.5 shrink-0" />
+                              <span className="flex flex-col items-start leading-tight">
+                                <span>Réduire la facture</span>
+                                <span className="text-[7px] font-normal opacity-75">Sans stockage</span>
+                              </span>
                             </button>
                             <button
                               onClick={() => setObjectif("autonomie")}
                               className={`flex-1 flex items-center gap-1 px-2 py-2 rounded-full text-[10px] font-medium border transition-colors ${objectif === "autonomie" ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary/50"}`}
                             >
-                              <Battery className="w-2.5 h-2.5 shrink-0" /> Autonomie totale
+                              <Battery className="w-2.5 h-2.5 shrink-0" />
+                              <span className="flex flex-col items-start leading-tight">
+                                <span>Autonomie totale</span>
+                                <span className="text-[7px] font-normal opacity-75">Avec stockage</span>
+                              </span>
                             </button>
                           </div>
                         </div>
