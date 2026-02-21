@@ -881,6 +881,19 @@ const Index = () => {
                           <h4 className="text-sm font-bold">Votre site</h4>
                         </div>
 
+                        {/* Mini carte satellite */}
+                        <div className="rounded-xl overflow-hidden border border-border">
+                          <img
+                            src={`https://maps.googleapis.com/maps/api/staticmap?center=${ville},Morocco&zoom=14&size=340x120&maptype=satellite&key=AIzaSyD80fHRAHSlawLtSvhjEjbx2XJfJ63uhrA`}
+                            alt="Localisation"
+                            className="w-full h-[100px] object-cover bg-muted"
+                          />
+                          <div className="flex items-center gap-1 px-2 py-1 bg-muted/50">
+                            <MapPin className="w-2.5 h-2.5 text-primary" />
+                            <span className="text-[8px] text-muted-foreground">{ville || "Casablanca"}, Maroc</span>
+                          </div>
+                        </div>
+
                         {/* Accès Panneaux + Surface — non-Entreprise uniquement */}
                         {selectedType !== "Entreprise" && (
                           <>
