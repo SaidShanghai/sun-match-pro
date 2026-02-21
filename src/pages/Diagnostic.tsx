@@ -739,7 +739,10 @@ const Diagnostic = () => {
                           setSolarData(null);
                           const lat = roofLat || 33.5731;
                           const lng = roofLng || -7.5898;
-                          supabase.functions.invoke("get-solar-data", { body: { lat, lng } })
+                          // Estimate peakpower from surface for Maison (rough: 1 panel = 400W, 2m²)
+                          const surfaceM2 = selectedSurface ? parseInt(surfaces.find(s => s.label === selectedSurface)?.m2 || "22") : 22;
+                          const estimatedKwp = Math.max(1, Math.round((surfaceM2 / 2) * 0.4));
+                          supabase.functions.invoke("get-solar-data", { body: { lat, lng, peakpower: estimatedKwp } })
                             .then(({ data, error: fnErr }) => {
                               if (fnErr || data?.error === "no_coverage" || data?.error) {
                                 setSolarError(data?.message || "Données non disponibles");
@@ -751,7 +754,7 @@ const Diagnostic = () => {
                               setTimeout(() => setScreen("solutions"), 2000);
                             })
                             .catch(() => {
-                              setSolarError("Erreur lors de l'appel Solar API");
+                              setSolarError("Erreur lors de l'appel PVGIS");
                               setSolarLoading(false);
                               setTimeout(() => setScreen("solutions"), 2000);
                             });
@@ -779,7 +782,7 @@ const Diagnostic = () => {
                   <div className="text-center space-y-2">
                     <p className="text-xl font-bold">Analyse en cours…</p>
                     <p className="text-muted-foreground">
-                      {solarLoading ? "Interrogation de Google Solar API…" : "Préparation de vos résultats…"}
+                      {solarLoading ? "Interrogation de PVGIS…" : "Préparation de vos résultats…"}
                     </p>
                   </div>
                 </motion.div>

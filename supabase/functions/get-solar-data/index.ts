@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { lat, lng } = await req.json();
+    const { lat, lng, peakpower } = await req.json();
     if (!lat || !lng) {
       return new Response(JSON.stringify({ error: "lat and lng required" }), {
         status: 400,
@@ -20,58 +20,44 @@ serve(async (req) => {
       });
     }
 
-    const apiKey = Deno.env.get("GOOGLE_MAPS_API_KEY");
-    if (!apiKey) {
-      return new Response(JSON.stringify({ error: "API key not configured" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    // Use 1 kWp as reference to get per-kWp production data
+    const kWp = peakpower || 1;
 
-    // Call Google Solar API - Building Insights endpoint
-    const solarUrl = `https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=${lat}&location.longitude=${lng}&requiredQuality=HIGH&key=${apiKey}`;
+    // PVGIS API - PVcalc endpoint (free, no API key, covers Morocco/Africa via PVGIS-SARAH3)
+    const pvgisUrl = `https://re.jrc.ec.europa.eu/api/v5_3/PVcalc?lat=${lat}&lon=${lng}&peakpower=${kWp}&loss=14&optimalangles=1&outputformat=json&raddatabase=PVGIS-SARAH3`;
 
-    const solarRes = await fetch(solarUrl);
+    console.log("Calling PVGIS:", pvgisUrl);
+    const pvgisRes = await fetch(pvgisUrl);
 
-    if (!solarRes.ok) {
-      // If HIGH quality not available, try MEDIUM
-      const solarUrlMedium = `https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=${lat}&location.longitude=${lng}&requiredQuality=MEDIUM&key=${apiKey}`;
-      const solarResMedium = await fetch(solarUrlMedium);
+    if (!pvgisRes.ok) {
+      // Try with ERA5 database as fallback (global coverage)
+      const fallbackUrl = `https://re.jrc.ec.europa.eu/api/v5_3/PVcalc?lat=${lat}&lon=${lng}&peakpower=${kWp}&loss=14&optimalangles=1&outputformat=json&raddatabase=PVGIS-ERA5`;
+      console.log("SARAH3 failed, trying ERA5:", fallbackUrl);
+      const fallbackRes = await fetch(fallbackUrl);
 
-      if (!solarResMedium.ok) {
-        // Try LOW quality as last resort
-        const solarUrlLow = `https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=${lat}&location.longitude=${lng}&requiredQuality=LOW&key=${apiKey}`;
-        const solarResLow = await fetch(solarUrlLow);
-
-        if (!solarResLow.ok) {
-          const errText = await solarResLow.text();
-          console.error("Solar API error:", errText);
-          return new Response(
-            JSON.stringify({
-              error: "no_coverage",
-              message: "Données solaires non disponibles pour cette localisation",
-            }),
-            {
-              status: 200,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            }
-          );
-        }
-
-        const dataLow = await solarResLow.json();
-        return new Response(JSON.stringify(formatSolarData(dataLow)), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+      if (!fallbackRes.ok) {
+        const errText = await fallbackRes.text();
+        console.error("PVGIS error:", errText);
+        return new Response(
+          JSON.stringify({
+            error: "no_coverage",
+            message: "Données solaires non disponibles pour cette localisation",
+          }),
+          {
+            status: 200,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
       }
 
-      const dataMedium = await solarResMedium.json();
-      return new Response(JSON.stringify(formatSolarData(dataMedium)), {
+      const fallbackData = await fallbackRes.json();
+      return new Response(JSON.stringify(formatPvgisData(fallbackData, kWp)), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const data = await solarRes.json();
-    return new Response(JSON.stringify(formatSolarData(data)), {
+    const data = await pvgisRes.json();
+    return new Response(JSON.stringify(formatPvgisData(data, kWp)), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
@@ -86,82 +72,59 @@ serve(async (req) => {
   }
 });
 
-function formatSolarData(raw: any) {
-  const solar = raw.solarPotential;
-  if (!solar) {
-    return { error: "no_data", message: "Pas de données solaires disponibles" };
-  }
+function formatPvgisData(raw: any, peakpower: number) {
+  const inputs = raw.inputs || {};
+  const outputs = raw.outputs || {};
+  const totals = outputs.totals?.fixed || {};
+  const monthly = outputs.monthly?.fixed || [];
 
-  // Get the best solar panel config (max panels)
-  const configs = solar.solarPanelConfigs || [];
-  const bestConfig = configs.length > 0 ? configs[configs.length - 1] : null;
-  const midConfig =
-    configs.length > 2
-      ? configs[Math.floor(configs.length / 2)]
-      : bestConfig;
+  // E_y = yearly PV energy production (kWh)
+  const yearlyProductionKwh = totals.E_y || 0;
+  // H(i)_y = yearly in-plane irradiation (kWh/m²)
+  const yearlyIrradiationKwhM2 = totals["H(i)_y"] || 0;
+  // SD_y = standard deviation of yearly production
+  const sdYearly = totals.SD_y || 0;
 
-  // Roof segments info
-  const roofSegments = solar.roofSegmentStats || [];
-  const totalArea = roofSegments.reduce(
-    (sum: number, seg: any) => sum + (seg.stats?.areaMeters2 || 0),
-    0
-  );
+  // Optimal angles
+  const mountingSystem = inputs.mounting_system?.fixed || {};
+  const optimalInclination = mountingSystem.slope?.value || 0;
+  const optimalAzimuth = mountingSystem.azimuth?.value || 0;
 
-  // Financial analysis (if available)
-  const financialAnalyses = solar.financialAnalyses || {};
-  const monthlyBill = financialAnalyses.monthlyBill;
+  // Location info
+  const location = inputs.location || {};
 
-  // Sun hours
-  const maxSunHours = solar.maxSunshineHoursPerYear || 0;
+  // Monthly breakdown
+  const monthlyData = monthly.map((m: any) => ({
+    month: m.month,
+    productionKwh: m.E_m || 0,
+    irradiationKwhM2: m["H(i)_m"] || 0,
+    sdMonthly: m.SD_m || 0,
+  }));
 
-  // Carbon offset
-  const carbonOffset = solar.carbonOffsetFactorKgPerMwh || 0;
+  // Estimate sunshine hours from irradiation (rough: GHI / average solar constant ~1 kW/m²)
+  const estimatedSunshineHours = yearlyIrradiationKwhM2;
+
+  // CO2 savings: Morocco grid ~0.7 kg CO2/kWh
+  const co2SavedKg = Math.round(yearlyProductionKwh * 0.7);
+
+  // Electricity price Morocco ~1.2 MAD/kWh
+  const savingsMad = Math.round(yearlyProductionKwh * 1.2);
 
   return {
-    maxSunshineHoursPerYear: maxSunHours,
-    maxArrayAreaMeters2: solar.maxArrayAreaMeters2 || 0,
-    maxArrayPanelsCount: solar.maxArrayPanelsCount || 0,
-    totalRoofAreaMeters2: totalArea,
-    panelCapacityWatts: solar.panelCapacityWatts || 400,
-    panelHeightMeters: solar.panelHeightMeters,
-    panelWidthMeters: solar.panelWidthMeters,
-    carbonOffsetFactorKgPerMwh: carbonOffset,
-    roofSegmentCount: roofSegments.length,
-    imageryDate: raw.imageryDate,
-    imageryQuality: raw.imageryQuality,
-    // Best config
-    bestConfig: bestConfig
-      ? {
-          panelsCount: bestConfig.panelsCount,
-          yearlyEnergyDcKwh: bestConfig.yearlyEnergyDcKwh,
-        }
-      : null,
-    // Mid config (recommended)
-    recommendedConfig: midConfig
-      ? {
-          panelsCount: midConfig.panelsCount,
-          yearlyEnergyDcKwh: midConfig.yearlyEnergyDcKwh,
-        }
-      : null,
-    // Roof segments summary
-    roofSegments: roofSegments.slice(0, 4).map((seg: any) => ({
-      pitchDegrees: seg.pitchDegrees,
-      azimuthDegrees: seg.azimuthDegrees,
-      areaMeters2: seg.stats?.areaMeters2 || 0,
-      sunshineHoursPerYear: seg.stats?.sunshineQuantiles
-        ? seg.stats.sunshineQuantiles[
-            seg.stats.sunshineQuantiles.length - 1
-          ]
-        : 0,
-    })),
-    // Data layer URLs for visualization
-    dataLayerUrls: solar.dataLayers
-      ? {
-          rgbUrl: solar.dataLayers.rgbUrl,
-          maskUrl: solar.dataLayers.maskUrl,
-          annualFluxUrl: solar.dataLayers.annualFluxUrl,
-          monthlyFluxUrl: solar.dataLayers.monthlyFluxUrl,
-        }
-      : null,
+    source: "PVGIS",
+    yearlyProductionKwh: Math.round(yearlyProductionKwh),
+    yearlyIrradiationKwhM2: Math.round(yearlyIrradiationKwhM2),
+    optimalInclination: Math.round(optimalInclination * 10) / 10,
+    optimalAzimuth: Math.round(optimalAzimuth * 10) / 10,
+    peakpowerKwp: peakpower,
+    systemLoss: 14,
+    co2SavedKg,
+    savingsMad,
+    sdYearly: Math.round(sdYearly),
+    monthlyData,
+    latitude: location.latitude,
+    longitude: location.longitude,
+    elevation: location.elevation,
+    database: inputs.meteo_data?.radiation_db || "PVGIS-SARAH3",
   };
 }
