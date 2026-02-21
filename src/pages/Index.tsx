@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
+import satellitePlaceholder from "@/assets/satellite-placeholder.jpg";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -884,7 +885,7 @@ const Index = () => {
                         {/* Mini carte satellite */}
                         <div className="rounded-xl overflow-hidden border border-border">
                           <img
-                            src={`https://maps.googleapis.com/maps/api/staticmap?center=${ville || "Casablanca"},Morocco&zoom=14&size=340x120&maptype=satellite&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ""}`}
+                            src={satellitePlaceholder}
                             alt="Localisation"
                             className="w-full h-[100px] object-cover bg-muted"
                           />
