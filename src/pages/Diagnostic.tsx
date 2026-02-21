@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Sun, Zap, Shield, ArrowRight, Star, MapPin, FileText,
+  Sun, Zap, Shield, ArrowRight, Star, MapPin, FileText, Lock,
   ChevronLeft, TrendingDown, Battery, MapPinned, ChevronDown,
   Home, Building2, Store, Warehouse,
 } from "lucide-react";
@@ -902,11 +902,14 @@ const Diagnostic = () => {
 
                   <div className="space-y-3">
                     {["Solution optimale identifiée", "Installateurs certifiés sélectionnés", "Aides d'état applicables détectées"].map((item) => (
-                      <div key={item} className="flex items-center gap-4 p-5 rounded-2xl bg-primary/5 border border-primary/20">
-                        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
-                          <span className="text-sm text-primary-foreground font-bold">✓</span>
+                      <div key={item} className="flex items-center justify-between gap-4 p-5 rounded-2xl bg-primary/5 border border-primary/20">
+                        <div className="flex items-center gap-4">
+                          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+                            <span className="text-sm text-primary-foreground font-bold">✓</span>
+                          </div>
+                          <span className="text-sm font-medium">{item}</span>
                         </div>
-                        <span className="text-sm font-medium">{item}</span>
+                        <Lock className="w-7 h-7 text-primary/60 shrink-0" />
                       </div>
                     ))}
                   </div>
