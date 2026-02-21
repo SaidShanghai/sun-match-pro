@@ -884,7 +884,7 @@ const Index = () => {
                         {/* Mini carte satellite */}
                         <div className="rounded-xl overflow-hidden border border-border">
                           <img
-                            src={`https://maps.googleapis.com/maps/api/staticmap?center=${ville},Morocco&zoom=14&size=340x120&maptype=satellite&key=AIzaSyD80fHRAHSlawLtSvhjEjbx2XJfJ63uhrA`}
+                            src={`https://maps.googleapis.com/maps/api/staticmap?center=${ville || "Casablanca"},Morocco&zoom=14&size=340x120&maptype=satellite&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ""}`}
                             alt="Localisation"
                             className="w-full h-[100px] object-cover bg-muted"
                           />
