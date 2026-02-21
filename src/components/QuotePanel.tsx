@@ -25,6 +25,8 @@ export interface DiagnosticData {
   extension_install?: string;
   subvention_recue?: string;
   elig_decl?: Record<string, string | null>;
+  gps_lat?: number;
+  gps_lng?: number;
 }
 
 interface QuotePanelProps {
