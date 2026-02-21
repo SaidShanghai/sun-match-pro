@@ -156,7 +156,7 @@ const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
         <MapPin className="w-4 h-4 text-primary" />
         Localisez votre toit
       </label>
-      <p className="text-xs text-muted-foreground">Déplacez le marqueur au centre de votre toiture</p>
+      <p className="text-xs text-muted-foreground">Déplacez le marqueur ROUGE au centre de votre toiture</p>
       <div className="relative rounded-xl overflow-hidden border-2 border-border">
         {loading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-muted/60">
