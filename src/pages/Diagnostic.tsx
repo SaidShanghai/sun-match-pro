@@ -8,6 +8,7 @@ import {
   ChevronLeft, TrendingDown, Battery, MapPinned, ChevronDown,
   Home, Building2, Store, Warehouse,
 } from "lucide-react";
+import FactureUpload from "@/components/FactureUpload";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import QuotePanel from "@/components/QuotePanel";
@@ -346,6 +347,44 @@ const Diagnostic = () => {
                       </button>
                     </div>
                   </div>
+
+                  {/* Facture upload with AI OCR — non-Entreprise only */}
+                  {selectedType !== "Entreprise" && (
+                    <FactureUpload
+                      onDataExtracted={(ocrData) => {
+                        // Auto-fill form fields from OCR
+                        if (ocrData.montant_ttc) {
+                          // Estimate annual from period
+                          const days = ocrData.periode_jours || 30;
+                          const annualAmount = Math.round((ocrData.montant_ttc / days) * 365);
+                          setFacture(annualAmount.toLocaleString("fr-FR"));
+                        }
+                        if (ocrData.consommation_kwh) {
+                          const days = ocrData.periode_jours || 30;
+                          const annualKwh = Math.round((ocrData.consommation_kwh / days) * 365);
+                          setConso(annualKwh.toLocaleString("fr-FR"));
+                        }
+                        if (ocrData.ville) {
+                          // Try to match with our city list
+                          const match = villesMaroc.find(v => 
+                            v.toLowerCase() === ocrData.ville!.toLowerCase() ||
+                            v.toLowerCase().includes(ocrData.ville!.toLowerCase()) ||
+                            ocrData.ville!.toLowerCase().includes(v.toLowerCase())
+                          );
+                          if (match) setVille(match);
+                        }
+                        if (ocrData.puissance_souscrite_kva) {
+                          setPuissanceSouscrite(String(ocrData.puissance_souscrite_kva));
+                        }
+                        if (ocrData.type_abonnement) {
+                          const mapped = ocrData.type_abonnement as typeof typeAbonnement;
+                          if (["Basse Tension", "Moyenne Tension", "Haute Tension"].includes(ocrData.type_abonnement)) {
+                            setTypeAbonnement(mapped);
+                          }
+                        }
+                      }}
+                    />
+                  )}
 
                   {selectedType === "Entreprise" ? (
                     <>
