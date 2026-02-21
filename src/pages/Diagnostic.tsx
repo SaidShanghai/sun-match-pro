@@ -525,6 +525,14 @@ const Diagnostic = () => {
                     </div>
                   </div>
 
+                  {/* Google Maps Picker for Entreprise */}
+                  {villeProjet && (
+                    <GoogleMapPicker
+                      city={villeProjet}
+                      onLocationSelect={(lat, lng) => { setRoofLat(lat); setRoofLng(lng); }}
+                    />
+                  )}
+
                   <div className="space-y-2">
                     <label className="text-sm font-semibold">Accès panneaux</label>
                     <div className="flex gap-3">
