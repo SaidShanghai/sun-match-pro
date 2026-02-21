@@ -132,6 +132,7 @@ Deno.serve(async (req) => {
     if (RESEND_API_KEY) {
       const firstName = escapeHtml(String(client_name).trim().split(" ")[0]);
       const refShort = escapeHtml(data.id.slice(0, 8).toUpperCase());
+      // 1) Email confirmation au client
       await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
@@ -181,6 +182,83 @@ Deno.serve(async (req) => {
           `,
         }),
       }).catch((e) => console.error("Email to client failed:", e));
+
+      // 2) Email diagnostic complet à l'admin
+      const safeVal = (v: unknown) => v ? escapeHtml(String(v)) : "—";
+      const diagRows = [
+        ["Type de profil", housing_type],
+        ["Objectif", objectif],
+        ["Type bâtiment", roof_type],
+        ["Orientation toiture", roof_orientation],
+        ["Surface disponible", roof_surface],
+        ["Consommation annuelle", annual_consumption],
+        ["Facture mensuelle", budget],
+        ["Type d'abonnement", type_abonnement],
+        ["Puissance souscrite", puissance_souscrite],
+        ["Usages", Array.isArray(selected_usages) ? selected_usages.join(", ") : null],
+        ["Description projet", description_projet],
+        ["Adresse projet", adresse_projet],
+        ["Ville projet", ville_projet],
+        ["Date début", date_debut],
+        ["Date fin", date_fin],
+        ["PV existante", pv_existante],
+        ["Extension install.", extension_install],
+        ["Subvention reçue", subvention_recue],
+        ["GPS", gps_lat != null && gps_lng != null ? `${gps_lat}, ${gps_lng}` : null],
+      ].filter(([, v]) => v != null && String(v).trim() !== "");
+
+      const eligRows = elig_decl ? Object.entries(elig_decl as Record<string, string>).filter(([,v]) => v).map(([k,v]) => `${escapeHtml(k)}: ${escapeHtml(v)}`).join(" · ") : null;
+
+      const diagHtml = diagRows.map(([label, val]) =>
+        `<tr><td style="padding:6px 12px;font-size:13px;color:#666;border-bottom:1px solid #f0f0f0;white-space:nowrap;">${escapeHtml(String(label))}</td><td style="padding:6px 12px;font-size:13px;color:#222;border-bottom:1px solid #f0f0f0;font-weight:500;">${safeVal(val)}</td></tr>`
+      ).join("");
+
+      const mapsLink = gps_lat != null && gps_lng != null
+        ? `<a href="https://www.google.com/maps?q=${gps_lat},${gps_lng}" style="color:#f97316;">Voir sur Google Maps</a>`
+        : "";
+
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "NOORIA <noreply@sungpt.ma>",
+          to: ["contact@sungpt.ma"],
+          subject: `🆕 Nouveau diagnostic – ${escapeHtml(String(client_name).trim())} – Réf. #${refShort}`,
+          html: `
+            <div style="font-family:sans-serif;max-width:650px;margin:auto;padding:32px;background:#fff;border-radius:12px;">
+              <h1 style="color:#f97316;font-size:20px;margin:0 0 4px;">🆕 Nouveau diagnostic reçu</h1>
+              <p style="font-size:13px;color:#999;margin:0 0 24px;">Réf. #${refShort} — ${new Date().toLocaleString("fr-FR", { timeZone: "Africa/Casablanca" })}</p>
+
+              <div style="background:#fff7ed;border-radius:8px;padding:16px;margin-bottom:24px;">
+                <h2 style="margin:0 0 8px;font-size:15px;color:#92400e;">👤 Contact client</h2>
+                <p style="margin:2px 0;font-size:14px;color:#333;"><strong>Nom :</strong> ${escapeHtml(String(client_name).trim())}</p>
+                <p style="margin:2px 0;font-size:14px;color:#333;"><strong>Email :</strong> <a href="mailto:${escapeHtml(String(client_email).trim())}" style="color:#f97316;">${escapeHtml(String(client_email).trim())}</a></p>
+                ${client_phone ? `<p style="margin:2px 0;font-size:14px;color:#333;"><strong>Tél :</strong> ${escapeHtml(String(client_phone).trim())}</p>` : ""}
+                ${city ? `<p style="margin:2px 0;font-size:14px;color:#333;"><strong>Ville :</strong> ${escapeHtml(String(city).trim())}</p>` : ""}
+              </div>
+
+              <h2 style="font-size:15px;color:#333;margin:0 0 8px;">📋 Diagnostic complet</h2>
+              <table style="width:100%;border-collapse:collapse;border:1px solid #eee;border-radius:8px;overflow:hidden;">
+                ${diagHtml}
+              </table>
+
+              ${eligRows ? `
+              <div style="margin-top:16px;">
+                <h3 style="font-size:14px;color:#333;margin:0 0 6px;">✅ Éligibilité</h3>
+                <p style="font-size:13px;color:#444;">${eligRows}</p>
+              </div>` : ""}
+
+              ${mapsLink ? `<p style="margin-top:16px;font-size:13px;">📍 ${mapsLink}</p>` : ""}
+
+              <hr style="border:none;border-top:1px solid #eee;margin:28px 0;" />
+              <p style="font-size:12px;color:#aaa;text-align:center;">Email généré automatiquement par NOORIA</p>
+            </div>
+          `,
+        }),
+      }).catch((e) => console.error("Email to admin failed:", e));
     }
 
     return new Response(JSON.stringify({ id: data.id }), {
