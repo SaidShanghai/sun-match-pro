@@ -853,7 +853,7 @@ const Diagnostic = () => {
           roof_surface: selectedSurface || undefined,
           annual_consumption: conso ? `${conso} kWh` : undefined,
           budget: facture ? `${facture} DH/mois` : undefined,
-          project_type: selectedType || undefined,
+          
           type_abonnement: typeAbonnement || undefined,
           puissance_souscrite: puissanceSouscrite ? `${puissanceSouscrite} kVA` : undefined,
           selected_usages: selectedUsages.length > 0 ? selectedUsages : undefined,
