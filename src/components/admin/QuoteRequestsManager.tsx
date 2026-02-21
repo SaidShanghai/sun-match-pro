@@ -293,12 +293,23 @@ const QuoteRequestsManager = () => {
                                 className="w-full h-[250px] object-cover bg-muted"
                               />
                             </div>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              GPS : {req.gps_lat.toFixed(6)}, {req.gps_lng.toFixed(6)} ·{" "}
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1 flex-wrap">
+                              <span>GPS : {req.gps_lat.toFixed(6)}, {req.gps_lng.toFixed(6)}</span>
                               <a href={`https://www.google.com/maps?q=${req.gps_lat},${req.gps_lng}`} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80 transition-colors">
                                 Ouvrir dans Google Maps
                               </a>
-                            </p>
+                              <span>·</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(`https://www.google.com/maps?q=${req.gps_lat},${req.gps_lng}`);
+                                  toast({ title: "Lien copié !", description: "Collez-le dans votre navigateur." });
+                                }}
+                                className="text-primary underline hover:text-primary/80 transition-colors"
+                              >
+                                Copier le lien
+                              </button>
+                            </div>
                           </div>
                         )}
                       </div>
