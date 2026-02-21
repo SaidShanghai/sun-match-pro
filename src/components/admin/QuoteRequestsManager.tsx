@@ -51,11 +51,11 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
 const DIAGNOSTIC_LABELS: Record<string, string> = {
   housing_type: "Type de logement",
   objectif: "Objectif",
-  roof_type: "Type de bâtiment",
+  roof_type: "Type de bâtiment (Entreprise)",
   roof_orientation: "Orientation toiture",
   roof_surface: "Surface disponible",
   annual_consumption: "Consommation annuelle",
-  budget: "Facture",
+  budget: "Facture mensuelle",
   project_type: "Type de projet",
   type_abonnement: "Type d'abonnement",
   puissance_souscrite: "Puissance souscrite",
