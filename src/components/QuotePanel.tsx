@@ -3,6 +3,7 @@ import { X, ArrowRight, CheckCircle, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
+import type { PIC } from "@/types/pic";
 
 export interface DiagnosticData {
   housing_type?: string;
@@ -35,12 +36,14 @@ interface QuotePanelProps {
   installerName?: string;
   onSuccess?: (id: string, clientName: string, clientEmail: string) => void;
   diagnosticData?: DiagnosticData;
+  /** Structured PIC object with all diagnostic + OCR data */
+  pic?: PIC | null;
 }
 
 const phoneRegex = /^(\+212|0)([ \-]?[0-9]){9}$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const QuotePanel = ({ open, onOpenChange, installerName, onSuccess, diagnosticData }: QuotePanelProps) => {
+const QuotePanel = ({ open, onOpenChange, installerName, onSuccess, diagnosticData, pic }: QuotePanelProps) => {
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
   const [telephone, setTelephone] = useState("");
