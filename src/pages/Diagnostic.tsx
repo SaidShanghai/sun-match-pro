@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 import QuotePanel from "@/components/QuotePanel";
 import EligibiliteScreen from "@/components/EligibiliteScreen";
 import GoogleMapPicker from "@/components/GoogleMapPicker";
+import SolarResults, { type SolarData } from "@/components/SolarResults";
 
 type Screen =
   | "landing"
@@ -120,6 +121,9 @@ const Diagnostic = () => {
   const invoiceInputRef = useRef<HTMLInputElement | null>(null);
   const [contactNom, setContactNom] = useState("");
   const [contactEmail, setContactEmail] = useState("");
+  const [solarData, setSolarData] = useState<SolarData | null>(null);
+  const [solarLoading, setSolarLoading] = useState(false);
+  const [solarError, setSolarError] = useState<string | null>(null);
   const { toast } = useToast();
   const [projetPlaceholderIndex, setProjetPlaceholderIndex] = useState(0);
   const [projetPlaceholderVisible, setProjetPlaceholderVisible] = useState(true);
@@ -642,7 +646,27 @@ const Diagnostic = () => {
                         setScreen("eligibilite");
                       } else {
                         setScreen("analyse");
-                        setTimeout(() => setScreen("solutions"), 4000);
+                        setSolarLoading(true);
+                        setSolarError(null);
+                        setSolarData(null);
+                        const lat = roofLat || 33.5731;
+                        const lng = roofLng || -7.5898;
+                        supabase.functions.invoke("get-solar-data", { body: { lat, lng } })
+                          .then(({ data, error: fnErr }) => {
+                            if (fnErr || data?.error === "no_coverage" || data?.error) {
+                              setSolarError(data?.message || "Données non disponibles");
+                              setSolarData(null);
+                            } else {
+                              setSolarData(data);
+                            }
+                            setSolarLoading(false);
+                            setTimeout(() => setScreen("solutions"), 2000);
+                          })
+                          .catch(() => {
+                            setSolarError("Erreur lors de l'appel Solar API");
+                            setSolarLoading(false);
+                            setTimeout(() => setScreen("solutions"), 2000);
+                          });
                       }
                     }}
                     className={`w-full rounded-2xl h-14 font-semibold text-base flex items-center justify-center gap-2 transition-colors ${
@@ -699,7 +723,31 @@ const Diagnostic = () => {
                     const canContinue = ["d1","d2","d3","d5","d6"].every(id => eligDecl[id] === "Oui") && eligDecl["d4"] !== null;
                     return (
                       <button
-                        onClick={() => { if (canContinue) { setScreen("analyse"); setTimeout(() => setScreen("solutions"), 4000); } }}
+                        onClick={() => {
+                          if (!canContinue) return;
+                          setScreen("analyse");
+                          setSolarLoading(true);
+                          setSolarError(null);
+                          setSolarData(null);
+                          const lat = roofLat || 33.5731;
+                          const lng = roofLng || -7.5898;
+                          supabase.functions.invoke("get-solar-data", { body: { lat, lng } })
+                            .then(({ data, error: fnErr }) => {
+                              if (fnErr || data?.error === "no_coverage" || data?.error) {
+                                setSolarError(data?.message || "Données non disponibles");
+                                setSolarData(null);
+                              } else {
+                                setSolarData(data);
+                              }
+                              setSolarLoading(false);
+                              setTimeout(() => setScreen("solutions"), 2000);
+                            })
+                            .catch(() => {
+                              setSolarError("Erreur lors de l'appel Solar API");
+                              setSolarLoading(false);
+                              setTimeout(() => setScreen("solutions"), 2000);
+                            });
+                        }}
                         disabled={!canContinue}
                         className={`w-full rounded-2xl h-14 font-semibold text-base flex items-center justify-center gap-2 transition-colors ${canContinue ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
                       >
@@ -722,7 +770,9 @@ const Diagnostic = () => {
                   />
                   <div className="text-center space-y-2">
                     <p className="text-xl font-bold">Analyse en cours…</p>
-                    <p className="text-muted-foreground">Nous calculons votre potentiel solaire</p>
+                    <p className="text-muted-foreground">
+                      {solarLoading ? "Interrogation de Google Solar API…" : "Préparation de vos résultats…"}
+                    </p>
                   </div>
                 </motion.div>
               )}
@@ -730,6 +780,14 @@ const Diagnostic = () => {
               {/* ── SOLUTIONS ── */}
               {screen === "solutions" && (
                 <motion.div key="solutions" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="space-y-8">
+                  {/* Solar API Results */}
+                  <SolarResults
+                    data={solarData}
+                    loading={solarLoading}
+                    error={solarError}
+                    factureMad={facture ? Number(facture.replace(/\s/g, "")) : undefined}
+                  />
+
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                       <Sun className="w-5 h-5 text-primary" />
