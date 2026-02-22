@@ -283,7 +283,7 @@ const Index = () => {
               initial={{ opacity: 0, rotate: -20, scale: 0.5 }}
               animate={{ opacity: 1, rotate: -12, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.4, type: "spring", stiffness: 200 }}
-              className="hidden lg:flex items-start justify-center -mt-20"
+              className="hidden lg:flex items-start justify-center -mt-[380px]"
             >
               <div
                 className="relative w-44 h-44 rounded-full border-[5px] border-primary flex items-center justify-center"
