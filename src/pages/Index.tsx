@@ -228,7 +228,7 @@ const Index = () => {
 
               <HeroRotatingTitle entreprise={selectedType === "Entreprise"} activeIndex={heroStepIndex} />
 
-              <p className="text-xl text-muted-foreground max-w-lg">
+              <p className="text-xl text-foreground/80 max-w-lg font-medium">
                 NOORIA connecte particuliers et installateurs certifiés. Diagnostic gratuit, devis personnalisés, installation garantie, programmes d'aides du Royaume.
               </p>
 
