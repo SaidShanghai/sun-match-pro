@@ -209,6 +209,7 @@ export type Database = {
       packages: {
         Row: {
           applicable_aids: string[] | null
+          category: string
           created_at: string
           description: string | null
           fabricant: string | null
@@ -224,6 +225,7 @@ export type Database = {
         }
         Insert: {
           applicable_aids?: string[] | null
+          category?: string
           created_at?: string
           description?: string | null
           fabricant?: string | null
@@ -239,6 +241,7 @@ export type Database = {
         }
         Update: {
           applicable_aids?: string[] | null
+          category?: string
           created_at?: string
           description?: string | null
           fabricant?: string | null
