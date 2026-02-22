@@ -278,52 +278,7 @@ const Index = () => {
               </div>
             </motion.div>
 
-            {/* Cachet / Stamp effect */}
-            <motion.div
-              initial={{ opacity: 0, rotate: 20, scale: 2.5 }}
-              animate={{ 
-                opacity: [0, 1, 1, 1, 0], 
-                rotate: 12, 
-                scale: [2.5, 1, 1, 1, 1],
-                y: [0, 0, -8, 0, -5, 0, -3, 0, -1, 0, 0],
-              }}
-              transition={{ 
-                duration: 6, 
-                delay: 0.8,
-                opacity: { duration: 6, delay: 0.8, times: [0, 0.02, 0.5, 0.9, 1] },
-                scale: { duration: 0.15, delay: 0.8 },
-                rotate: { duration: 0.15, delay: 0.8 },
-                y: { duration: 3, delay: 0.95, ease: "easeOut" },
-              }}
-              className="hidden lg:flex items-start justify-center -mt-[480px]"
-            >
-              <motion.div
-                initial={{ scale: 1 }}
-                animate={{ scale: [1, 1.06, 0.97, 1.02, 1] }}
-                transition={{ duration: 0.4, delay: 0.95, ease: "easeOut" }}
-              >
-              <div
-                className="relative px-12 py-8 border-[6px] border-blue-600 bg-blue-50/80 backdrop-blur-sm"
-                style={{
-                  borderRadius: "4px",
-                }}
-              >
-                <div className="absolute inset-[6px] border-2 border-blue-400/50 rounded-[2px]" />
-                <div className="relative text-center z-10">
-                  <span className="block text-[18px] font-bold uppercase tracking-[0.25em] text-blue-700">★ NOORIA ★</span>
-                  <div className="w-28 h-[3px] mx-auto my-2.5 bg-blue-600" />
-                  <span className="block text-[32px] font-black leading-tight text-blue-800">
-                    1ère IA solaire
-                  </span>
-                  <span className="block text-[32px] font-black leading-tight text-blue-800">
-                    du Maroc 🇲🇦
-                  </span>
-                  <div className="w-28 h-[3px] mx-auto my-2.5 bg-blue-600" />
-                  <span className="block text-[16px] font-semibold uppercase tracking-[0.2em] text-blue-600">Certifié</span>
-                </div>
-              </div>
-              </motion.div>
-            </motion.div>
+
 
             {/* Phone mockup */}
             <motion.div
