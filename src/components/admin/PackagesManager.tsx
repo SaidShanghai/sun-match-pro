@@ -613,16 +613,30 @@ const PackagesManager = () => {
             <DialogTitle>{editingId ? "Modifier le produit" : "Nouveau produit"}</DialogTitle>
           </DialogHeader>
 
-          {/* Brochure upload */}
-          <div className="mt-2 mb-4">
+          {/* Step 1: Famille produit (always visible at top) */}
+          <div className="space-y-1.5 mt-2">
+            <Label className={h("category") ? "text-red-600 font-semibold" : ""}>
+              Famille produit *
+              {h("category") && <span className="ml-1 text-[10px] font-normal text-red-500">● IA</span>}
+            </Label>
+            <Select value={form.category} onValueChange={(v) => setForm((f) => ({ ...f, category: v, specs: {} }))}>
+              <SelectTrigger className={h("category") ? "border-red-400 bg-red-50/50 text-red-900" : ""}><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {CATEGORY_OPTIONS.map((cat) => <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Step 2: Brochure upload */}
+          <div className="my-3">
             <label htmlFor="brochure-upload"
-              className={`flex items-center justify-center gap-3 border-2 border-dashed rounded-lg p-4 cursor-pointer transition-colors ${
+              className={`flex items-center justify-center gap-3 border-2 border-dashed rounded-lg p-3 cursor-pointer transition-colors ${
                 ocrLoading ? "border-primary/40 bg-primary/5" : "border-border hover:border-primary/50 hover:bg-muted/50"
               }`}>
               {ocrLoading ? (
                 <><Loader2 className="w-5 h-5 animate-spin text-primary" /><span className="text-sm text-primary font-medium">Analyse de la brochure en cours…</span></>
               ) : (
-                <><Upload className="w-5 h-5 text-muted-foreground" /><span className="text-sm text-muted-foreground"><span className="font-medium text-foreground">Importer une brochure</span> pour pré-remplir le formulaire (JPG, PNG, PDF)</span></>
+                <><Upload className="w-5 h-5 text-muted-foreground" /><span className="text-sm text-muted-foreground"><span className="font-medium text-foreground">Importer une brochure</span> (optionnel – JPG, PNG, PDF)</span></>
               )}
               <input id="brochure-upload" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden" disabled={ocrLoading}
                 onChange={(e) => { const file = e.target.files?.[0]; if (file) handleBrochureUpload(file); e.target.value = ""; }} />
@@ -630,13 +644,14 @@ const PackagesManager = () => {
           </div>
 
           {ocrFields.size > 0 && (
-            <p className="text-xs text-red-500 flex items-center gap-1">
+            <p className="text-xs text-red-500 flex items-center gap-1 mb-2">
               <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
               Les champs en rouge ont été pré-remplis par l'IA depuis la brochure
             </p>
           )}
 
-          <Tabs defaultValue="general" className="mt-2">
+          {/* Step 3: Tabs (Général + Tech adaptatif) */}
+          <Tabs defaultValue="general">
             <TabsList className="w-full grid grid-cols-3">
               <TabsTrigger value="general">Général</TabsTrigger>
               <TabsTrigger value="tech1">Technique</TabsTrigger>
@@ -645,18 +660,6 @@ const PackagesManager = () => {
 
             {/* ── GÉNÉRAL ── */}
             <TabsContent value="general" className="space-y-4 pt-4">
-              <div className="space-y-1.5">
-                <Label className={h("category") ? "text-red-600 font-semibold" : ""}>
-                  Famille produit *
-                  {h("category") && <span className="ml-1 text-[10px] font-normal text-red-500">● IA</span>}
-                </Label>
-                <Select value={form.category} onValueChange={(v) => setForm((f) => ({ ...f, category: v }))}>
-                  <SelectTrigger className={h("category") ? "border-red-400 bg-red-50/50 text-red-900" : ""}><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {CATEGORY_OPTIONS.map((cat) => <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
               <div className="grid grid-cols-2 gap-4">
                 <TextField label="Fabricant" value={form.fabricant} onChange={(v) => setForm((f) => ({ ...f, fabricant: v }))} placeholder="Ex: Blue Carbon" highlighted={h("fabricant")} />
                 <TextField label="Modèle" value={form.modele} onChange={(v) => setForm((f) => ({ ...f, modele: v }))} placeholder="Ex: 350kWh Cabinet" highlighted={h("modele")} />
