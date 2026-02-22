@@ -1220,6 +1220,51 @@ const Index = () => {
                 </div>
               </div>
             </motion.div>
+
+            {/* Steps timeline - right column */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="hidden lg:flex flex-col gap-0 relative"
+            >
+              {/* Vertical line */}
+              <div className="absolute left-[15px] top-4 bottom-4 w-[2px] bg-border" />
+
+              {[
+                { icon: Zap, label: "Diagnostic IA", sub: "3 minutes", done: false, active: true },
+                { icon: FileText, label: "Devis personnalisé", sub: "Sous 24h", done: false, active: false },
+                { icon: MapPinned, label: "Visite technique", sub: "Sur site", done: false, active: false },
+                { icon: Shield, label: "Validation offre", sub: "Garanties incluses", done: false, active: false },
+                { icon: Sun, label: "Installation", sub: "Clé en main", done: false, active: false },
+                { icon: TrendingDown, label: "Facture réduite", sub: "Jusqu'à -70%", done: false, active: false },
+                { icon: Star, label: "Client heureux", sub: "Accompagné", done: false, active: false },
+              ].map((step, i) => (
+                <motion.div
+                  key={step.label}
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 + i * 0.12 }}
+                  className="flex items-start gap-3 relative py-3"
+                >
+                  <div className={`w-[30px] h-[30px] rounded-full flex items-center justify-center shrink-0 z-10 ${
+                    i === 0
+                      ? "bg-primary text-primary-foreground ring-2 ring-primary/30"
+                      : "bg-muted border border-border text-muted-foreground"
+                  }`}>
+                    <step.icon className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="pt-0.5">
+                    <p className={`text-sm font-semibold leading-tight ${i === 0 ? "text-foreground" : "text-muted-foreground"}`}>
+                      {step.label}
+                    </p>
+                    <p className={`text-xs mt-0.5 ${i === 0 ? "text-primary font-medium" : "text-muted-foreground/70"}`}>
+                      {step.sub}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         </div>
       </section>
