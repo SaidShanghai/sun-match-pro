@@ -7,9 +7,17 @@ const corsHeaders = {
 };
 
 const SYSTEM_PROMPT = `Tu es un expert en systèmes solaires et stockage d'énergie.
-Analyse cette brochure produit (panneaux solaires, batteries, onduleurs, systèmes de stockage) et extrais toutes les spécifications techniques.
+Analyse cette brochure produit et extrais toutes les spécifications techniques.
 
-Retourne UNIQUEMENT un JSON structuré comme suit. Si une information n'est pas trouvée, mets null. Pour les tableaux, mets un tableau vide [].
+Retourne UNIQUEMENT un JSON structuré. Si une information n'est pas trouvée, mets null. Pour les tableaux, mets un tableau vide [].
+
+D'abord, identifie la catégorie du produit :
+- "panneaux" = modules photovoltaïques
+- "onduleurs" = onduleurs/inverteurs seuls
+- "batteries" = batteries/systèmes de stockage seuls
+- "solarbox" = solution intégrée onduleur+batterie
+
+Puis extrais les specs adaptées à la catégorie :
 
 {
   "name": string | null,
@@ -21,43 +29,63 @@ Retourne UNIQUEMENT un JSON structuré comme suit. Si une information n'est pas 
   "price_ttc": number | null,
   "description": string | null,
   "specs": {
+    // PANNEAUX : inclure si catégorie = panneaux
+    "puissance_wc": number | null,
+    "rendement": number | null,
+    "voc": number | null,
+    "isc": number | null,
+    "vmp": number | null,
+    "imp": number | null,
+    "type_cellule": string[],
+    "nb_cellules": number | null,
+    "coeff_temp_pmax": number | null,
+    "coeff_temp_voc": number | null,
+    "poids_kg": number | null,
+    "longueur_mm": number | null,
+
+    // ONDULEURS : inclure si catégorie = onduleurs ou solarbox
+    "puissance_nominale_kw": number | null,
+    "puissance_max_kw": number | null,
+    "nb_mppt": number | null,
+    "nb_strings": number | null,
+    "efficacite_max": number | null,
+    "tension_dc_max": number | null,
+    "type_onduleur": string[],
+    "phases": string[],
+
+    // BATTERIES : inclure si catégorie = batteries ou solarbox
     "capacite_kwh": number | null,
     "capacite_utilisable_kwh": number | null,
     "puissance_decharge_jour_kw": number | null,
     "puissance_decharge_nuit_kw": number | null,
     "puissance_charge_kw": number | null,
     "cycle_vie": number | null,
-    "duree_vie_ans": number | null,
     "depth_of_discharge": number | null,
-    "type_systeme": string[],
-    "type_client": string[],
-    "prix_installation_dh": number | null,
+    "type_batterie": "LFP" | "NMC" | "NCA" | "Lead-Acid" | null,
     "efficacite_roundtrip": number | null,
-    "temp_min_celsius": number | null,
-    "temp_max_celsius": number | null,
-    "ip_rating": string | null,
+    "type_refroidissement": "forced_air" | "natural_convection" | "liquid" | null,
+
+    // COMMUN à tous
+    "duree_vie_ans": number | null,
+    "garantie_ans": number | null,
     "largeur_mm": number | null,
     "hauteur_mm": number | null,
-    "type_batterie": "LFP" | "NMC" | "NCA" | "Lead-Acid" | null,
-    "type_refroidissement": "forced_air" | "natural_convection" | "liquid" | null,
-    "communication": string[],
-    "use_cases": string[],
-    "puissance_min_site_kw": number | null,
-    "conso_min_kwh_mois": number | null,
-    "secteurs_cibles": string[]
+    "epaisseur_mm": number | null,
+    "ip_rating": string | null,
+    "temp_min_celsius": number | null,
+    "temp_max_celsius": number | null,
+    "communication": string[]
   }
 }
 
 Règles :
-- type_systeme: valeurs possibles = "on_grid", "off_grid", "hybride"
-- type_client: valeurs possibles = "particulier", "pme", "entreprise", "industrie"
+- type_cellule: valeurs possibles = "monocristallin", "polycristallin", "bifacial", "PERC", "TOPCon", "HJT"
+- type_onduleur: valeurs possibles = "string", "micro", "hybride", "central"
+- phases: valeurs possibles = "monophasé", "triphasé"
 - communication: valeurs possibles = "RS485", "Modbus-TCP", "CAN", "4G", "WiFi", "Ethernet"
-- use_cases: valeurs possibles = "peak_shaving", "backup", "off_grid", "autoconsommation", "recharge_ev"
-- secteurs_cibles: valeurs possibles = "industrie", "data_center", "hotel", "commerce", "agriculture", "residentiel"
-- category: "panneaux" = modules PV, "onduleurs" = onduleurs/inverteurs seuls, "batteries" = batteries/stockage seul, "solarbox" = solution intégrée onduleur+batterie
+- N'inclus que les champs pertinents pour la catégorie détectée, les autres restent null
 - Convertis toutes les dimensions en mm
-- Déduis le profile_type à partir de la puissance/capacité: <10kWh=residential, 10-100kWh=commercial, >100kWh=industrial
-- Déduis la category à partir du type de produit décrit dans la brochure
+- Déduis le profile_type : panneaux <400Wc ou batteries <10kWh = residential, >100kWh = industrial, sinon commercial
 - Si le prix n'est pas mentionné, mets null`;
 
 serve(async (req) => {
