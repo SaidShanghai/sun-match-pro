@@ -286,23 +286,23 @@ const Index = () => {
               className="hidden lg:flex items-start justify-center -mt-[480px]"
             >
               <div
-                className="relative px-6 py-4 border-[3px] border-blue-600 bg-blue-50/80 backdrop-blur-sm"
+                className="relative px-12 py-8 border-[6px] border-blue-600 bg-blue-50/80 backdrop-blur-sm"
                 style={{
                   borderRadius: "4px",
                 }}
               >
-                <div className="absolute inset-[4px] border border-blue-400/50 rounded-[2px]" />
+                <div className="absolute inset-[6px] border-2 border-blue-400/50 rounded-[2px]" />
                 <div className="relative text-center z-10">
-                  <span className="block text-[9px] font-bold uppercase tracking-[0.25em] text-blue-700">★ NOORIA ★</span>
-                  <div className="w-14 h-[2px] mx-auto my-1.5 bg-blue-600" />
-                  <span className="block text-[16px] font-black leading-tight text-blue-800">
+                  <span className="block text-[18px] font-bold uppercase tracking-[0.25em] text-blue-700">★ NOORIA ★</span>
+                  <div className="w-28 h-[3px] mx-auto my-2.5 bg-blue-600" />
+                  <span className="block text-[32px] font-black leading-tight text-blue-800">
                     1ère IA solaire
                   </span>
-                  <span className="block text-[16px] font-black leading-tight text-blue-800">
+                  <span className="block text-[32px] font-black leading-tight text-blue-800">
                     du Maroc 🇲🇦
                   </span>
-                  <div className="w-14 h-[2px] mx-auto my-1.5 bg-blue-600" />
-                  <span className="block text-[8px] font-semibold uppercase tracking-[0.2em] text-blue-600">Certifié</span>
+                  <div className="w-28 h-[3px] mx-auto my-2.5 bg-blue-600" />
+                  <span className="block text-[16px] font-semibold uppercase tracking-[0.2em] text-blue-600">Certifié</span>
                 </div>
               </div>
             </motion.div>
