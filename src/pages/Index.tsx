@@ -280,11 +280,21 @@ const Index = () => {
 
             {/* Cachet / Stamp effect */}
             <motion.div
-              initial={{ opacity: 0, rotate: 20, scale: 0.5 }}
+              initial={{ opacity: 0, rotate: 20, scale: 2.5 }}
               animate={{ opacity: 1, rotate: 12, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.4, type: "spring", stiffness: 200 }}
+              transition={{ 
+                duration: 0.15, 
+                delay: 0.8, 
+                ease: [0.25, 0.1, 0.25, 1],
+                opacity: { duration: 0.05, delay: 0.8 },
+              }}
               className="hidden lg:flex items-start justify-center -mt-[480px]"
             >
+              <motion.div
+                initial={{ scale: 1 }}
+                animate={{ scale: [1, 1.06, 0.97, 1.02, 1] }}
+                transition={{ duration: 0.4, delay: 0.95, ease: "easeOut" }}
+              >
               <div
                 className="relative px-12 py-8 border-[6px] border-blue-600 bg-blue-50/80 backdrop-blur-sm"
                 style={{
@@ -305,6 +315,7 @@ const Index = () => {
                   <span className="block text-[16px] font-semibold uppercase tracking-[0.2em] text-blue-600">Certifié</span>
                 </div>
               </div>
+              </motion.div>
             </motion.div>
 
             {/* Phone mockup */}
