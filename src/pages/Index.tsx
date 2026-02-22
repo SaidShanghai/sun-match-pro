@@ -1221,44 +1221,118 @@ const Index = () => {
               </div>
             </motion.div>
 
-            {/* Steps timeline - right column */}
+            {/* Steps timeline - right column - sketch style */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="hidden lg:flex flex-col gap-0 relative"
+              className="hidden lg:flex flex-col gap-1 relative max-w-[260px]"
             >
-              {/* Vertical line */}
-              <div className="absolute left-[15px] top-4 bottom-4 w-[2px] bg-border" />
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Votre parcours</p>
+              {/* Dashed vertical line - sketch style */}
+              <div className="absolute left-[27px] top-[52px] bottom-6 w-0 border-l-[2px] border-dashed border-primary/25" />
 
               {[
-                { icon: Zap, label: "Diagnostic IA", sub: "3 minutes", done: false, active: true },
-                { icon: FileText, label: "Devis personnalisé", sub: "Sous 24h", done: false, active: false },
-                { icon: MapPinned, label: "Visite technique", sub: "Sur site", done: false, active: false },
-                { icon: Shield, label: "Validation offre", sub: "Garanties incluses", done: false, active: false },
-                { icon: Sun, label: "Installation", sub: "Clé en main", done: false, active: false },
-                { icon: TrendingDown, label: "Facture réduite", sub: "Jusqu'à -70%", done: false, active: false },
-                { icon: Star, label: "Client heureux", sub: "Accompagné", done: false, active: false },
+                {
+                  label: "Diagnostic IA",
+                  sub: "3 minutes",
+                  sketch: (
+                    <svg viewBox="0 0 48 48" className="w-full h-full" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="24" cy="20" r="10" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 1.5" />
+                      <path d="M20 18l3 4 6-8" stroke="hsl(var(--primary))" strokeWidth="2" />
+                      <path d="M18 32c-1 2-3 4-3 8h18c0-4-2-6-3-8" stroke="currentColor" strokeWidth="1.5" />
+                      <line x1="24" y1="30" x2="24" y2="34" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                  ),
+                },
+                {
+                  label: "Devis personnalisé",
+                  sub: "Sous 24h",
+                  sketch: (
+                    <svg viewBox="0 0 48 48" className="w-full h-full" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="10" y="6" width="28" height="36" rx="2" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 2" />
+                      <line x1="16" y1="14" x2="32" y2="14" stroke="currentColor" strokeWidth="1.2" />
+                      <line x1="16" y1="20" x2="28" y2="20" stroke="currentColor" strokeWidth="1.2" />
+                      <line x1="16" y1="26" x2="30" y2="26" stroke="currentColor" strokeWidth="1.2" />
+                      <path d="M16 32h8" stroke="hsl(var(--primary))" strokeWidth="1.5" />
+                      <path d="M30 30l4 4m0-4l-4 4" stroke="hsl(var(--primary))" strokeWidth="1.5" />
+                    </svg>
+                  ),
+                },
+                {
+                  label: "Visite technique",
+                  sub: "Sur site",
+                  sketch: (
+                    <svg viewBox="0 0 48 48" className="w-full h-full" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M8 40l16-24 16 24z" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 2" />
+                      <rect x="18" y="28" width="12" height="12" stroke="currentColor" strokeWidth="1.2" />
+                      <circle cx="24" cy="16" r="4" stroke="hsl(var(--primary))" strokeWidth="1.5" />
+                      <path d="M24 12v-4M20 16h-4M28 16h4" stroke="hsl(var(--primary))" strokeWidth="1.2" />
+                      <path d="M6 42h36" stroke="currentColor" strokeWidth="1.2" />
+                    </svg>
+                  ),
+                },
+                {
+                  label: "Validation & offre",
+                  sub: "Garanties incluses",
+                  sketch: (
+                    <svg viewBox="0 0 48 48" className="w-full h-full" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M24 4l6 2 6 0 2 6 4 4-2 6 2 6-4 4-2 6-6 0-6 2-6-2-6 0-2-6-4-4 2-6-2-6 4-4 2-6 6 0z" stroke="currentColor" strokeWidth="1.3" strokeDasharray="3 2" />
+                      <path d="M17 24l5 5 10-10" stroke="hsl(var(--primary))" strokeWidth="2.5" />
+                    </svg>
+                  ),
+                },
+                {
+                  label: "Installation",
+                  sub: "Clé en main",
+                  sketch: (
+                    <svg viewBox="0 0 48 48" className="w-full h-full" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="8" y="10" width="32" height="20" rx="1" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 2" />
+                      <line x1="8" y1="17" x2="40" y2="17" stroke="currentColor" strokeWidth="1" />
+                      <line x1="8" y1="24" x2="40" y2="24" stroke="currentColor" strokeWidth="1" />
+                      <line x1="18" y1="10" x2="18" y2="30" stroke="currentColor" strokeWidth="1" />
+                      <line x1="29" y1="10" x2="29" y2="30" stroke="currentColor" strokeWidth="1" />
+                      <circle cx="38" cy="8" r="3" stroke="hsl(var(--primary))" strokeWidth="1.5" />
+                      <path d="M38 3v-1M43 8h1M38 13v1M33 8h-1" stroke="hsl(var(--primary))" strokeWidth="1.2" />
+                      <line x1="24" y1="30" x2="24" y2="40" stroke="currentColor" strokeWidth="1.5" />
+                      <line x1="16" y1="40" x2="32" y2="40" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                  ),
+                },
+                {
+                  label: "Économies",
+                  sub: "Jusqu'à -70%",
+                  sketch: (
+                    <svg viewBox="0 0 48 48" className="w-full h-full" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="24" cy="24" r="14" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 2" />
+                      <path d="M20 20c0-2.5 2-4 4-4s4 1.5 4 4-2 3-4 3.5v2" stroke="hsl(var(--primary))" strokeWidth="2" />
+                      <path d="M20 28c0 2.5 2 4 4 4s4-1.5 4-4" stroke="hsl(var(--primary))" strokeWidth="1.5" />
+                      <line x1="22" y1="20" x2="26" y2="20" stroke="hsl(var(--primary))" strokeWidth="1.5" />
+                      <line x1="22" y1="28" x2="26" y2="28" stroke="hsl(var(--primary))" strokeWidth="1.5" />
+                      <path d="M36 6l-4 6h3v4h2v-4h3z" stroke="hsl(var(--primary))" strokeWidth="1.2" fill="hsl(var(--primary))" opacity="0.2" />
+                    </svg>
+                  ),
+                },
               ].map((step, i) => (
                 <motion.div
                   key={step.label}
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 + i * 0.12 }}
-                  className="flex items-start gap-3 relative py-3"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 + i * 0.15, type: "spring", stiffness: 120 }}
+                  className="flex items-center gap-3 relative group"
                 >
-                  <div className={`w-[30px] h-[30px] rounded-full flex items-center justify-center shrink-0 z-10 ${
+                  <div className={`w-[54px] h-[54px] shrink-0 z-10 rounded-xl p-1.5 transition-all duration-300 ${
                     i === 0
-                      ? "bg-primary text-primary-foreground ring-2 ring-primary/30"
-                      : "bg-muted border border-border text-muted-foreground"
+                      ? "text-primary bg-primary/10 ring-2 ring-primary/20 shadow-sm"
+                      : "text-muted-foreground bg-background border border-dashed border-border group-hover:border-primary/40 group-hover:text-primary"
                   }`}>
-                    <step.icon className="w-3.5 h-3.5" />
+                    {step.sketch}
                   </div>
-                  <div className="pt-0.5">
-                    <p className={`text-sm font-semibold leading-tight ${i === 0 ? "text-foreground" : "text-muted-foreground"}`}>
+                  <div className="min-w-0">
+                    <p className={`text-[13px] font-bold leading-tight ${i === 0 ? "text-foreground" : "text-foreground/70 group-hover:text-foreground"} transition-colors`}>
                       {step.label}
                     </p>
-                    <p className={`text-xs mt-0.5 ${i === 0 ? "text-primary font-medium" : "text-muted-foreground/70"}`}>
+                    <p className={`text-[11px] mt-0.5 ${i === 0 ? "text-primary font-semibold" : "text-muted-foreground"}`}>
                       {step.sub}
                     </p>
                   </div>
