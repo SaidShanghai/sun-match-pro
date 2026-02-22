@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 interface PackageRow {
   id: string;
   name: string;
+  category: string;
   profile_type: string;
   power_kwc: number;
   price_ttc: number;
@@ -27,6 +28,20 @@ interface PackageRow {
   specs: Record<string, unknown> | null;
   created_at: string;
 }
+
+const CATEGORY_OPTIONS = [
+  { value: "panneaux", label: "🔆 Panneaux solaires" },
+  { value: "onduleurs", label: "⚡ Onduleurs (Inverteurs)" },
+  { value: "batteries", label: "🔋 Batteries" },
+  { value: "solarbox", label: "📦 SolarBox (Onduleur+Batterie)" },
+];
+
+const CATEGORY_LABELS: Record<string, string> = {
+  panneaux: "🔆 Panneaux solaires",
+  onduleurs: "⚡ Onduleurs",
+  batteries: "🔋 Batteries",
+  solarbox: "📦 SolarBox",
+};
 
 const AIDS_OPTIONS = ["SR500", "TATWIR", "GEFF", "PPA"];
 
@@ -81,6 +96,7 @@ const emptyForm = {
   name: "",
   fabricant: "",
   modele: "",
+  category: "panneaux",
   profile_type: "industrial",
   power_kwc: "",
   price_ttc: "",
@@ -188,7 +204,7 @@ const PackagesManager = () => {
     const { data, error } = await supabase
       .from("packages")
       .select("*")
-      .order("profile_type")
+      .order("category")
       .order("power_kwc");
     if (!error) setPackages((data as PackageRow[]) || []);
     setLoading(false);
@@ -244,6 +260,7 @@ const PackagesManager = () => {
       if (d.power_kwc) filled.add("power_kwc");
       if (d.price_ttc) filled.add("price_ttc");
       if (d.description) filled.add("description");
+      if (d.category) filled.add("category");
       const specKeys = Object.keys(s) as string[];
       specKeys.forEach((k) => {
         const v = s[k];
@@ -258,6 +275,7 @@ const PackagesManager = () => {
         name: d.name || f.name,
         fabricant: d.fabricant || f.fabricant,
         modele: d.modele || f.modele,
+        category: d.category || f.category,
         profile_type: d.profile_type || f.profile_type,
         power_kwc: d.power_kwc ? String(d.power_kwc) : f.power_kwc,
         price_ttc: d.price_ttc ? String(d.price_ttc) : f.price_ttc,
@@ -308,6 +326,7 @@ const PackagesManager = () => {
       name: pkg.name,
       fabricant: pkg.fabricant || "",
       modele: pkg.modele || "",
+      category: pkg.category || "panneaux",
       profile_type: pkg.profile_type,
       power_kwc: String(pkg.power_kwc),
       price_ttc: String(pkg.price_ttc),
@@ -367,6 +386,7 @@ const PackagesManager = () => {
       name: form.name.trim(),
       fabricant: form.fabricant.trim() || null,
       modele: form.modele.trim() || null,
+      category: form.category,
       profile_type: form.profile_type,
       power_kwc: parseFloat(form.power_kwc) || (specs.capacite_kwh as number) || 0,
       price_ttc: parseFloat(form.price_ttc),
@@ -410,8 +430,9 @@ const PackagesManager = () => {
     }));
 
   const grouped = packages.reduce<Record<string, PackageRow[]>>((acc, p) => {
-    if (!acc[p.profile_type]) acc[p.profile_type] = [];
-    acc[p.profile_type].push(p);
+    const key = p.category || "panneaux";
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(p);
     return acc;
   }, {});
 
@@ -446,10 +467,10 @@ const PackagesManager = () => {
           </CardContent>
         </Card>
       ) : (
-        Object.entries(grouped).map(([profileType, pkgs]) => (
-          <div key={profileType} className="space-y-3">
+        Object.entries(grouped).map(([category, pkgs]) => (
+          <div key={category} className="space-y-3">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-              {PROFILE_LABELS[profileType] || profileType}
+              {CATEGORY_LABELS[category] || category}
             </h3>
             <div className="grid gap-3">
               {pkgs.map((pkg) => {
@@ -464,6 +485,7 @@ const PackagesManager = () => {
                             {pkg.fabricant && (
                               <Badge variant="outline" className="text-[10px]">{pkg.fabricant}</Badge>
                             )}
+                            <Badge variant="secondary" className="text-[10px]">{PROFILE_LABELS[pkg.profile_type] || pkg.profile_type}</Badge>
                             {!pkg.is_active && (
                               <Badge variant="outline" className="text-[10px]">Inactif</Badge>
                             )}
@@ -590,6 +612,20 @@ const PackagesManager = () => {
 
             {/* ── GÉNÉRAL ── */}
             <TabsContent value="general" className="space-y-4 pt-4">
+              <div className="space-y-1.5">
+                <Label className={ocrFields.has("category") ? "text-red-600 font-semibold" : ""}>
+                  Famille produit *
+                  {ocrFields.has("category") && <span className="ml-1 text-[10px] font-normal text-red-500">● IA</span>}
+                </Label>
+                <Select value={form.category} onValueChange={(v) => setForm((f) => ({ ...f, category: v }))}>
+                  <SelectTrigger className={ocrFields.has("category") ? "border-red-400 bg-red-50/50 text-red-900" : ""}><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {CATEGORY_OPTIONS.map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label className={ocrFields.has("fabricant") ? "text-red-600 font-semibold" : ""}>

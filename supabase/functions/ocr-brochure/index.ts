@@ -15,6 +15,7 @@ Retourne UNIQUEMENT un JSON structuré comme suit. Si une information n'est pas 
   "name": string | null,
   "fabricant": string | null,
   "modele": string | null,
+  "category": "panneaux" | "onduleurs" | "batteries" | "solarbox" | null,
   "profile_type": "residential" | "commercial" | "industrial" | null,
   "power_kwc": number | null,
   "price_ttc": number | null,
@@ -53,8 +54,10 @@ Règles :
 - communication: valeurs possibles = "RS485", "Modbus-TCP", "CAN", "4G", "WiFi", "Ethernet"
 - use_cases: valeurs possibles = "peak_shaving", "backup", "off_grid", "autoconsommation", "recharge_ev"
 - secteurs_cibles: valeurs possibles = "industrie", "data_center", "hotel", "commerce", "agriculture", "residentiel"
+- category: "panneaux" = modules PV, "onduleurs" = onduleurs/inverteurs seuls, "batteries" = batteries/stockage seul, "solarbox" = solution intégrée onduleur+batterie
 - Convertis toutes les dimensions en mm
 - Déduis le profile_type à partir de la puissance/capacité: <10kWh=residential, 10-100kWh=commercial, >100kWh=industrial
+- Déduis la category à partir du type de produit décrit dans la brochure
 - Si le prix n'est pas mentionné, mets null`;
 
 serve(async (req) => {
