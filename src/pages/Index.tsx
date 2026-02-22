@@ -281,12 +281,19 @@ const Index = () => {
             {/* Cachet / Stamp effect */}
             <motion.div
               initial={{ opacity: 0, rotate: 20, scale: 2.5 }}
-              animate={{ opacity: 1, rotate: 12, scale: 1 }}
+              animate={{ 
+                opacity: [0, 1, 1, 1, 0], 
+                rotate: 12, 
+                scale: [2.5, 1, 1, 1, 1],
+                y: [0, 0, -8, 0, -5, 0, -3, 0, -1, 0, 0],
+              }}
               transition={{ 
-                duration: 0.15, 
-                delay: 0.8, 
-                ease: [0.25, 0.1, 0.25, 1],
-                opacity: { duration: 0.05, delay: 0.8 },
+                duration: 6, 
+                delay: 0.8,
+                opacity: { duration: 6, delay: 0.8, times: [0, 0.02, 0.5, 0.9, 1] },
+                scale: { duration: 0.15, delay: 0.8 },
+                rotate: { duration: 0.15, delay: 0.8 },
+                y: { duration: 3, delay: 0.95, ease: "easeOut" },
               }}
               className="hidden lg:flex items-start justify-center -mt-[480px]"
             >
