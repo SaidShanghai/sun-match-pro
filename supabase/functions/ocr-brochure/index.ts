@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -29,7 +29,6 @@ Puis extrais les specs adaptées à la catégorie :
   "price_ttc": number | null,
   "description": string | null,
   "specs": {
-    // PANNEAUX : inclure si catégorie = panneaux
     "puissance_wc": number | null,
     "rendement": number | null,
     "voc": number | null,
@@ -42,8 +41,6 @@ Puis extrais les specs adaptées à la catégorie :
     "coeff_temp_voc": number | null,
     "poids_kg": number | null,
     "longueur_mm": number | null,
-
-    // ONDULEURS : inclure si catégorie = onduleurs ou solarbox
     "puissance_nominale_kw": number | null,
     "puissance_max_kw": number | null,
     "nb_mppt": number | null,
@@ -52,8 +49,6 @@ Puis extrais les specs adaptées à la catégorie :
     "tension_dc_max": number | null,
     "type_onduleur": string[],
     "phases": string[],
-
-    // BATTERIES : inclure si catégorie = batteries ou solarbox
     "capacite_kwh": number | null,
     "capacite_utilisable_kwh": number | null,
     "puissance_decharge_jour_kw": number | null,
@@ -64,8 +59,6 @@ Puis extrais les specs adaptées à la catégorie :
     "type_batterie": "LFP" | "NMC" | "NCA" | "Lead-Acid" | null,
     "efficacite_roundtrip": number | null,
     "type_refroidissement": "forced_air" | "natural_convection" | "liquid" | null,
-
-    // COMMUN à tous
     "duree_vie_ans": number | null,
     "garantie_ans": number | null,
     "largeur_mm": number | null,
@@ -88,12 +81,51 @@ Règles :
 - Déduis le profile_type : panneaux <400Wc ou batteries <10kWh = residential, >100kWh = industrial, sinon commercial
 - Si le prix n'est pas mentionné, mets null`;
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Authentication check
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser(
+      authHeader.replace("Bearer ", "")
+    );
+
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Invalid authentication" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Rate limiting: 10 OCR requests per user per hour
+    const { data: isLimited } = await supabase.rpc("check_rate_limit", {
+      _key: `ocr-brochure:${user.id}`,
+      _max_requests: 10,
+      _window_seconds: 3600,
+    });
+
+    if (isLimited) {
+      return new Response(
+        JSON.stringify({ error: "rate_limited", message: "Trop de requêtes. Réessayez dans une heure." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { imageBase64, mimeType } = await req.json();
 
     if (!imageBase64) {
@@ -189,7 +221,7 @@ serve(async (req) => {
   } catch (err) {
     console.error("OCR brochure error:", err);
     return new Response(
-      JSON.stringify({ error: "internal_error", message: String(err) }),
+      JSON.stringify({ error: "internal_error", message: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

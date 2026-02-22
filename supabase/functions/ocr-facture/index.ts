@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -34,12 +34,51 @@ Retourne UNIQUEMENT le JSON, sans commentaire ni explication.
   "periode_facturation": string | null
 }`;
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Authentication check
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser(
+      authHeader.replace("Bearer ", "")
+    );
+
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Invalid authentication" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Rate limiting: 10 OCR requests per user per hour
+    const { data: isLimited } = await supabase.rpc("check_rate_limit", {
+      _key: `ocr-facture:${user.id}`,
+      _max_requests: 10,
+      _window_seconds: 3600,
+    });
+
+    if (isLimited) {
+      return new Response(
+        JSON.stringify({ error: "rate_limited", message: "Trop de requêtes. Réessayez dans une heure." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { imageBase64, mimeType } = await req.json();
 
     if (!imageBase64) {
@@ -57,7 +96,6 @@ serve(async (req) => {
       );
     }
 
-    // Clean base64 (remove data URL prefix if present)
     const cleanBase64 = imageBase64.replace(/^data:[^;]+;base64,/, "");
     const mediaType = mimeType || "image/jpeg";
 
@@ -76,9 +114,7 @@ serve(async (req) => {
             content: [
               {
                 type: "image_url",
-                image_url: {
-                  url: `data:${mediaType};base64,${cleanBase64}`,
-                },
+                image_url: { url: `data:${mediaType};base64,${cleanBase64}` },
               },
               {
                 type: "text",
@@ -115,7 +151,6 @@ serve(async (req) => {
     const aiData = await response.json();
     const content = aiData.choices?.[0]?.message?.content || "";
 
-    // Extract JSON from the response (handle markdown code blocks)
     let jsonStr = content;
     const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
     if (jsonMatch) {
@@ -126,7 +161,6 @@ serve(async (req) => {
     try {
       parsed = JSON.parse(jsonStr);
     } catch {
-      // Try to fix truncated JSON by closing braces
       try {
         let fixed = jsonStr.replace(/,\s*$/, '');
         if (!fixed.endsWith('}')) fixed += '}';
@@ -146,7 +180,7 @@ serve(async (req) => {
   } catch (err) {
     console.error("OCR function error:", err);
     return new Response(
-      JSON.stringify({ error: "internal_error", message: String(err) }),
+      JSON.stringify({ error: "internal_error", message: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
