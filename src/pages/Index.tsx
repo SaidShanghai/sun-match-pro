@@ -280,8 +280,8 @@ const Index = () => {
 
             {/* Cachet / Stamp effect */}
             <motion.div
-              initial={{ opacity: 0, rotate: 20, scale: 0.5 }}
-              animate={{ opacity: 1, rotate: 12, scale: 1 }}
+              initial={{ opacity: 0, rotate: -20, scale: 0.5 }}
+              animate={{ opacity: 1, rotate: -12, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.4, type: "spring", stiffness: 200 }}
               className="hidden lg:flex items-start justify-center -mt-[480px]"
             >
