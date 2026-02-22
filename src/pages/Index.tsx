@@ -294,8 +294,7 @@ const Index = () => {
               >
                 <div className="absolute inset-2 rounded-full border-2 border-primary/60" />
                 <div className="text-center px-3">
-                  <span className="block text-xs font-bold uppercase tracking-widest text-primary">Certifié</span>
-                  <span className="block text-sm font-extrabold text-primary leading-tight mt-1">
+                  <span className="block text-sm font-extrabold text-primary leading-tight">
                     1ère IA solaire
                   </span>
                   <span className="block text-sm font-extrabold text-primary leading-tight">
