@@ -1318,24 +1318,32 @@ const Index = () => {
                 <motion.div
                   key={step.label}
                   initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 + i * 0.15, type: "spring", stiffness: 120 }}
-                  className="flex items-center gap-3 relative group"
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    scale: isActive ? 1.12 : 1,
+                    zIndex: isActive ? 20 : 1,
+                  }}
+                  transition={isActive
+                    ? { type: "spring", stiffness: 300, damping: 18 }
+                    : { delay: 0.5 + i * 0.15, type: "spring", stiffness: 120 }
+                  }
+                  className="flex items-center gap-3 relative group origin-left"
                 >
                   <div className={`w-[54px] h-[54px] shrink-0 z-10 rounded-xl p-1.5 transition-all duration-500 ${
                     isActive
-                      ? "text-primary bg-primary/10 ring-2 ring-primary/20 shadow-sm scale-110"
+                      ? "text-primary bg-primary/10 ring-2 ring-primary/30 shadow-lg shadow-primary/20 scale-125"
                       : isDone
                         ? "text-primary/60 bg-primary/5 border border-primary/30"
                         : "text-muted-foreground bg-background border border-dashed border-border group-hover:border-primary/40 group-hover:text-primary"
                   }`}>
                     {step.sketch}
                   </div>
-                  <div className="min-w-0">
-                    <p className={`text-[13px] font-bold leading-tight transition-colors duration-500 ${isActive ? "text-foreground" : isDone ? "text-foreground/60" : "text-foreground/40 group-hover:text-foreground"}`}>
+                  <div className={`min-w-0 transition-all duration-500 ${isActive ? "translate-x-1" : ""}`}>
+                    <p className={`font-bold leading-tight transition-all duration-500 ${isActive ? "text-foreground text-[15px]" : isDone ? "text-foreground/60 text-[13px]" : "text-foreground/40 group-hover:text-foreground text-[13px]"}`}>
                       {step.label}
                     </p>
-                    <p className={`text-[11px] mt-0.5 transition-colors duration-500 ${isActive ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+                    <p className={`mt-0.5 transition-all duration-500 ${isActive ? "text-primary font-semibold text-xs" : "text-muted-foreground text-[11px]"}`}>
                       {step.sub}
                     </p>
                   </div>
