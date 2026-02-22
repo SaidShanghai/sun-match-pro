@@ -286,21 +286,43 @@ const Index = () => {
               className="hidden lg:flex items-start justify-center -mt-[480px]"
             >
               <div
-                className="relative w-44 h-44 rounded-full border-[5px] border-primary flex items-center justify-center"
+                className="relative w-48 h-48 flex items-center justify-center"
                 style={{
-                  boxShadow: "inset 0 0 0 3px hsl(var(--primary)), 0 0 0 2px hsl(var(--primary) / 0.3)",
-                  background: "hsl(var(--primary) / 0.06)",
+                  filter: "saturate(0.9) contrast(1.1)",
                 }}
               >
-                <div className="absolute inset-2 rounded-full border-2 border-primary/60" />
-                <div className="text-center px-3">
-                  <span className="block text-sm font-extrabold text-primary leading-tight">
+                {/* Outer octagon shape */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
+                    border: "4px solid #1a5c2a",
+                    background: "rgba(26, 92, 42, 0.08)",
+                  }}
+                />
+                <div
+                  className="absolute inset-2"
+                  style={{
+                    clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
+                    border: "2px solid rgba(26, 92, 42, 0.5)",
+                  }}
+                />
+                {/* SVG borders for octagon */}
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" fill="none">
+                  <polygon points="30,0 70,0 100,30 100,70 70,100 30,100 0,70 0,30" stroke="#1a5c2a" strokeWidth="2.5" fill="rgba(26,92,42,0.06)" />
+                  <polygon points="34,4 66,4 96,34 96,66 66,96 34,96 4,66 4,34" stroke="#1a5c2a" strokeWidth="1" fill="none" opacity="0.5" />
+                </svg>
+                <div className="relative text-center px-4 z-10">
+                  <span className="block text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#1a5c2a" }}>★ NOORIA ★</span>
+                  <div className="w-12 h-[1px] mx-auto my-1" style={{ background: "#1a5c2a" }} />
+                  <span className="block text-[15px] font-black leading-tight" style={{ color: "#1a5c2a" }}>
                     1ère IA solaire
                   </span>
-                  <span className="block text-sm font-extrabold text-primary leading-tight">
+                  <span className="block text-[15px] font-black leading-tight" style={{ color: "#1a5c2a" }}>
                     du Maroc 🇲🇦
                   </span>
-                  <span className="block text-[10px] font-bold uppercase tracking-widest text-primary mt-1">★ NOORIA ★</span>
+                  <div className="w-12 h-[1px] mx-auto my-1" style={{ background: "#1a5c2a" }} />
+                  <span className="block text-[8px] font-semibold uppercase tracking-[0.15em]" style={{ color: "#1a5c2a" }}>Approuvé</span>
                 </div>
               </div>
             </motion.div>
