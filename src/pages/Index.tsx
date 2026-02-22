@@ -286,43 +286,23 @@ const Index = () => {
               className="hidden lg:flex items-start justify-center -mt-[480px]"
             >
               <div
-                className="relative w-48 h-48 flex items-center justify-center"
+                className="relative px-6 py-4 border-[3px] border-blue-600 bg-blue-50/80 backdrop-blur-sm"
                 style={{
-                  filter: "saturate(0.9) contrast(1.1)",
+                  borderRadius: "4px",
                 }}
               >
-                {/* Outer octagon shape */}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
-                    border: "4px solid #1a5c2a",
-                    background: "rgba(26, 92, 42, 0.08)",
-                  }}
-                />
-                <div
-                  className="absolute inset-2"
-                  style={{
-                    clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
-                    border: "2px solid rgba(26, 92, 42, 0.5)",
-                  }}
-                />
-                {/* SVG borders for octagon */}
-                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" fill="none">
-                  <polygon points="30,0 70,0 100,30 100,70 70,100 30,100 0,70 0,30" stroke="#1a5c2a" strokeWidth="2.5" fill="rgba(26,92,42,0.06)" />
-                  <polygon points="34,4 66,4 96,34 96,66 66,96 34,96 4,66 4,34" stroke="#1a5c2a" strokeWidth="1" fill="none" opacity="0.5" />
-                </svg>
-                <div className="relative text-center px-4 z-10">
-                  <span className="block text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#1a5c2a" }}>★ NOORIA ★</span>
-                  <div className="w-12 h-[1px] mx-auto my-1" style={{ background: "#1a5c2a" }} />
-                  <span className="block text-[15px] font-black leading-tight" style={{ color: "#1a5c2a" }}>
+                <div className="absolute inset-[4px] border border-blue-400/50 rounded-[2px]" />
+                <div className="relative text-center z-10">
+                  <span className="block text-[9px] font-bold uppercase tracking-[0.25em] text-blue-700">★ NOORIA ★</span>
+                  <div className="w-14 h-[2px] mx-auto my-1.5 bg-blue-600" />
+                  <span className="block text-[16px] font-black leading-tight text-blue-800">
                     1ère IA solaire
                   </span>
-                  <span className="block text-[15px] font-black leading-tight" style={{ color: "#1a5c2a" }}>
+                  <span className="block text-[16px] font-black leading-tight text-blue-800">
                     du Maroc 🇲🇦
                   </span>
-                  <div className="w-12 h-[1px] mx-auto my-1" style={{ background: "#1a5c2a" }} />
-                  <span className="block text-[8px] font-semibold uppercase tracking-[0.15em]" style={{ color: "#1a5c2a" }}>Approuvé</span>
+                  <div className="w-14 h-[2px] mx-auto my-1.5 bg-blue-600" />
+                  <span className="block text-[8px] font-semibold uppercase tracking-[0.2em] text-blue-600">Certifié</span>
                 </div>
               </div>
             </motion.div>
