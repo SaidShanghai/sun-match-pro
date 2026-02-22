@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
+import heroBg from "@/assets/hero-bg.png";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -207,9 +208,10 @@ const Index = () => {
 
       {/* Hero */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-16">
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5" />
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-2xl" />
+        <div className="absolute inset-0">
+          <img src={heroBg} alt="" className="w-full h-full object-contain object-right-bottom opacity-10" />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/95 to-background/60" />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-[1fr_auto_1fr] gap-6 items-center">
