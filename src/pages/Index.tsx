@@ -1220,6 +1220,78 @@ const Index = () => {
                 </div>
               </div>
             </motion.div>
+
+            {/* Decorative solar illustration */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="hidden lg:flex flex-col items-center justify-center gap-8"
+            >
+              {/* Sun with rays */}
+              <div className="relative">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+                  className="w-40 h-40 relative"
+                >
+                  {[...Array(12)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="absolute top-1/2 left-1/2 w-[2px] h-20 bg-gradient-to-t from-transparent to-primary/30 origin-bottom"
+                      style={{ transform: `translate(-50%, -100%) rotate(${i * 30}deg)` }}
+                    />
+                  ))}
+                </motion.div>
+                <motion.div
+                  animate={{ scale: [1, 1.08, 1] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/40 to-primary/10 border border-primary/20 shadow-lg" style={{ boxShadow: "0 0 40px hsl(var(--primary) / 0.2)" }} />
+                </motion.div>
+              </div>
+
+              {/* Floating solar panels */}
+              <div className="relative w-48 h-32">
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute top-0 left-4"
+                >
+                  <div className="w-20 h-14 rounded-lg bg-gradient-to-br from-blue-900/20 to-blue-600/10 border border-primary/15 backdrop-blur-sm grid grid-cols-3 grid-rows-2 gap-[2px] p-1.5">
+                    {[...Array(6)].map((_, i) => (
+                      <div key={i} className="bg-primary/15 rounded-[2px]" />
+                    ))}
+                  </div>
+                </motion.div>
+                <motion.div
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                  className="absolute top-6 right-2"
+                >
+                  <div className="w-24 h-16 rounded-lg bg-gradient-to-br from-blue-900/15 to-blue-600/8 border border-primary/10 backdrop-blur-sm grid grid-cols-3 grid-rows-2 gap-[2px] p-1.5">
+                    {[...Array(6)].map((_, i) => (
+                      <div key={i} className="bg-primary/10 rounded-[2px]" />
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Floating particles */}
+              {[...Array(5)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-2 h-2 rounded-full bg-primary/20"
+                  style={{ top: `${20 + i * 15}%`, right: `${10 + (i % 3) * 20}%` }}
+                  animate={{ 
+                    y: [0, -15, 0], 
+                    opacity: [0.2, 0.6, 0.2],
+                  }}
+                  transition={{ duration: 3 + i, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 }}
+                />
+              ))}
+            </motion.div>
           </div>
         </div>
       </section>
