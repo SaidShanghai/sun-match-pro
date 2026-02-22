@@ -211,7 +211,7 @@ const Index = () => {
         <div className="absolute inset-0">
           <img src={heroBg} alt="" className="w-full h-full object-cover opacity-10" />
         </div>
-        <div className="absolute inset-0 bg-background/70" />
+        <div className="absolute inset-0 bg-background/40" />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-[1fr_auto_1fr] gap-6 items-center">
