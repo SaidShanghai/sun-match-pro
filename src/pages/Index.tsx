@@ -214,7 +214,7 @@ const Index = () => {
         <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-2xl" />
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-[1fr_auto_1fr] gap-6 items-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -275,6 +275,34 @@ const Index = () => {
                   <span className="w-2 h-2 bg-white rounded-full shrink-0" />
                   Aides d'état SR500, TATWIR
                 </button>
+              </div>
+            </motion.div>
+
+            {/* Cachet / Stamp effect */}
+            <motion.div
+              initial={{ opacity: 0, rotate: -20, scale: 0.5 }}
+              animate={{ opacity: 1, rotate: -12, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.4, type: "spring", stiffness: 200 }}
+              className="hidden lg:flex items-center justify-center"
+            >
+              <div
+                className="relative w-44 h-44 rounded-full border-[5px] border-primary flex items-center justify-center"
+                style={{
+                  boxShadow: "inset 0 0 0 3px hsl(var(--primary)), 0 0 0 2px hsl(var(--primary) / 0.3)",
+                  background: "hsl(var(--primary) / 0.06)",
+                }}
+              >
+                <div className="absolute inset-2 rounded-full border-2 border-primary/60" />
+                <div className="text-center px-3">
+                  <span className="block text-xs font-bold uppercase tracking-widest text-primary">Certifié</span>
+                  <span className="block text-sm font-extrabold text-primary leading-tight mt-1">
+                    1ère IA solaire
+                  </span>
+                  <span className="block text-sm font-extrabold text-primary leading-tight">
+                    du Maroc 🇲🇦
+                  </span>
+                  <span className="block text-[10px] font-bold uppercase tracking-widest text-primary mt-1">★ NOORIA ★</span>
+                </div>
               </div>
             </motion.div>
 
