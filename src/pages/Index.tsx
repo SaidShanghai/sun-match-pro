@@ -59,20 +59,9 @@ const features = [
 const heroWords = ["Le solaire,", "Le diagnostic,", "Le soutien,", "Le financement,", "Le chantier,", "Le suivi,"];
 const heroWordsEntreprise = ["SR500,", "TATWIR,", "GEFF,", "PPA,", "Le chantier,", "Le suivi,", "Le diagnostic,", "Le soutien,", "Le financement,"];
 
-const HeroRotatingTitle = ({ entreprise = false }: { entreprise?: boolean }) => {
-  const [index, setIndex] = useState(0);
+const HeroRotatingTitle = ({ entreprise = false, activeIndex }: { entreprise?: boolean; activeIndex: number }) => {
   const words = entreprise ? heroWordsEntreprise : heroWords;
-
-  useEffect(() => {
-    setIndex(0);
-  }, [entreprise]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % words.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [words]);
+  const index = activeIndex % words.length;
 
   return (
     <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
@@ -96,6 +85,7 @@ const HeroRotatingTitle = ({ entreprise = false }: { entreprise?: boolean }) => 
 };
 
 const Index = () => {
+  const [heroStepIndex, setHeroStepIndex] = useState(0);
   const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form" | "informations" | "site" | "eligibilite" | "analyse" | "solutions" | "contact" | "merci">("intro");
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [objectif, setObjectif] = useState<"facture" | "autonomie" | null>(null);
@@ -167,6 +157,14 @@ const Index = () => {
     });
   }, []);
 
+  // Shared rotating index for hero title + steps (3s interval)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroStepIndex((prev) => prev + 1);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleAideCTA = () => {
     setPhoneScreen("intro");
     setSelectedType(null);
@@ -226,7 +224,7 @@ const Index = () => {
                 <span className="text-lg font-semibold">1ère IA solaire du Maroc 🇲🇦</span>
               </div>
 
-              <HeroRotatingTitle entreprise={selectedType === "Entreprise"} />
+              <HeroRotatingTitle entreprise={selectedType === "Entreprise"} activeIndex={heroStepIndex} />
 
               <p className="text-xl text-muted-foreground max-w-lg">
                 NOORIA connecte particuliers et installateurs certifiés. Diagnostic gratuit, devis personnalisés, installation garantie, programmes d'aides du Royaume.
@@ -277,7 +275,6 @@ const Index = () => {
                 </button>
               </div>
             </motion.div>
-
 
 
             {/* Phone mockup */}
@@ -1313,7 +1310,11 @@ const Index = () => {
                     </svg>
                   ),
                 },
-              ].map((step, i) => (
+              ].map((step, i) => {
+                const activeStep = heroStepIndex % 6;
+                const isActive = i === activeStep;
+                const isDone = i < activeStep;
+                return (
                 <motion.div
                   key={step.label}
                   initial={{ opacity: 0, y: 15 }}
@@ -1321,23 +1322,26 @@ const Index = () => {
                   transition={{ delay: 0.5 + i * 0.15, type: "spring", stiffness: 120 }}
                   className="flex items-center gap-3 relative group"
                 >
-                  <div className={`w-[54px] h-[54px] shrink-0 z-10 rounded-xl p-1.5 transition-all duration-300 ${
-                    i === 0
-                      ? "text-primary bg-primary/10 ring-2 ring-primary/20 shadow-sm"
-                      : "text-muted-foreground bg-background border border-dashed border-border group-hover:border-primary/40 group-hover:text-primary"
+                  <div className={`w-[54px] h-[54px] shrink-0 z-10 rounded-xl p-1.5 transition-all duration-500 ${
+                    isActive
+                      ? "text-primary bg-primary/10 ring-2 ring-primary/20 shadow-sm scale-110"
+                      : isDone
+                        ? "text-primary/60 bg-primary/5 border border-primary/30"
+                        : "text-muted-foreground bg-background border border-dashed border-border group-hover:border-primary/40 group-hover:text-primary"
                   }`}>
                     {step.sketch}
                   </div>
                   <div className="min-w-0">
-                    <p className={`text-[13px] font-bold leading-tight ${i === 0 ? "text-foreground" : "text-foreground/70 group-hover:text-foreground"} transition-colors`}>
+                    <p className={`text-[13px] font-bold leading-tight transition-colors duration-500 ${isActive ? "text-foreground" : isDone ? "text-foreground/60" : "text-foreground/40 group-hover:text-foreground"}`}>
                       {step.label}
                     </p>
-                    <p className={`text-[11px] mt-0.5 ${i === 0 ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+                    <p className={`text-[11px] mt-0.5 transition-colors duration-500 ${isActive ? "text-primary font-semibold" : "text-muted-foreground"}`}>
                       {step.sub}
                     </p>
                   </div>
                 </motion.div>
-              ))}
+                );
+              })}
             </motion.div>
           </div>
         </div>
