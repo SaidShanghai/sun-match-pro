@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
 
 const NAV_LINKS = [
@@ -10,6 +11,7 @@ const NAV_LINKS = [
 ];
 
 const Header = () => {
+  const { user } = useAuth();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const getScale = (i: number) => {
@@ -43,8 +45,8 @@ const Header = () => {
               </Link>
             ))}
           </nav>
-          <Button asChild size="sm">
-            <Link to="/profil">Mon profil</Link>
+          <Button asChild size="sm" variant={user ? "outline" : "default"}>
+            <Link to="/profil">{user ? "Connecté" : "Se connecter"}</Link>
           </Button>
         </div>
       </div>
