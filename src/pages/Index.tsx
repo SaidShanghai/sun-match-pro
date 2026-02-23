@@ -998,9 +998,9 @@ const Index = () => {
                             </div>
 
                             {/* Small map preview — click to reopen fullscreen */}
-                            <button onClick={() => setSiteMapFullscreen(true)} className="w-full">
+                            <div onClick={() => setSiteMapFullscreen(true)} className="w-full cursor-pointer">
                               <MiniMapMockup key="map-mini" city={ville || "Casablanca"} />
-                            </button>
+                            </div>
 
                         {/* Accès Panneaux + Surface — non-Entreprise uniquement */}
                         {selectedType !== "Entreprise" && (

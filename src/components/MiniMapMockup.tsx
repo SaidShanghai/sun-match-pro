@@ -108,14 +108,14 @@ const MiniMapMockup = ({ city, fullscreen = false, onValidate }: MiniMapMockupPr
 
   if (fullscreen) {
     return (
-      <div className="absolute inset-0 z-20 flex flex-col" style={{ touchAction: "none" }}>
+      <div className="flex flex-col w-full h-full relative" style={{ touchAction: "none" }}>
         {loading && (
           <div className="absolute inset-0 z-30 flex items-center justify-center bg-muted/60">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
           </div>
         )}
-        {/* Map fills entire frame */}
-        <div ref={mapRef} className="flex-1 w-full" style={{ touchAction: "none" }} />
+        {/* Map fills entire space */}
+        <div ref={mapRef} className="flex-1 w-full min-h-0" style={{ touchAction: "none" }} />
 
         {/* Top bar overlay */}
         <div className="absolute top-0 left-0 right-0 z-30 flex items-center gap-2 px-3 py-2 bg-gradient-to-b from-black/60 to-transparent">
