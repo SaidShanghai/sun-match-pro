@@ -531,7 +531,7 @@ const Index = () => {
                             <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 flex flex-col items-center gap-1.5">
                               <Loader2 className="w-5 h-5 text-primary animate-spin" />
                               <p className="text-[8px] font-semibold">Analyse IA en cours…</p>
-                              <p className="text-[7px] text-muted-foreground">Extraction des données</p>
+                              <p className="text-[7px] text-muted-foreground animate-pulse">Extraction des données</p>
                             </div>
                           ) : (
                             <button
