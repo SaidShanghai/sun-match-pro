@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { FileText, Loader2, Mail, Phone, MapPin, Calendar, ChevronDown, ChevronUp, StickyNote, Sun, Zap, Leaf, LayoutGrid, Search, Copy } from "lucide-react";
+import { FileText, Loader2, Mail, Phone, MapPin, Calendar, ChevronDown, ChevronUp, StickyNote, Sun, Zap, Leaf, LayoutGrid, Search, Copy, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import SatelliteMapPreview from "@/components/admin/SatelliteMapPreview";
 
@@ -64,6 +64,21 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   in_progress: { label: "En cours", color: "bg-amber-500/10 text-amber-700 border-amber-500/20" },
   treated: { label: "Traité", color: "bg-green-500/10 text-green-700 border-green-500/20" },
   lost: { label: "Perdu", color: "bg-red-500/10 text-red-600 border-red-500/20" },
+};
+
+const getDelayLabel = (createdAt: string, status: string): { text: string; urgent: boolean } | null => {
+  if (status === "treated" || status === "lost") return null;
+  const diff = Date.now() - new Date(createdAt).getTime();
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(hours / 24);
+  if (days > 0) {
+    return { text: `${days}j ${hours % 24}h`, urgent: days >= 2 };
+  }
+  if (hours > 0) {
+    return { text: `${hours}h`, urgent: hours >= 24 };
+  }
+  const mins = Math.max(1, Math.floor(diff / 60000));
+  return { text: `${mins}min`, urgent: false };
 };
 
 const DIAGNOSTIC_LABELS: Record<string, string> = {
@@ -262,9 +277,25 @@ const QuoteRequestsManager = () => {
                         {req.client_phone && <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5" />{req.client_phone}</span>}
                         {req.city && <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{req.city}</span>}
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(req.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(req.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                        </span>
+                        {(() => {
+                          const delay = getDelayLabel(req.created_at, req.status);
+                          if (!delay) return null;
+                          return (
+                            <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
+                              delay.urgent
+                                ? "bg-destructive/10 text-destructive border border-destructive/20"
+                                : "bg-muted text-muted-foreground"
+                            }`}>
+                              <Clock className="w-3 h-3" />
+                              {delay.text}
+                            </span>
+                          );
+                        })()}
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
