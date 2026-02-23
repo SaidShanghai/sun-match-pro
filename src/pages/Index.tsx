@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
 import heroBg from "@/assets/hero-bg.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sun,
@@ -26,6 +26,9 @@ import {
   Warehouse,
   Lock,
   Camera,
+  Loader2,
+  CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -87,7 +90,6 @@ const HeroRotatingTitle = ({ entreprise = false, activeIndex }: { entreprise?: b
 };
 
 const Index = () => {
-  const navigate = useNavigate();
   const [heroStepIndex, setHeroStepIndex] = useState(0);
   const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form" | "informations" | "site" | "eligibilite" | "analyse" | "solutions" | "contact" | "merci">("intro");
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -113,6 +115,10 @@ const Index = () => {
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [quoteRef, setQuoteRef] = useState<string | null>(null);
   const { toast } = useToast();
+  // OCR mockup state
+  const mockupFileRef = useRef<HTMLInputElement>(null);
+  const [mockupOcrState, setMockupOcrState] = useState<"idle" | "loading" | "success">("idle");
+  const [mockupOcrFields, setMockupOcrFields] = useState<string[]>([]);
   const [contactNom, setContactNom] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactTel, setContactTel] = useState("");
@@ -457,28 +463,92 @@ const Index = () => {
                           </div>
                         </div>
 
-                        {/* Mini facture upload (visual, like real diagnostic) */}
+                        {/* Mini facture upload — real file picker + OCR */}
                         <div className="space-y-1">
                           <label className="text-[9px] font-semibold flex items-center gap-1">
                             <Camera className="w-3 h-3 text-primary" />
                             Photo de votre facture
                             <span className="text-[7px] font-normal text-muted-foreground">(recommandé)</span>
                           </label>
-                          <button
-                            className="w-full rounded-xl border border-dashed border-border hover:border-primary/50 p-3 flex flex-col items-center gap-1 transition-colors group"
-                            onClick={() => navigate("/diagnostic")}
-                          >
-                            <div className="w-8 h-8 rounded-xl bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center transition-colors">
-                              <Camera className="w-4 h-4 text-primary" />
+                          <input
+                            ref={mockupFileRef}
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp,application/pdf"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              const MAX = 5 * 1024 * 1024;
+                              if (file.size > MAX) { toast({ title: "Fichier trop volumineux", description: "Max 5 Mo", variant: "destructive" }); return; }
+                              setMockupOcrState("loading");
+                              setMockupOcrFields([]);
+                              try {
+                                const base64 = await new Promise<string>((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result as string); r.onerror = rej; r.readAsDataURL(file); });
+                                const { data, error } = await supabase.functions.invoke("ocr-facture", { body: { imageBase64: base64, mimeType: file.type } });
+                                if (error) throw error;
+                                if (data?.success && data.data) {
+                                  const d = data.data;
+                                  const fields: string[] = [];
+                                  if (d.consommation_kwh) { setConso(Number(d.consommation_kwh).toLocaleString("fr-FR")); fields.push("Consommation"); }
+                                  if (d.montant_ttc) { setFacture(Number(d.montant_ttc).toLocaleString("fr-FR")); fields.push("Montant TTC"); }
+                                  if (d.ville) { setVille(d.ville); fields.push("Ville"); }
+                                  if (d.puissance_souscrite_kva) { setPuissanceSouscrite(String(d.puissance_souscrite_kva)); fields.push("Puissance"); }
+                                  if (d.type_abonnement && ["Basse Tension", "Moyenne Tension", "Haute Tension"].includes(d.type_abonnement)) { setTypeAbonnement(d.type_abonnement); fields.push("Abonnement"); }
+                                  setMockupOcrFields(fields);
+                                  setMockupOcrState("success");
+                                  toast({ title: "Facture analysée ✓", description: `${fields.length} info${fields.length > 1 ? "s" : ""} extraite${fields.length > 1 ? "s" : ""}` });
+                                } else {
+                                  toast({ title: "Analyse difficile", description: "Essayez avec une photo plus nette.", variant: "destructive" });
+                                  setMockupOcrState("idle");
+                                }
+                              } catch (err: any) {
+                                console.error("OCR error:", err);
+                                toast({ title: "Erreur d'analyse", description: err?.message || "Réessayez.", variant: "destructive" });
+                                setMockupOcrState("idle");
+                              }
+                              if (mockupFileRef.current) mockupFileRef.current.value = "";
+                            }}
+                          />
+                          {mockupOcrState === "success" ? (
+                            <div className="rounded-xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-700 p-2 space-y-1.5">
+                              <div className="flex items-center gap-1">
+                                <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                                <p className="text-[8px] font-semibold text-emerald-800 dark:text-emerald-300">Facture analysée</p>
+                              </div>
+                              <div className="flex flex-wrap gap-1">
+                                {mockupOcrFields.map(f => (
+                                  <span key={f} className="inline-flex items-center gap-0.5 text-[7px] font-medium px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-800/40 text-emerald-700 dark:text-emerald-300">
+                                    <Sparkles className="w-2 h-2" /> {f}
+                                  </span>
+                                ))}
+                              </div>
+                              <button onClick={() => mockupFileRef.current?.click()} className="text-[7px] text-emerald-700 dark:text-emerald-400 font-medium hover:underline">
+                                Changer de photo
+                              </button>
                             </div>
-                            <p className="text-[8px] font-medium text-foreground">Photographiez votre facture ONEE</p>
-                            <p className="text-[7px] text-muted-foreground">L'IA pré-remplira vos informations</p>
-                            <div className="flex items-center gap-1 mt-0.5">
-                              <span className="text-[7px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted">JPG</span>
-                              <span className="text-[7px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted">PNG</span>
-                              <span className="text-[7px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted">PDF</span>
+                          ) : mockupOcrState === "loading" ? (
+                            <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 flex flex-col items-center gap-1.5">
+                              <Loader2 className="w-5 h-5 text-primary animate-spin" />
+                              <p className="text-[8px] font-semibold">Analyse IA en cours…</p>
+                              <p className="text-[7px] text-muted-foreground">Extraction des données</p>
                             </div>
-                          </button>
+                          ) : (
+                            <button
+                              className="w-full rounded-xl border border-dashed border-border hover:border-primary/50 p-3 flex flex-col items-center gap-1 transition-colors group"
+                              onClick={() => mockupFileRef.current?.click()}
+                            >
+                              <div className="w-8 h-8 rounded-xl bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center transition-colors">
+                                <Camera className="w-4 h-4 text-primary" />
+                              </div>
+                              <p className="text-[8px] font-medium text-foreground">Photographiez votre facture ONEE</p>
+                              <p className="text-[7px] text-muted-foreground">L'IA pré-remplira vos informations</p>
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <span className="text-[7px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted">JPG</span>
+                                <span className="text-[7px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted">PNG</span>
+                                <span className="text-[7px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted">PDF</span>
+                              </div>
+                            </button>
+                          )}
                         </div>
 
                         {selectedType === "Entreprise" ? (
