@@ -59,9 +59,12 @@ const Header = () => {
               ))}
             </nav>
             {user ? (
-              <Button size="sm" variant="outline" onClick={() => setShowLogout(true)}>
-                Connecté
-              </Button>
+              <div className="flex items-center gap-2">
+                <span className="hidden sm:inline text-xs text-muted-foreground truncate max-w-[160px]">{user.email}</span>
+                <Button size="sm" variant="outline" onClick={() => setShowLogout(true)}>
+                  Connecté
+                </Button>
+              </div>
             ) : (
               <Button asChild size="sm">
                 <Link to="/profil">Se connecter</Link>
