@@ -1142,6 +1142,10 @@ const Index = () => {
                         )}
 
                         {/* CTA Analyser */}
+                          </div>
+                        )}
+                        {/* CTA — épinglé en bas, hors scroll */}
+                        <div className="px-4 pb-2.5 pt-2 shrink-0">
                         {(() => {
                           const siteValid = selectedUsages.length > 0 &&
                             (selectedType === "Entreprise"
@@ -1159,14 +1163,13 @@ const Index = () => {
                                 }
                               }}
                               disabled={!siteValid}
-                              className={`w-full rounded-full mt-1 text-[11px] h-10 font-semibold flex items-center justify-center gap-1.5 transition-colors ${siteValid ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
+                              className={`w-full rounded-full text-[10px] h-[36px] font-semibold flex items-center justify-center gap-1.5 transition-colors ${siteValid ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
                             >
                               {selectedType === "Entreprise" ? "Continuer" : "Analyser"} <ArrowRight className="w-3.5 h-3.5" />
                             </button>
                           );
                         })()}
-                          </div>
-                        )}
+                        </div>
                       </motion.div>
                     ) : phoneScreen === "eligibilite" ? (
                       <EligibiliteScreen
