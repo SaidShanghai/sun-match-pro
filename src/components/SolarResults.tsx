@@ -105,6 +105,7 @@ const SolarResults = ({ data, loading, error, factureMad, consoKwh, city }: Sola
       unit: `kWh/an (${data.peakpowerKwp} kWc)`,
       color: "text-emerald-500",
       bgColor: "bg-emerald-500/10",
+      locked: true,
     },
     {
       icon: TrendingUp,
