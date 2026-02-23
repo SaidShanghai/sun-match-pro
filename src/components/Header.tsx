@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { LogOut } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
 
 const NAV_LINKS = [
@@ -13,45 +16,81 @@ const NAV_LINKS = [
 
 const Header = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [showLogout, setShowLogout] = useState(false);
 
   const getScale = (i: number) => {
     if (hoveredIndex === null) return 1;
     return i === hoveredIndex ? 1.35 : 1;
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setShowLogout(false);
+    navigate("/");
+  };
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center">
-            <img src={nooriaLogo} alt="NOORIA" className="h-10 w-auto object-contain" />
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            {NAV_LINKS.map((link, i) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                onMouseEnter={() => setHoveredIndex(i)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                style={{
-                  transform: `scale(${getScale(i)})`,
-                  transition: "transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                  display: "inline-block",
-                  transformOrigin: "center bottom",
-                }}
-                className="text-sm font-medium hover:text-primary transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-          <Button asChild size="sm" variant={user ? "outline" : "default"}>
-            <Link to="/profil">{user ? "Connecté" : "Se connecter"}</Link>
-          </Button>
+    <>
+      <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <Link to="/" className="flex items-center">
+              <img src={nooriaLogo} alt="NOORIA" className="h-10 w-auto object-contain" />
+            </Link>
+            <nav className="hidden md:flex items-center gap-6">
+              {NAV_LINKS.map((link, i) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  onMouseEnter={() => setHoveredIndex(i)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                  style={{
+                    transform: `scale(${getScale(i)})`,
+                    transition: "transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                    display: "inline-block",
+                    transformOrigin: "center bottom",
+                  }}
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+            {user ? (
+              <Button size="sm" variant="outline" onClick={() => setShowLogout(true)}>
+                Connecté
+              </Button>
+            ) : (
+              <Button asChild size="sm">
+                <Link to="/profil">Se connecter</Link>
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      <Dialog open={showLogout} onOpenChange={setShowLogout}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Déconnexion</DialogTitle>
+            <DialogDescription>
+              Voulez-vous vous déconnecter de votre compte ?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2 sm:justify-center">
+            <Button variant="outline" onClick={() => setShowLogout(false)}>
+              Annuler
+            </Button>
+            <Button variant="destructive" onClick={handleSignOut}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Se déconnecter
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
