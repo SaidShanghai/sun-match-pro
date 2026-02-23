@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
 import heroBg from "@/assets/hero-bg.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sun,
@@ -87,6 +87,7 @@ const HeroRotatingTitle = ({ entreprise = false, activeIndex }: { entreprise?: b
 };
 
 const Index = () => {
+  const navigate = useNavigate();
   const [heroStepIndex, setHeroStepIndex] = useState(0);
   const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form" | "informations" | "site" | "eligibilite" | "analyse" | "solutions" | "contact" | "merci">("intro");
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -465,7 +466,7 @@ const Index = () => {
                           </label>
                           <button
                             className="w-full rounded-xl border border-dashed border-border hover:border-primary/50 p-3 flex flex-col items-center gap-1 transition-colors group"
-                            onClick={(e) => e.preventDefault()}
+                            onClick={() => navigate("/diagnostic")}
                           >
                             <div className="w-8 h-8 rounded-xl bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center transition-colors">
                               <Camera className="w-4 h-4 text-primary" />
