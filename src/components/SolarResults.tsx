@@ -133,7 +133,7 @@ const SolarResults = ({ data, loading, error, factureMad, consoKwh, city }: Sola
       unit: "kg/an",
       color: "text-teal-500",
       bgColor: "bg-teal-500/10",
-      locked: false as boolean,
+      locked: true,
     },
     (() => {
       const theoreticalPrice = getEffectivePricePerKwh(annualConsoKwh || 3000);
