@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Sun, Zap, Ruler, Leaf, BarChart3, AlertTriangle, Calendar, TrendingUp, Receipt } from "lucide-react";
+import { Sun, Zap, Ruler, Leaf, BarChart3, AlertTriangle, Calendar, TrendingUp, Receipt, Lock } from "lucide-react";
 import { calcSolarSavings, getEffectivePricePerKwh, getTarifDetails, getDistributeur } from "@/data/oneeTariffs";
 
 export interface SolarData {
@@ -96,6 +96,7 @@ const SolarResults = ({ data, loading, error, factureMad, consoKwh, city }: Sola
       unit: "kWh/m²/an",
       color: "text-amber-500",
       bgColor: "bg-amber-500/10",
+      locked: true,
     },
     {
       icon: Zap,
@@ -166,9 +167,7 @@ const SolarResults = ({ data, loading, error, factureMad, consoKwh, city }: Sola
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Source : <span className="font-semibold">PVGIS ({data.database || "SARAH3"})</span>
-        {data.latitude && ` · ${data.latitude.toFixed(2)}°N, ${data.longitude?.toFixed(2)}°W`}
-        {` · Distributeur : ${distributeur}`}
+        Distributeur : <span className="font-semibold">{distributeur}</span>
       </p>
 
       <div className="grid grid-cols-2 gap-3">
@@ -185,10 +184,19 @@ const SolarResults = ({ data, loading, error, factureMad, consoKwh, city }: Sola
             </div>
             <p className="text-xs text-muted-foreground">{card.label}</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-xl font-black">{card.value}</span>
-              <span className="text-xs text-muted-foreground">{card.unit}</span>
+              {card.locked ? (
+                <span className="flex items-center gap-1.5 text-amber-500">
+                  <Lock className="w-4 h-4" />
+                  <span className="text-sm font-semibold">Résultat verrouillé</span>
+                </span>
+              ) : (
+                <>
+                  <span className="text-xl font-black">{card.value}</span>
+                  <span className="text-xs text-muted-foreground">{card.unit}</span>
+                </>
+              )}
             </div>
-            {card.extra && (
+            {!card.locked && card.extra && (
               <p className="text-[10px] font-medium text-emerald-600">{card.extra}</p>
             )}
           </motion.div>
