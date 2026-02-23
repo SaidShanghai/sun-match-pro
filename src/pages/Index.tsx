@@ -969,7 +969,7 @@ const Index = () => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
                         transition={{ duration: 0.25 }}
-                        className="relative flex flex-col flex-1 overflow-hidden"
+                        className="relative flex flex-col flex-1 overflow-hidden h-full"
                       >
                         {siteMapFullscreen ? (
                           <MiniMapMockup key="map-full" city={ville || "Casablanca"} fullscreen onValidate={() => setSiteMapFullscreen(false)} />
