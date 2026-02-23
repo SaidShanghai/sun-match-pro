@@ -114,6 +114,7 @@ const SolarResults = ({ data, loading, error, factureMad, consoKwh, city }: Sola
       unit: azimuthToDirection(data.optimalAzimuth),
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
+      locked: true,
     },
     {
       icon: BarChart3,
