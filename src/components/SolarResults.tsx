@@ -124,6 +124,7 @@ const SolarResults = ({ data, loading, error, factureMad, consoKwh, city }: Sola
       color: "text-green-600",
       bgColor: "bg-green-600/10",
       extra: savings.savingsPercent > 0 ? `≈ ${savings.savingsPercent}% de votre facture` : undefined,
+      locked: true,
     },
     {
       icon: Leaf,
@@ -132,6 +133,7 @@ const SolarResults = ({ data, loading, error, factureMad, consoKwh, city }: Sola
       unit: "kg/an",
       color: "text-teal-500",
       bgColor: "bg-teal-500/10",
+      locked: false as boolean,
     },
     (() => {
       const theoreticalPrice = getEffectivePricePerKwh(annualConsoKwh || 3000);
@@ -149,6 +151,7 @@ const SolarResults = ({ data, loading, error, factureMad, consoKwh, city }: Sola
         color: "text-primary",
         bgColor: "bg-primary/10",
         extra: `Mode ${tarifInfo.mode}`,
+        locked: false as boolean,
       };
     })(),
   ];
