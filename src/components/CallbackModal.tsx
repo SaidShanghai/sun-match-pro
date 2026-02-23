@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { formatPhoneInput } from "@/lib/formatPhone";
 import { Phone, CheckCircle, X, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -130,7 +131,7 @@ const CallbackModal = ({ open, onOpenChange }: CallbackModalProps) => {
                           type="tel"
                           placeholder="Ex : 06 12 34 56 78"
                           value={telephone}
-                          onChange={(e) => setTelephone(e.target.value)}
+                          onChange={(e) => setTelephone(formatPhoneInput(e.target.value))}
                           maxLength={20}
                           className="h-[63px] text-lg px-5"
                         />

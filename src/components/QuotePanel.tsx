@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { formatPhoneInput } from "@/lib/formatPhone";
 import { X, ArrowRight, CheckCircle, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -257,7 +258,7 @@ const QuotePanel = ({ open, onOpenChange, installerName, onSuccess, diagnosticDa
                           type="tel"
                           placeholder="Ex : 06 12 34 56 78"
                           value={telephone}
-                          onChange={(e) => setTelephone(e.target.value)}
+                          onChange={(e) => setTelephone(formatPhoneInput(e.target.value))}
                           maxLength={20}
                           className="h-12"
                         />

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { formatPhoneInput } from "@/lib/formatPhone";
 import { useNavigate } from "react-router-dom";
 import { Building2, Package, Zap, ShieldAlert, Lock, ArrowRight, AlertTriangle, Loader2, LogOut, CheckCircle2, Clock, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -416,7 +417,7 @@ const Partenaires = () => {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Téléphone *</Label>
-                      <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+212 6XX XXX XXX" required />
+                      <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(formatPhoneInput(e.target.value))} placeholder="06 12 34 56 78" required />
                     </div>
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="companyEmail">Email professionnel *</Label>
