@@ -120,6 +120,7 @@ const Index = () => {
   const mockupFileRef = useRef<HTMLInputElement>(null);
   const [mockupOcrState, setMockupOcrState] = useState<"idle" | "loading" | "success">("idle");
   const [mockupOcrFields, setMockupOcrFields] = useState<string[]>([]);
+  const [siteMapFullscreen, setSiteMapFullscreen] = useState(true);
   const [contactNom, setContactNom] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactTel, setContactTel] = useState("");
@@ -950,7 +951,7 @@ const Index = () => {
                           return (
                             <div className="px-4 pb-2.5 pt-2 shrink-0">
                               <button
-                                onClick={() => { if (infoValid) setPhoneScreen("site"); }}
+                                onClick={() => { if (infoValid) { setSiteMapFullscreen(true); setPhoneScreen("site"); } }}
                                 disabled={!infoValid}
                                 className={`w-full rounded-full text-[10px] h-[36px] font-semibold flex items-center justify-center gap-1.5 transition-colors ${infoValid ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
                               >
@@ -968,32 +969,38 @@ const Index = () => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
                         transition={{ duration: 0.25 }}
-                        className="px-4 py-3 flex flex-col gap-3 overflow-y-auto flex-1"
+                        className="relative flex flex-col flex-1 overflow-hidden"
                       >
-                        {/* Stepper - Site active */}
-                        <div className="flex items-center justify-between px-1">
-                          {(selectedType === "Entreprise" ? ["Profil", "Info", "Site", "Eligib.", "Analyse", "Solut.", "Contact"] : ["Profil", "Site", "Analyse", "Solutions", "Contact"]).map((step, i) => {
-                            const isDone = selectedType === "Entreprise" ? i <= 1 : i === 0;
-                            const isActive = selectedType === "Entreprise" ? i === 2 : i === 1;
-                            return (
-                              <div key={step} className="flex flex-col items-center gap-0.5">
-                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${isDone ? "bg-success text-success-foreground" : isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
-                                  {isDone ? "✓" : i + 1}
-                                </div>
-                                <span className={`text-[8px] ${isActive ? "font-semibold text-foreground" : isDone ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
+                        {siteMapFullscreen ? (
+                          <MiniMapMockup city={ville || "Casablanca"} fullscreen onValidate={() => setSiteMapFullscreen(false)} />
+                        ) : (
+                          <div className="px-4 py-3 flex flex-col gap-3 overflow-y-auto flex-1">
+                            {/* Stepper */}
+                            <div className="flex items-center justify-between px-1">
+                              {(selectedType === "Entreprise" ? ["Profil", "Info", "Site", "Eligib.", "Analyse", "Solut.", "Contact"] : ["Profil", "Site", "Analyse", "Solutions", "Contact"]).map((step, i) => {
+                                const isDone = selectedType === "Entreprise" ? i <= 1 : i === 0;
+                                const isActive = selectedType === "Entreprise" ? i === 2 : i === 1;
+                                return (
+                                  <div key={step} className="flex flex-col items-center gap-0.5">
+                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold ${isDone ? "bg-success text-success-foreground" : isActive ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>
+                                      {isDone ? "✓" : i + 1}
+                                    </div>
+                                    <span className={`text-[8px] ${isActive ? "font-semibold text-foreground" : isDone ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{step}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
 
-                        {/* Title */}
-                        <div className="flex items-center gap-1.5 pt-1">
-                          <ChevronLeft className="w-3.5 h-3.5 text-foreground" />
-                          <h4 className="text-sm font-bold">Votre site</h4>
-                        </div>
+                            {/* Title */}
+                            <div className="flex items-center gap-1.5 pt-1">
+                              <ChevronLeft className="w-3.5 h-3.5 text-foreground" />
+                              <h4 className="text-sm font-bold">Votre site</h4>
+                            </div>
 
-                        {/* Mini carte satellite */}
-                        <MiniMapMockup city={ville || "Casablanca"} />
+                            {/* Small map preview — click to reopen fullscreen */}
+                            <button onClick={() => setSiteMapFullscreen(true)} className="w-full">
+                              <MiniMapMockup city={ville || "Casablanca"} />
+                            </button>
 
                         {/* Accès Panneaux + Surface — non-Entreprise uniquement */}
                         {selectedType !== "Entreprise" && (
@@ -1158,6 +1165,8 @@ const Index = () => {
                             </button>
                           );
                         })()}
+                          </div>
+                        )}
                       </motion.div>
                     ) : phoneScreen === "eligibilite" ? (
                       <EligibiliteScreen
