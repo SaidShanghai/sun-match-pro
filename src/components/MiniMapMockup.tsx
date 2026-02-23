@@ -59,9 +59,9 @@ const MiniMapMockup = ({ city, fullscreen = false, onValidate }: MiniMapMockupPr
         // Red draggable marker
         const pinEl = document.createElement("div");
         pinEl.style.cssText = `width:${fullscreen ? 32 : 24}px;height:${fullscreen ? 32 : 24}px;background:#EF4444;border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.5);cursor:grab;touch-action:none;`;
-        new AdvancedMarkerElement({ map, position: coords, gmpDraggable: fullscreen, content: pinEl, title: "Votre toit" });
+        const redMarker = new AdvancedMarkerElement({ map, position: coords, gmpDraggable: fullscreen, content: pinEl, title: "Votre toit" });
 
-        // Blue geolocation dot
+        // Blue geolocation dot — center map + move red marker to user's real position
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             (pos) => {
@@ -69,6 +69,8 @@ const MiniMapMockup = ({ city, fullscreen = false, onValidate }: MiniMapMockupPr
               const dot = document.createElement("div");
               dot.style.cssText = "width:12px;height:12px;background:#4285F4;border:2px solid white;border-radius:50%;box-shadow:0 0 4px rgba(66,133,244,0.6);";
               new AdvancedMarkerElement({ map, position: geoPos, content: dot, title: "Votre position" });
+              map.setCenter(geoPos);
+              redMarker.position = geoPos;
             },
             () => {},
             { enableHighAccuracy: true, timeout: 8000 }
