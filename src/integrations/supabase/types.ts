@@ -503,6 +503,22 @@ export type Database = {
       }
       is_company_owner: { Args: { _company_id: string }; Returns: boolean }
       is_profile_owner: { Args: { _profile_id: string }; Returns: boolean }
+      lookup_quote_by_ref: {
+        Args: { ref_prefix: string }
+        Returns: {
+          adresse_projet: string
+          annual_consumption: string
+          city: string
+          client_name: string
+          created_at: string
+          housing_type: string
+          id: string
+          objectif: string
+          project_type: string
+          status: string
+          ville_projet: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user"

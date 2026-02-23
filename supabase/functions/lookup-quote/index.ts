@@ -31,7 +31,9 @@ Deno.serve(async (req) => {
     const { data, error } = await supabase
       .rpc("lookup_quote_by_ref", { ref_prefix: cleanRef });
 
-    if (error || !data) {
+    const row = Array.isArray(data) ? data[0] : data;
+
+    if (error || !row) {
       return new Response(
         JSON.stringify({ error: "Aucun dossier trouvé avec cette référence" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -41,16 +43,16 @@ Deno.serve(async (req) => {
     // Return limited info (no email/phone for privacy)
     return new Response(
       JSON.stringify({
-        id: data.id,
-        ref: data.id.slice(0, 8).toUpperCase(),
-        created_at: data.created_at,
-        status: data.status,
-        client_name: data.client_name,
-        city: data.ville_projet || data.city,
-        project_type: data.project_type,
-        housing_type: data.housing_type,
-        objectif: data.objectif,
-        annual_consumption: data.annual_consumption,
+        id: row.id,
+        ref: String(row.id).slice(0, 8).toUpperCase(),
+        created_at: row.created_at,
+        status: row.status,
+        client_name: row.client_name,
+        city: row.ville_projet || row.city,
+        project_type: row.project_type,
+        housing_type: row.housing_type,
+        objectif: row.objectif,
+        annual_consumption: row.annual_consumption,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
