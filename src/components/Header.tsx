@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { to: "/", label: "Accueil" },
   { to: "/diagnostic", label: "Diagnostic IA" },
   { to: "/nos-solutions", label: "Nos solutions" },
+  { to: "/profil", label: "Mon diagnostic" },
 ];
 
 const Header = () => {
