@@ -133,7 +133,7 @@ const SolarResults = ({ data, loading, error, factureMad, consoKwh, city }: Sola
     (() => {
       const theoreticalPrice = getEffectivePricePerKwh(annualConsoKwh || 3000);
       const realPrice = factureMad && annualConsoKwh && annualConsoKwh > 0
-        ? (factureMad / (annualConsoKwh / 12))
+        ? (factureMad / annualConsoKwh)
         : null;
       const priceDisplay = realPrice && Math.abs(realPrice - theoreticalPrice) > 0.01
         ? `${Math.min(theoreticalPrice, realPrice).toFixed(2)} ~ ${Math.max(theoreticalPrice, realPrice).toFixed(2)}`
