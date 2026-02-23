@@ -130,15 +130,24 @@ const SolarResults = ({ data, loading, error, factureMad, consoKwh, city }: Sola
       color: "text-teal-500",
       bgColor: "bg-teal-500/10",
     },
-    {
-      icon: Receipt,
-      label: "Prix moyen kWh",
-      value: `${getEffectivePricePerKwh(annualConsoKwh || 3000).toFixed(2)}`,
-      unit: "MAD TTC",
-      color: "text-primary",
-      bgColor: "bg-primary/10",
-      extra: `Mode ${tarifInfo.mode}`,
-    },
+    (() => {
+      const theoreticalPrice = getEffectivePricePerKwh(annualConsoKwh || 3000);
+      const realPrice = factureMad && annualConsoKwh && annualConsoKwh > 0
+        ? (factureMad / (annualConsoKwh / 12))
+        : null;
+      const priceDisplay = realPrice && Math.abs(realPrice - theoreticalPrice) > 0.01
+        ? `${Math.min(theoreticalPrice, realPrice).toFixed(2)} ~ ${Math.max(theoreticalPrice, realPrice).toFixed(2)}`
+        : `${theoreticalPrice.toFixed(2)}`;
+      return {
+        icon: Receipt,
+        label: "Prix moyen kWh",
+        value: priceDisplay,
+        unit: "MAD TTC",
+        color: "text-primary",
+        bgColor: "bg-primary/10",
+        extra: `Mode ${tarifInfo.mode}`,
+      };
+    })(),
   ];
 
   const monthNames = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
