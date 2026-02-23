@@ -992,19 +992,26 @@ const Index = () => {
                         </div>
 
                         {/* Mini carte satellite */}
-                        {mapsKey && (
-                        <div className="rounded-xl overflow-hidden border border-border">
-                          <img
-                            src={`https://maps.googleapis.com/maps/api/staticmap?center=${ville || "Casablanca"},Morocco&zoom=14&size=340x120&maptype=satellite&key=${mapsKey}`}
-                            alt="Localisation"
-                            className="w-full h-[100px] object-cover bg-muted"
-                          />
+                        <div className="rounded-xl overflow-hidden border border-border" style={{ touchAction: "none" }}>
+                          {mapsKey ? (
+                            <iframe
+                              src={`https://www.google.com/maps/embed/v1/place?key=${mapsKey}&q=${encodeURIComponent((ville || "Casablanca") + ",Morocco")}&maptype=satellite&zoom=14`}
+                              className="w-full h-[120px] border-0"
+                              allowFullScreen={false}
+                              loading="lazy"
+                              referrerPolicy="no-referrer-when-downgrade"
+                              title="Carte satellite"
+                            />
+                          ) : (
+                            <div className="w-full h-[120px] bg-muted flex items-center justify-center">
+                              <span className="text-[8px] text-muted-foreground">Chargement carte…</span>
+                            </div>
+                          )}
                           <div className="flex items-center gap-1 px-2 py-1 bg-muted/50">
                             <MapPin className="w-2.5 h-2.5 text-primary" />
                             <span className="text-[8px] text-muted-foreground">{ville || "Casablanca"}, Maroc</span>
                           </div>
                         </div>
-                        )}
 
                         {/* Accès Panneaux + Surface — non-Entreprise uniquement */}
                         {selectedType !== "Entreprise" && (
