@@ -89,7 +89,20 @@ const FactureUpload = ({ onDataExtracted }: FactureUploadProps) => {
         body: { imageBase64: base64, mimeType: file.type },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Check if it's an auth error (non-2xx from edge function)
+        const errorMsg = error?.message || "";
+        if (errorMsg.includes("non-2xx") || errorMsg.includes("401") || errorMsg.includes("Authentication")) {
+          toast({
+            title: "Connexion requise",
+            description: "Veuillez vous connecter pour utiliser l'analyse de facture par IA.",
+            variant: "destructive",
+          });
+          setUploading(false);
+          return;
+        }
+        throw error;
+      }
 
       if (data?.error) {
         toast({
