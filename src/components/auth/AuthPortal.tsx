@@ -136,7 +136,7 @@ const AuthPortal = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 pt-24 pb-16 flex flex-col items-center gap-8">
+      <main className="container mx-auto px-4 pt-24 pb-16 flex items-start justify-center min-h-[80vh] gap-8 flex-col md:flex-row">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center space-y-2">
             <div className="mx-auto w-14 h-14 bg-primary rounded-2xl flex items-center justify-center mb-2">
