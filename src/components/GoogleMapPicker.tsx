@@ -1,7 +1,8 @@
 /// <reference types="google.maps" />
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, MapPin } from "lucide-react";
+import { Loader2, MapPin, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { cityCoords } from "@/data/moroccanCities";
 
 interface GoogleMapPickerProps {
@@ -18,6 +19,7 @@ const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
   const initedRef = useRef(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [rateLimited, setRateLimited] = useState(false);
 
   // Keep callback ref up to date without triggering re-renders
   useEffect(() => {
@@ -33,7 +35,12 @@ const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
       try {
         const { data, error: fnError } = await supabase.functions.invoke("get-maps-key");
         if (fnError || !data?.key) {
-          setError("Impossible de charger la carte");
+          if (data?.error === "Rate limited") {
+            setRateLimited(true);
+            setError("Trop de requêtes. Veuillez patienter quelques minutes puis réessayer.");
+          } else {
+            setError("Impossible de charger la carte");
+          }
           setLoading(false);
           return;
         }
@@ -133,9 +140,31 @@ const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-border bg-muted/30 p-6 text-center text-sm text-muted-foreground">
-        <MapPin className="w-6 h-6 mx-auto mb-2 text-muted-foreground" />
-        {error}
+      <div className="rounded-xl border border-border bg-muted/30 p-6 text-center text-sm text-muted-foreground space-y-3">
+        <MapPin className="w-6 h-6 mx-auto text-muted-foreground" />
+        <p>{error}</p>
+        {rateLimited && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setError(null);
+              setRateLimited(false);
+              setLoading(true);
+              initedRef.current = false;
+              // Re-trigger the init effect
+              setTimeout(() => {
+                initedRef.current = false;
+                setError(null);
+                setLoading(true);
+                window.location.reload();
+              }, 0);
+            }}
+          >
+            <RefreshCw className="w-4 h-4 mr-1" />
+            Réessayer
+          </Button>
+        )}
       </div>
     );
   }
