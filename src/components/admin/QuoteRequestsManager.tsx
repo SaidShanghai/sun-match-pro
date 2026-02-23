@@ -244,11 +244,11 @@ const QuoteRequestsManager = () => {
                           title="Copier la référence"
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigator.clipboard.writeText(req.id.slice(0, 8).toUpperCase());
-                            toast({ title: "Référence copiée !", description: `#${req.id.slice(0, 8).toUpperCase()}` });
+                            navigator.clipboard.writeText(req.id.slice(0, 12).toUpperCase());
+                            toast({ title: "Référence copiée !", description: `#${req.id.slice(0, 12).toUpperCase()}` });
                           }}
                         >
-                          #{req.id.slice(0, 8).toUpperCase()}
+                          #{req.id.slice(0, 12).toUpperCase()}
                           <Copy className="w-3 h-3" />
                         </button>
                         <h4 className="font-semibold">{req.client_name}</h4>
