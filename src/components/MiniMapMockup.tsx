@@ -42,16 +42,37 @@ const MiniMapMockup = ({ city }: MiniMapMockupProps) => {
 
         const coords = cityCoords[city] || cityCoords["Casablanca"];
 
+        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
+
         const map = new google.maps.Map(mapRef.current!, {
           center: coords,
           zoom: 15,
           mapTypeId: "satellite",
-          mapId: "NOORIA_MINI",
+          mapId: "NOORIA_MAP",
           disableDefaultUI: true,
           zoomControl: false,
           gestureHandling: "greedy",
           keyboardShortcuts: false,
         });
+
+        // Red draggable marker
+        const pinEl = document.createElement("div");
+        pinEl.style.cssText = "width:24px;height:24px;background:#EF4444;border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.5);cursor:grab;touch-action:none;";
+        new AdvancedMarkerElement({ map, position: coords, content: pinEl, title: "Votre toit" });
+
+        // Blue geolocation dot
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              const geoPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+              const dot = document.createElement("div");
+              dot.style.cssText = "width:12px;height:12px;background:#4285F4;border:2px solid white;border-radius:50%;box-shadow:0 0 4px rgba(66,133,244,0.6);";
+              new AdvancedMarkerElement({ map, position: geoPos, content: dot, title: "Votre position" });
+            },
+            () => {},
+            { enableHighAccuracy: true, timeout: 8000 }
+          );
+        }
 
         mapInstanceRef.current = map;
         setLoading(false);
