@@ -31,10 +31,6 @@ const ClientProfileContent = () => {
               <h1 className="text-3xl font-bold">Mon Profil</h1>
               <p className="text-muted-foreground text-sm">{user?.email}</p>
             </div>
-            <Button variant="outline" size="sm" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Déconnexion
-            </Button>
           </div>
 
           {/* Info compte */}
