@@ -6,10 +6,30 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Sun, Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Sun, Mail, Lock, ArrowRight, Loader2, Search, MapPin, Zap, Home, ClipboardList } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+
+const statusLabels: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+  new: { label: "Nouveau", variant: "default" },
+  in_progress: { label: "En cours", variant: "secondary" },
+  completed: { label: "Traité", variant: "outline" },
+  cancelled: { label: "Annulé", variant: "destructive" },
+};
+
+type LookupResult = {
+  ref: string;
+  created_at: string;
+  status: string;
+  client_name: string;
+  city: string | null;
+  project_type: string | null;
+  housing_type: string | null;
+  objectif: string | null;
+  annual_consumption: string | null;
+};
 
 const AuthPortal = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -18,6 +38,10 @@ const AuthPortal = () => {
   const [loading, setLoading] = useState(false);
   const [forgotPassword, setForgotPassword] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const [refInput, setRefInput] = useState("");
+  const [lookupLoading, setLookupLoading] = useState(false);
+  const [lookupResult, setLookupResult] = useState<LookupResult | null>(null);
+  const [lookupError, setLookupError] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -79,10 +103,40 @@ const AuthPortal = () => {
     }
   };
 
+  const handleLookup = async () => {
+    if (!refInput.trim() || refInput.trim().length < 6) {
+      setLookupError("Entrez au moins 6 caractères de votre référence");
+      return;
+    }
+    setLookupLoading(true);
+    setLookupError("");
+    setLookupResult(null);
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lookup-quote`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({ ref: refInput.trim() }),
+        }
+      );
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Dossier introuvable");
+      setLookupResult(json);
+    } catch (err: any) {
+      setLookupError(err.message || "Erreur lors de la recherche");
+    } finally {
+      setLookupLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 pt-24 pb-16 flex items-center justify-center min-h-[80vh]">
+      <main className="container mx-auto px-4 pt-24 pb-16 flex flex-col items-center justify-center min-h-[80vh] gap-8">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center space-y-2">
             <div className="mx-auto w-14 h-14 bg-primary rounded-2xl flex items-center justify-center mb-2">
@@ -179,6 +233,76 @@ const AuthPortal = () => {
                 </button>
               )}
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Reference lookup for prospects */}
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center space-y-2 pb-4">
+            <div className="mx-auto w-10 h-10 bg-muted rounded-xl flex items-center justify-center">
+              <ClipboardList className="w-5 h-5 text-primary" />
+            </div>
+            <CardTitle className="text-lg">Suivi de dossier</CardTitle>
+            <CardDescription className="text-xs">
+              Vous avez déjà soumis un diagnostic ? Entrez votre numéro de référence pour consulter son statut.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Ex : #1DCF1B04"
+                  value={refInput}
+                  onChange={(e) => setRefInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleLookup()}
+                  className="pl-10 font-mono uppercase"
+                  maxLength={20}
+                />
+              </div>
+              <Button onClick={handleLookup} disabled={lookupLoading} size="default">
+                {lookupLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Rechercher"}
+              </Button>
+            </div>
+
+            {lookupError && (
+              <p className="text-sm text-destructive font-medium">{lookupError}</p>
+            )}
+
+            {lookupResult && (
+              <div className="border rounded-xl p-4 space-y-3 bg-muted/30">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono font-bold text-sm">#{lookupResult.ref}</span>
+                  <Badge variant={statusLabels[lookupResult.status]?.variant || "default"} className="text-[10px]">
+                    {statusLabels[lookupResult.status]?.label || lookupResult.status}
+                  </Badge>
+                </div>
+                <div className="space-y-1.5 text-xs text-muted-foreground">
+                  <p><span className="font-medium text-foreground">Nom :</span> {lookupResult.client_name}</p>
+                  {lookupResult.city && (
+                    <p className="flex items-center gap-1">
+                      <MapPin className="w-3 h-3" /> {lookupResult.city}
+                    </p>
+                  )}
+                  {lookupResult.housing_type && (
+                    <p className="flex items-center gap-1">
+                      <Home className="w-3 h-3" /> {lookupResult.housing_type}
+                    </p>
+                  )}
+                  {lookupResult.annual_consumption && (
+                    <p className="flex items-center gap-1">
+                      <Zap className="w-3 h-3" /> {lookupResult.annual_consumption}
+                    </p>
+                  )}
+                  <p className="text-[11px] pt-1 border-t border-border">
+                    Soumis le {new Date(lookupResult.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                  </p>
+                </div>
+                <p className="text-[10px] text-muted-foreground italic">
+                  Connectez-vous avec l'email utilisé lors de la soumission pour accéder à tous vos diagnostics.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </main>

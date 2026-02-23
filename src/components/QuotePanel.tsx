@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, ArrowRight, CheckCircle, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/hooks/useAuth";
 import type { PIC } from "@/types/pic";
 
 export interface DiagnosticData {
@@ -44,6 +45,7 @@ const phoneRegex = /^(\+212|0)([ \-]?[0-9]){9}$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const QuotePanel = ({ open, onOpenChange, installerName, onSuccess, diagnosticData, pic }: QuotePanelProps) => {
+  const { user } = useAuth();
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
   const [telephone, setTelephone] = useState("");
@@ -51,6 +53,13 @@ const QuotePanel = ({ open, onOpenChange, installerName, onSuccess, diagnosticDa
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Auto-fill email from authenticated user
+  useEffect(() => {
+    if (user?.email && !email) {
+      setEmail(user.email);
+    }
+  }, [user?.email]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -215,19 +224,30 @@ const QuotePanel = ({ open, onOpenChange, installerName, onSuccess, diagnosticDa
                         />
                       </div>
 
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">
-                          Email *
-                        </label>
-                        <Input
-                          type="email"
-                          placeholder="Ex : youssef@gmail.com"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          maxLength={255}
-                          className="h-12"
-                        />
-                      </div>
+                      {user?.email ? (
+                        <div>
+                          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">
+                            Email
+                          </label>
+                          <div className="h-12 flex items-center px-3 rounded-md border border-border bg-muted/50 text-sm text-muted-foreground">
+                            {user.email}
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">
+                            Email *
+                          </label>
+                          <Input
+                            type="email"
+                            placeholder="Ex : youssef@gmail.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            maxLength={255}
+                            className="h-12"
+                          />
+                        </div>
+                      )}
 
                       <div>
                         <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">
