@@ -167,7 +167,9 @@ const SolarResults = ({ data, loading, error, factureMad, consoKwh, city }: Sola
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Distributeur : <span className="font-semibold">{distributeur}</span>
+        Source : <span className="font-semibold">PVGIS ({data.database || "SARAH3"})</span>
+        {data.latitude && ` · ${data.latitude.toFixed(2)}°N, ${data.longitude?.toFixed(2)}°W`}
+        {` · Distributeur : ${distributeur}`}
       </p>
 
       <div className="grid grid-cols-2 gap-3">
