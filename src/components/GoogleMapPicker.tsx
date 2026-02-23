@@ -33,23 +33,29 @@ const GoogleMapPicker = ({ city, onLocationSelect }: GoogleMapPickerProps) => {
 
     (async () => {
       try {
-        const { data, error: fnError } = await supabase.functions.invoke("get-maps-key");
-        if (fnError || !data?.key) {
-          if (data?.error === "Rate limited") {
-            setRateLimited(true);
-            setError("Trop de requêtes. Veuillez patienter quelques minutes puis réessayer.");
-          } else {
-            setError("Impossible de charger la carte");
+        // Check sessionStorage cache first
+        let apiKey = sessionStorage.getItem("gm_key");
+        if (!apiKey) {
+          const { data, error: fnError } = await supabase.functions.invoke("get-maps-key");
+          if (fnError || !data?.key) {
+            if (data?.error === "Rate limited") {
+              setRateLimited(true);
+              setError("Trop de requêtes. Veuillez patienter quelques minutes puis réessayer.");
+            } else {
+              setError("Impossible de charger la carte");
+            }
+            setLoading(false);
+            return;
           }
-          setLoading(false);
-          return;
+          apiKey = data.key;
+          sessionStorage.setItem("gm_key", apiKey!);
         }
 
         // Load Google Maps script if not already loaded
         if (!(window as any).google?.maps) {
           await new Promise<void>((resolve, reject) => {
             const script = document.createElement("script");
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=marker,places`;
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=marker,places`;
             script.async = true;
             script.onload = () => resolve();
             script.onerror = () => reject(new Error("Failed to load Google Maps"));
