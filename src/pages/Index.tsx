@@ -972,7 +972,7 @@ const Index = () => {
                         className="relative flex flex-col flex-1 overflow-hidden"
                       >
                         {siteMapFullscreen ? (
-                          <MiniMapMockup city={ville || "Casablanca"} fullscreen onValidate={() => setSiteMapFullscreen(false)} />
+                          <MiniMapMockup key="map-full" city={ville || "Casablanca"} fullscreen onValidate={() => setSiteMapFullscreen(false)} />
                         ) : (
                           <div className="px-4 py-3 flex flex-col gap-3 overflow-y-auto flex-1">
                             {/* Stepper */}
@@ -999,7 +999,7 @@ const Index = () => {
 
                             {/* Small map preview — click to reopen fullscreen */}
                             <button onClick={() => setSiteMapFullscreen(true)} className="w-full">
-                              <MiniMapMockup city={ville || "Casablanca"} />
+                              <MiniMapMockup key="map-mini" city={ville || "Casablanca"} />
                             </button>
 
                         {/* Accès Panneaux + Surface — non-Entreprise uniquement */}
