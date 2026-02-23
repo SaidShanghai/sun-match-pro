@@ -25,6 +25,7 @@ import {
   Store,
   Warehouse,
   Lock,
+  Camera,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -453,6 +454,30 @@ const Index = () => {
                               </span>
                             </button>
                           </div>
+                        </div>
+
+                        {/* Mini facture upload (visual, like real diagnostic) */}
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-semibold flex items-center gap-1">
+                            <Camera className="w-3 h-3 text-primary" />
+                            Photo de votre facture
+                            <span className="text-[7px] font-normal text-muted-foreground">(recommandé)</span>
+                          </label>
+                          <button
+                            className="w-full rounded-xl border border-dashed border-border hover:border-primary/50 p-3 flex flex-col items-center gap-1 transition-colors group"
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            <div className="w-8 h-8 rounded-xl bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center transition-colors">
+                              <Camera className="w-4 h-4 text-primary" />
+                            </div>
+                            <p className="text-[8px] font-medium text-foreground">Photographiez votre facture ONEE</p>
+                            <p className="text-[7px] text-muted-foreground">L'IA pré-remplira vos informations</p>
+                            <div className="flex items-center gap-1 mt-0.5">
+                              <span className="text-[7px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted">JPG</span>
+                              <span className="text-[7px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted">PNG</span>
+                              <span className="text-[7px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted">PDF</span>
+                            </div>
+                          </button>
                         </div>
 
                         {selectedType === "Entreprise" ? (
