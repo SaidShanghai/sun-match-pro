@@ -40,34 +40,17 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Authentication check
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "Authentication required" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace("Bearer ", "")
-    );
+    // Rate limiting by IP (no auth required for better UX)
+    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const rateLimitKey = `ocr-facture:${clientIp}`;
 
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: "Invalid authentication" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Rate limiting: 10 OCR requests per user per hour
     const { data: isLimited } = await supabase.rpc("check_rate_limit", {
-      _key: `ocr-facture:${user.id}`,
+      _key: rateLimitKey,
       _max_requests: 10,
       _window_seconds: 3600,
     });
