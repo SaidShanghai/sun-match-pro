@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { FileText, Loader2, Mail, Phone, MapPin, Calendar, ChevronDown, ChevronUp, StickyNote, Sun, Zap, Leaf, LayoutGrid } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { FileText, Loader2, Mail, Phone, MapPin, Calendar, ChevronDown, ChevronUp, StickyNote, Sun, Zap, Leaf, LayoutGrid, Search, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import SatelliteMapPreview from "@/components/admin/SatelliteMapPreview";
 
@@ -93,6 +94,7 @@ const QuoteRequestsManager = () => {
   const [noteText, setNoteText] = useState("");
   const [savingNote, setSavingNote] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [mapsKey, setMapsKey] = useState<string | null>(null);
   const [solarCache, setSolarCache] = useState<Record<string, SolarResult | "loading" | null>>({});
   const { toast } = useToast();
@@ -154,7 +156,18 @@ const QuoteRequestsManager = () => {
     setSavingNote(false);
   };
 
-  const filtered = filterStatus === "all" ? requests : requests.filter((r) => r.status === filterStatus);
+  const searchLower = searchQuery.trim().toLowerCase().replace(/^#/, "");
+  const filtered = requests.filter((r) => {
+    const matchStatus = filterStatus === "all" || r.status === filterStatus;
+    const matchSearch = !searchLower || 
+      r.id.toLowerCase().includes(searchLower) ||
+      r.client_name.toLowerCase().includes(searchLower) ||
+      r.client_email.toLowerCase().includes(searchLower) ||
+      (r.client_phone && r.client_phone.includes(searchLower)) ||
+      (r.city && r.city.toLowerCase().includes(searchLower)) ||
+      (r.ville_projet && r.ville_projet.toLowerCase().includes(searchLower));
+    return matchStatus && matchSearch;
+  });
 
   const counts = Object.keys(STATUS_CONFIG).reduce<Record<string, number>>((acc, s) => {
     acc[s] = requests.filter((r) => r.status === s).length;
@@ -173,6 +186,17 @@ const QuoteRequestsManager = () => {
             {requests.length} demande{requests.length !== 1 ? "s" : ""} reçue{requests.length !== 1 ? "s" : ""}
           </p>
         </div>
+      </div>
+
+      {/* Recherche */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input
+          placeholder="Rechercher par référence, nom, email, ville…"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10 font-mono"
+        />
       </div>
 
       {/* Compteurs statut */}
@@ -214,6 +238,19 @@ const QuoteRequestsManager = () => {
                   <div className="flex items-start justify-between gap-4">
                     <div className="space-y-1 flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
+                        <button
+                          type="button"
+                          className="font-mono text-xs bg-muted px-2 py-0.5 rounded text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                          title="Copier la référence"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(req.id.slice(0, 8).toUpperCase());
+                            toast({ title: "Référence copiée !", description: `#${req.id.slice(0, 8).toUpperCase()}` });
+                          }}
+                        >
+                          #{req.id.slice(0, 8).toUpperCase()}
+                          <Copy className="w-3 h-3" />
+                        </button>
                         <h4 className="font-semibold">{req.client_name}</h4>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${cfg.color}`}>
                           {cfg.label}
