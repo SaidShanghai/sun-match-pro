@@ -104,8 +104,8 @@ const AuthPortal = () => {
   };
 
   const handleLookup = async () => {
-    if (!refInput.trim() || refInput.trim().length < 6) {
-      setLookupError("Entrez au moins 6 caractères de votre référence");
+    if (!refInput.trim() || refInput.trim().length < 10) {
+      setLookupError("Entrez au moins 12 caractères de votre référence");
       return;
     }
     setLookupLoading(true);

@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
 
   try {
     const { ref } = await req.json();
-    if (!ref || typeof ref !== "string" || ref.trim().length < 6) {
+    if (!ref || typeof ref !== "string" || ref.trim().length < 10) {
       return new Response(
         JSON.stringify({ error: "Référence invalide (min 6 caractères)" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         id: row.id,
-        ref: String(row.id).slice(0, 8).toUpperCase(),
+        ref: String(row.id).slice(0, 12).toUpperCase(),
         created_at: row.created_at,
         status: row.status,
         client_name: row.client_name,

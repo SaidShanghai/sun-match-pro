@@ -1194,7 +1194,7 @@ const Index = () => {
                           {quoteRef && (
                             <div className="inline-flex items-center gap-1.5 bg-muted rounded-lg px-3 py-1.5 mt-1">
                               <span className="text-[9px] text-muted-foreground font-medium">Référence :</span>
-                              <span className="text-[9px] font-bold text-foreground font-mono">#{quoteRef.slice(0, 8).toUpperCase()}</span>
+                              <span className="text-[9px] font-bold text-foreground font-mono">#{quoteRef.slice(0, 12).toUpperCase()}</span>
                             </div>
                           )}
                         </div>

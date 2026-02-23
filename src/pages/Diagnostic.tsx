@@ -940,7 +940,7 @@ const Diagnostic = () => {
                     {quoteRef && (
                       <div className="inline-flex items-center gap-2 bg-muted rounded-xl px-4 py-2 mt-2">
                         <span className="text-sm text-muted-foreground font-medium">Référence :</span>
-                        <span className="text-sm font-bold font-mono">#{quoteRef.slice(0, 8).toUpperCase()}</span>
+                        <span className="text-sm font-bold font-mono">#{quoteRef.slice(0, 12).toUpperCase()}</span>
                       </div>
                     )}
                   </div>

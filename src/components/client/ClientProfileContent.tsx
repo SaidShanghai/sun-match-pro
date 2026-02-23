@@ -108,7 +108,7 @@ const ClientProfileContent = () => {
                       <div key={d.id} className="flex items-start justify-between border rounded-lg p-4 gap-4">
                         <div className="space-y-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-mono text-xs font-bold text-primary">#{d.id.slice(0, 8).toUpperCase()}</span>
+                            <span className="font-mono text-xs font-bold text-primary">#{d.id.slice(0, 12).toUpperCase()}</span>
                             <span className="text-sm font-medium">
                               {d.project_type === "Entreprise" ? "Entreprise" : "Résidentiel"}
                             </span>

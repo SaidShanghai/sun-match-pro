@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     if (RESEND_API_KEY) {
       const firstName = escapeHtml(String(client_name).trim().split(" ")[0]);
-      const refShort = escapeHtml(data.id.slice(0, 8).toUpperCase());
+      const refShort = escapeHtml(data.id.slice(0, 12).toUpperCase());
       // 1) Email confirmation au client
       await fetch("https://api.resend.com/emails", {
         method: "POST",
