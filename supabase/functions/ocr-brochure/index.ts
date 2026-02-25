@@ -7,79 +7,80 @@ const corsHeaders = {
 };
 
 const SYSTEM_PROMPT = `Tu es un expert en systèmes solaires et stockage d'énergie.
-Analyse cette brochure produit et extrais toutes les spécifications techniques.
+Analyse cette brochure produit et extrais les spécifications techniques.
 
-Retourne UNIQUEMENT un JSON structuré. Si une information n'est pas trouvée, mets null. Pour les tableaux, mets un tableau vide [].
+IMPORTANT:
+- Retourne UNIQUEMENT du JSON brut, SANS backticks markdown, SANS texte avant/après.
+- description: 1 phrase max (30 mots).
+- Omets les champs null pour réduire la taille de la réponse. Ne les inclus que s'ils ont une valeur.
+- Si une info n'est pas trouvée, ne l'inclus PAS dans le JSON.
 
-D'abord, identifie la catégorie du produit :
+Catégories possibles :
 - "panneaux" = modules photovoltaïques
 - "onduleurs" = onduleurs/inverteurs seuls
 - "batteries" = batteries/systèmes de stockage seuls
 - "solarbox" = solution intégrée onduleur+batterie
 
-Puis extrais les specs adaptées à la catégorie :
-
+Structure attendue (n'inclus que les champs avec valeur) :
 {
-  "name": string | null,
-  "fabricant": string | null,
-  "modele": string | null,
-  "category": "panneaux" | "onduleurs" | "batteries" | "solarbox" | null,
-  "profile_type": "residential" | "commercial" | "industrial" | null,
-  "power_kwc": number | null,
-  "price_ttc": number | null,
-  "description": string | null,
+  "name": string,
+  "fabricant": string,
+  "modele": string,
+  "category": "panneaux" | "onduleurs" | "batteries" | "solarbox",
+  "profile_type": "residential" | "commercial" | "industrial",
+  "power_kwc": number,
+  "price_ttc": number,
+  "description": string,
   "specs": {
-    "puissance_wc": number | null,
-    "rendement": number | null,
-    "voc": number | null,
-    "isc": number | null,
-    "vmp": number | null,
-    "imp": number | null,
+    "puissance_wc": number,
+    "rendement": number,
+    "voc": number,
+    "isc": number,
+    "vmp": number,
+    "imp": number,
     "type_cellule": string[],
-    "nb_cellules": number | null,
-    "coeff_temp_pmax": number | null,
-    "coeff_temp_voc": number | null,
-    "poids_kg": number | null,
-    "longueur_mm": number | null,
-    "puissance_nominale_kw": number | null,
-    "puissance_max_kw": number | null,
-    "nb_mppt": number | null,
-    "nb_strings": number | null,
-    "efficacite_max": number | null,
-    "tension_dc_max": number | null,
+    "nb_cellules": number,
+    "coeff_temp_pmax": number,
+    "coeff_temp_voc": number,
+    "poids_kg": number,
+    "longueur_mm": number,
+    "largeur_mm": number,
+    "hauteur_mm": number,
+    "epaisseur_mm": number,
+    "puissance_nominale_kw": number,
+    "puissance_max_kw": number,
+    "nb_mppt": number,
+    "nb_strings": number,
+    "efficacite_max": number,
+    "tension_dc_max": number,
     "type_onduleur": string[],
     "phases": string[],
-    "capacite_kwh": number | null,
-    "capacite_utilisable_kwh": number | null,
-    "puissance_decharge_jour_kw": number | null,
-    "puissance_decharge_nuit_kw": number | null,
-    "puissance_charge_kw": number | null,
-    "cycle_vie": number | null,
-    "depth_of_discharge": number | null,
-    "type_batterie": "LFP" | "NMC" | "NCA" | "Lead-Acid" | null,
-    "efficacite_roundtrip": number | null,
-    "type_refroidissement": "forced_air" | "natural_convection" | "liquid" | null,
-    "duree_vie_ans": number | null,
-    "garantie_ans": number | null,
-    "largeur_mm": number | null,
-    "hauteur_mm": number | null,
-    "epaisseur_mm": number | null,
-    "ip_rating": string | null,
-    "temp_min_celsius": number | null,
-    "temp_max_celsius": number | null,
+    "capacite_kwh": number,
+    "capacite_utilisable_kwh": number,
+    "puissance_decharge_jour_kw": number,
+    "puissance_decharge_nuit_kw": number,
+    "puissance_charge_kw": number,
+    "cycle_vie": number,
+    "depth_of_discharge": number,
+    "type_batterie": "LFP" | "NMC" | "NCA" | "Lead-Acid",
+    "efficacite_roundtrip": number,
+    "type_refroidissement": "forced_air" | "natural_convection" | "liquid",
+    "duree_vie_ans": number,
+    "garantie_ans": number,
+    "ip_rating": string,
+    "temp_min_celsius": number,
+    "temp_max_celsius": number,
     "communication": string[]
   }
 }
 
 Règles :
-- type_cellule: valeurs possibles = "monocristallin", "polycristallin", "bifacial", "PERC", "TOPCon", "HJT"
-- type_onduleur: valeurs possibles = "string", "micro", "hybride", "central"
-- phases: valeurs possibles = "monophasé", "triphasé"
-- communication: valeurs possibles = "RS485", "Modbus-TCP", "CAN", "4G", "WiFi", "Ethernet"
-- N'inclus que les champs pertinents pour la catégorie détectée, les autres restent null
-- Convertis toutes les dimensions en mm
-- Déduis le profile_type : panneaux <400Wc ou batteries <10kWh = residential, >100kWh = industrial, sinon commercial
-- Si le prix n'est pas mentionné, mets null`;
+- type_cellule: "monocristallin", "polycristallin", "bifacial", "PERC", "TOPCon", "HJT"
+- type_onduleur: "string", "micro", "hybride", "central"
+- phases: "monophasé", "triphasé"
+- communication: "RS485", "Modbus-TCP", "CAN", "4G", "WiFi", "Ethernet"
+- Convertis dimensions en mm
+- profile_type: panneaux <400Wc ou batteries <10kWh = residential, >100kWh = industrial, sinon commercial`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
