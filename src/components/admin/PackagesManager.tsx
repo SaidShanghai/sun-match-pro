@@ -574,30 +574,48 @@ const PackagesManager = () => {
       );
     }
 
-    // solarbox = onduleur + batterie combined (C&I Cabinet)
+    // solarbox = onduleur + batterie combined
     return (
       <>
         <TabsContent value="tech1" className="space-y-4 pt-4">
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">⚡ Onduleur / PCS intégré</p>
+          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">⚡ Onduleur / Inverter intégré</p>
           <div className="grid grid-cols-2 gap-4">
-            <NumField label="Puissance onduleur" unit="kW" value={specStr(form.specs, "puissance_onduleur_kw")} onChange={(v) => setSpec("puissance_onduleur_kw", v)} placeholder="100" highlighted={h("specs.puissance_onduleur_kw")} />
-            <NumField label="Puissance onduleur max" unit="kW" value={specStr(form.specs, "puissance_onduleur_max_kw")} onChange={(v) => setSpec("puissance_onduleur_max_kw", v)} placeholder="110" highlighted={h("specs.puissance_onduleur_max_kw")} />
-            <NumField label="Nb MPPT" unit="" value={specStr(form.specs, "nb_mppt")} onChange={(v) => setSpec("nb_mppt", v)} placeholder="" highlighted={h("specs.nb_mppt")} />
+            <NumField label="Puissance onduleur" unit="kW" value={specStr(form.specs, "puissance_onduleur_kw")} onChange={(v) => setSpec("puissance_onduleur_kw", v)} placeholder="6" highlighted={h("specs.puissance_onduleur_kw")} />
+            <NumField label="Puissance onduleur max" unit="kW" value={specStr(form.specs, "puissance_onduleur_max_kw")} onChange={(v) => setSpec("puissance_onduleur_max_kw", v)} placeholder="6" highlighted={h("specs.puissance_onduleur_max_kw")} />
+            <NumField label="Efficacité max" unit="%" value={specStr(form.specs, "efficacite_max_pct")} onChange={(v) => setSpec("efficacite_max_pct", v)} placeholder="93" highlighted={h("specs.efficacite_max_pct")} />
+            <NumField label="Power Factor" unit="" value={specStr(form.specs, "power_factor")} onChange={(v) => setSpec("power_factor", v)} placeholder="1" highlighted={h("specs.power_factor")} />
+            <NumField label="Switch Time" unit="ms" value={specStr(form.specs, "switch_time_ms")} onChange={(v) => setSpec("switch_time_ms", v)} placeholder="10" highlighted={h("specs.switch_time_ms")} />
+            <NumField label="Max parallèle" unit="unités" value={specStr(form.specs, "max_parallel")} onChange={(v) => setSpec("max_parallel", v)} placeholder="9" highlighted={h("specs.max_parallel")} />
           </div>
+          <TextField label="Forme d'onde" value={specStr(form.specs, "wave_form")} onChange={(v) => setSpec("wave_form", v)} placeholder="Pure sine wave" highlighted={h("specs.wave_form")} />
+          <TextField label="Plage tension AC (normal)" value={specStr(form.specs, "voltage_range_normal_v")} onChange={(v) => setSpec("voltage_range_normal_v", v)} placeholder="90~280" highlighted={h("specs.voltage_range_normal_v")} />
+          <TextField label="Plage tension AC (UPS)" value={specStr(form.specs, "voltage_range_ups_v")} onChange={(v) => setSpec("voltage_range_ups_v", v)} placeholder="170~280" highlighted={h("specs.voltage_range_ups_v")} />
+
+          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide pt-2">☀️ Entrée PV / MPPT</p>
+          <div className="grid grid-cols-2 gap-4">
+            <NumField label="Nb MPPT" unit="" value={specStr(form.specs, "nb_mppt")} onChange={(v) => setSpec("nb_mppt", v)} placeholder="1" highlighted={h("specs.nb_mppt")} />
+            <NumField label="Max PV Input" unit="W" value={specStr(form.specs, "max_pv_input_w")} onChange={(v) => setSpec("max_pv_input_w", v)} placeholder="6000" highlighted={h("specs.max_pv_input_w")} />
+            <NumField label="Tension PV max (Voc)" unit="V" value={specStr(form.specs, "tension_dc_max_v")} onChange={(v) => setSpec("tension_dc_max_v", v)} placeholder="500" highlighted={h("specs.tension_dc_max_v")} />
+            <NumField label="Max PV courant" unit="A" value={specStr(form.specs, "max_pv_current_a")} onChange={(v) => setSpec("max_pv_current_a", v)} placeholder="18" highlighted={h("specs.max_pv_current_a")} />
+            <NumField label="Max charge PV" unit="A" value={specStr(form.specs, "max_charge_current_a")} onChange={(v) => setSpec("max_charge_current_a", v)} placeholder="80" highlighted={h("specs.max_charge_current_a")} />
+            <NumField label="Max charge AC" unit="A" value={specStr(form.specs, "max_ac_charge_current_a")} onChange={(v) => setSpec("max_ac_charge_current_a", v)} placeholder="80" highlighted={h("specs.max_ac_charge_current_a")} />
+          </div>
+          <TextField label="Plage MPPT" value={specStr(form.specs, "mppt_range_v")} onChange={(v) => setSpec("mppt_range_v", v)} placeholder="120~450" highlighted={h("specs.mppt_range_v")} />
+
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide pt-2">🔋 Batterie intégrée</p>
           <div className="grid grid-cols-2 gap-4">
-            <NumField label="Capacité batterie" unit="kWh" value={specStr(form.specs, "capacite_batterie_kwh")} onChange={(v) => setSpec("capacite_batterie_kwh", v)} placeholder="215" highlighted={h("specs.capacite_batterie_kwh")} />
-            <NumField label="Capacité utilisable" unit="kWh" value={specStr(form.specs, "capacite_utilisable_kwh")} onChange={(v) => setSpec("capacite_utilisable_kwh", v)} placeholder="193.5" highlighted={h("specs.capacite_utilisable_kwh")} computed={isCalc("specs.capacite_utilisable_kwh")} />
-            <NumField label="Tension batterie" unit="V" value={specStr(form.specs, "tension_batterie_v")} onChange={(v) => setSpec("tension_batterie_v", v)} placeholder="614.4" highlighted={h("specs.tension_batterie_v")} />
+            <NumField label="Capacité batterie" unit="kWh" value={specStr(form.specs, "capacite_batterie_kwh")} onChange={(v) => setSpec("capacite_batterie_kwh", v)} placeholder="15" highlighted={h("specs.capacite_batterie_kwh")} />
+            <NumField label="Capacité utilisable" unit="kWh" value={specStr(form.specs, "capacite_utilisable_kwh")} onChange={(v) => setSpec("capacite_utilisable_kwh", v)} placeholder="13.5" highlighted={h("specs.capacite_utilisable_kwh")} computed={isCalc("specs.capacite_utilisable_kwh")} />
+            <NumField label="Capacité" unit="Ah" value={specStr(form.specs, "capacite_ah")} onChange={(v) => setSpec("capacite_ah", v)} placeholder="300" highlighted={h("specs.capacite_ah")} />
+            <NumField label="Tension batterie" unit="V" value={specStr(form.specs, "tension_batterie_v")} onChange={(v) => setSpec("tension_batterie_v", v)} placeholder="51.2" highlighted={h("specs.tension_batterie_v")} />
           </div>
+
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide pt-2">⚡ Puissances AC</p>
           <div className="grid grid-cols-2 gap-4">
-            <NumField label="Décharge jour" unit="kW" value={specStr(form.specs, "puissance_decharge_jour_kw")} onChange={(v) => setSpec("puissance_decharge_jour_kw", v)} placeholder="100" highlighted={h("specs.puissance_decharge_jour_kw")} />
-            <NumField label="Décharge jour max" unit="kW" value={specStr(form.specs, "puissance_decharge_jour_max_kw")} onChange={(v) => setSpec("puissance_decharge_jour_max_kw", v)} placeholder="110" highlighted={h("specs.puissance_decharge_jour_max_kw")} />
-            <NumField label="Décharge nuit" unit="kW" value={specStr(form.specs, "puissance_decharge_nuit_kw")} onChange={(v) => setSpec("puissance_decharge_nuit_kw", v)} placeholder="50" highlighted={h("specs.puissance_decharge_nuit_kw")} />
-            <NumField label="Décharge nuit max" unit="kW" value={specStr(form.specs, "puissance_decharge_nuit_max_kw")} onChange={(v) => setSpec("puissance_decharge_nuit_max_kw", v)} placeholder="55" highlighted={h("specs.puissance_decharge_nuit_max_kw")} />
-            <NumField label="Puissance charge" unit="kW" value={specStr(form.specs, "puissance_charge_kw")} onChange={(v) => setSpec("puissance_charge_kw", v)} placeholder="100" highlighted={h("specs.puissance_charge_kw")} />
+            <NumField label="Puissance charge" unit="kW" value={specStr(form.specs, "puissance_charge_kw")} onChange={(v) => setSpec("puissance_charge_kw", v)} placeholder="6" highlighted={h("specs.puissance_charge_kw")} />
+            <NumField label="Puissance décharge" unit="kW" value={specStr(form.specs, "puissance_decharge_kw")} onChange={(v) => setSpec("puissance_decharge_kw", v)} placeholder="6" highlighted={h("specs.puissance_decharge_kw")} />
           </div>
+
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide pt-2">⏳ Durée de vie</p>
           <div className="grid grid-cols-2 gap-4">
             <NumField label="DoD" unit="%" value={specStr(form.specs, "dod_pct")} onChange={(v) => setSpec("dod_pct", v)} placeholder="90" highlighted={h("specs.dod_pct")} />
@@ -619,6 +637,8 @@ const PackagesManager = () => {
               </SelectContent>
             </Select>
           </div>
+          <MultiToggle label="Phases" options={MULTI_OPTIONS.phases} selected={specArr(form.specs, "phases")} onChange={(v) => setSpec("phases", v)} highlighted={h("specs.phases")} />
+          <MultiToggle label="Type onduleur" options={MULTI_OPTIONS.type_onduleur} selected={specArr(form.specs, "type_onduleur")} onChange={(v) => setSpec("type_onduleur", v)} highlighted={h("specs.type_onduleur")} />
         </TabsContent>
         <TabsContent value="tech2" className="space-y-4 pt-4">
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">📐 Dimensions & Environnement</p>
