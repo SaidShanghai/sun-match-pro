@@ -170,7 +170,7 @@ Deno.serve(async (req) => {
             ],
           },
         ],
-        max_tokens: 4000,
+        max_tokens: 8000,
       }),
     });
 
@@ -192,22 +192,41 @@ Deno.serve(async (req) => {
     const aiData = await response.json();
     const content = aiData.choices?.[0]?.message?.content || "";
 
+    // Strip markdown code fences (even if truncated / no closing fence)
     let jsonStr = content;
-    const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (jsonMatch) {
-      jsonStr = jsonMatch[1].trim();
+    const fencedMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (fencedMatch) {
+      jsonStr = fencedMatch[1].trim();
+    } else {
+      // Handle truncated response: opening fence but no closing fence
+      const openFence = content.match(/```(?:json)?\s*([\s\S]*)/);
+      if (openFence) {
+        jsonStr = openFence[1].trim();
+      }
     }
 
     let parsed;
     try {
       parsed = JSON.parse(jsonStr);
     } catch {
+      // Try to fix truncated JSON by closing open braces/brackets
       try {
         let fixed = jsonStr.replace(/,\s*$/, "");
-        if (!fixed.endsWith("}")) fixed += "}";
+        // Count open vs close braces/brackets
+        const openBraces = (fixed.match(/{/g) || []).length;
+        const closeBraces = (fixed.match(/}/g) || []).length;
+        const openBrackets = (fixed.match(/\[/g) || []).length;
+        const closeBrackets = (fixed.match(/\]/g) || []).length;
+        // Remove trailing incomplete string/value
+        fixed = fixed.replace(/,?\s*"[^"]*$/, "");
+        fixed = fixed.replace(/,?\s*"[^"]*":\s*"?[^",}]*$/, "");
+        fixed = fixed.replace(/,\s*$/, "");
+        // Close remaining open brackets then braces
+        for (let i = 0; i < openBrackets - closeBrackets; i++) fixed += "]";
+        for (let i = 0; i < openBraces - closeBraces; i++) fixed += "}";
         parsed = JSON.parse(fixed);
       } catch {
-        console.error("Failed to parse AI response:", content);
+        console.error("Failed to parse AI response:", content.substring(0, 500));
         return new Response(
           JSON.stringify({ error: "parse_error", message: "Impossible d'extraire les données de la brochure.", raw: content }),
           { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
