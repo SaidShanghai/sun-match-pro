@@ -5,11 +5,13 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import {
-  Loader2, CheckCircle2, XCircle, Clock, ShieldCheck, LogOut,
-  Building2, Mail, Phone, MapPin, FileText, FileCheck, CreditCard,
-  Package, Truck, Download, Users, LayoutDashboard,
+  Loader2, ShieldCheck, LogOut, Building2, Mail, Phone, MapPin,
+  FileText, Package, Users, Plus, Trash2, Edit, X, CheckCircle2,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
@@ -17,35 +19,33 @@ import Footer from "@/components/Footer";
 import PackagesManager from "@/components/admin/PackagesManager";
 import QuoteRequestsManager from "@/components/admin/QuoteRequestsManager";
 
-interface DocDetail {
-  id: string;
-  doc_type: string;
-  file_path: string;
-  file_name: string;
-  validated: boolean;
-}
+const moroccoRegions: Record<string, string[]> = {
+  "Casablanca-Settat": ["Casablanca", "Mohammedia", "Settat", "Berrechid", "El Jadida", "Benslimane", "Médiouna"],
+  "Rabat-Salé-Kénitra": ["Rabat", "Salé", "Kénitra", "Témara", "Skhirate", "Khémisset"],
+  "Marrakech-Safi": ["Marrakech", "Safi", "Essaouira", "El Kelâa des Sraghna", "Youssoufia", "Chichaoua"],
+  "Fès-Meknès": ["Fès", "Meknès", "Taza", "Ifrane", "Sefrou", "Moulay Yacoub"],
+  "Tanger-Tétouan-Al Hoceïma": ["Tanger", "Tétouan", "Al Hoceïma", "Larache", "Chefchaouen", "Ouezzane"],
+  "Souss-Massa": ["Agadir", "Inezgane", "Tiznit", "Taroudant", "Chtouka Aït Baha", "Tata"],
+  "Oriental": ["Oujda", "Nador", "Berkane", "Taourirt", "Jerada", "Driouch"],
+  "Béni Mellal-Khénifra": ["Béni Mellal", "Khouribga", "Khénifra", "Fquih Ben Salah", "Azilal"],
+  "Drâa-Tafilalet": ["Errachidia", "Ouarzazate", "Tinghir", "Zagora", "Midelt"],
+  "Guelmim-Oued Noun": ["Guelmim", "Tan-Tan", "Sidi Ifni", "Assa-Zag"],
+  "Laâyoune-Sakia El Hamra": ["Laâyoune", "Boujdour", "Tarfaya", "Es-Semara"],
+  "Dakhla-Oued Ed-Dahab": ["Dakhla", "Aousserd"],
+};
 
-interface PartnerRequest {
+const allCities = Object.values(moroccoRegions).flat();
+
+interface CompanyRow {
   id: string;
-  user_id: string;
-  status: string;
-  setup_complete: boolean;
-  cotisations_a_jour: boolean;
+  name: string;
+  ice: string;
+  city: string;
+  phone: string;
+  email: string;
+  certifications: string[] | null;
+  service_areas: string[] | null;
   created_at: string;
-  user_email?: string;
-  company?: {
-    name: string;
-    ice: string;
-    city: string;
-    phone: string;
-    email: string;
-    certifications: string[] | null;
-    service_areas: string[] | null;
-  } | null;
-  docs: { rc: boolean; modele_j: boolean };
-  docDetails: DocDetail[];
-  hasKits: boolean;
-  hasTarifs: boolean;
 }
 
 const AdminDashboardContent = () => {
@@ -53,9 +53,22 @@ const AdminDashboardContent = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [partners, setPartners] = useState<PartnerRequest[]>([]);
+  const [companies, setCompanies] = useState<CompanyRow[]>([]);
   const [loadingData, setLoadingData] = useState(true);
-  const [updating, setUpdating] = useState<string | null>(null);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [editingCompany, setEditingCompany] = useState<CompanyRow | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  // Form state
+  const [formName, setFormName] = useState("");
+  const [formIce, setFormIce] = useState("");
+  const [formCity, setFormCity] = useState("Casablanca");
+  const [formPhone, setFormPhone] = useState("");
+  const [formEmail, setFormEmail] = useState("");
+  const [formCertifications, setFormCertifications] = useState("");
+  const [formServiceAreas, setFormServiceAreas] = useState<string[]>([]);
+  const [selectedRegion, setSelectedRegion] = useState("");
 
   useEffect(() => {
     if (adminLoading) return;
@@ -65,81 +78,105 @@ const AdminDashboardContent = () => {
 
   useEffect(() => {
     if (!isAdmin) return;
-    fetchPartners();
+    fetchCompanies();
   }, [isAdmin]);
 
-  const fetchPartners = async () => {
+  const fetchCompanies = async () => {
     setLoadingData(true);
-    const { data: profiles, error } = await supabase
-      .from("partner_profiles")
-      .select("id, user_id, status, created_at, email, setup_complete, cotisations_a_jour")
+    const { data, error } = await supabase
+      .from("companies")
+      .select("id, name, ice, city, phone, email, certifications, service_areas, created_at")
       .order("created_at", { ascending: false });
-
-    if (error || !profiles) { setLoadingData(false); return; }
-
-    const enriched: PartnerRequest[] = await Promise.all(
-      profiles.map(async (p) => {
-        const [companyRes, docsRes, kitsRes, tarifsRes] = await Promise.all([
-          supabase.from("companies").select("name, ice, city, phone, email, certifications, service_areas").eq("user_id", p.user_id).maybeSingle(),
-          supabase.from("partner_documents").select("id, doc_type, file_path, file_name, validated").eq("user_id", p.user_id),
-          supabase.from("kits").select("id", { count: "exact", head: true }).eq("user_id", p.user_id).eq("is_active", true),
-          supabase.from("delivery_costs").select("id", { count: "exact", head: true }).eq("user_id", p.user_id),
-        ]);
-        const docDetails: DocDetail[] = (docsRes.data || []) as DocDetail[];
-        const docTypes = docDetails.map((d) => d.doc_type);
-        return {
-          ...p,
-          setup_complete: (p as any).setup_complete ?? false,
-          cotisations_a_jour: (p as any).cotisations_a_jour ?? false,
-          user_email: (p as any).email,
-          company: companyRes.data,
-          docs: { rc: docTypes.includes("rc"), modele_j: docTypes.includes("modele_j") },
-          docDetails: docDetails.filter((d) => d.doc_type !== "cotisations"),
-          hasKits: (kitsRes.count ?? 0) > 0,
-          hasTarifs: (tarifsRes.count ?? 0) > 0,
-        };
-      })
-    );
-    setPartners(enriched);
+    if (!error && data) setCompanies(data);
     setLoadingData(false);
   };
 
-  const updateStatus = async (profileId: string, newStatus: "approved" | "rejected") => {
-    setUpdating(profileId);
-    const { error } = await supabase.from("partner_profiles").update({ status: newStatus }).eq("id", profileId);
+  const resetForm = () => {
+    setFormName(""); setFormIce(""); setFormCity("Casablanca");
+    setFormPhone(""); setFormEmail(""); setFormCertifications("");
+    setFormServiceAreas([]); setSelectedRegion(""); setEditingCompany(null);
+  };
+
+  const openAddDialog = () => {
+    resetForm();
+    setShowAddDialog(true);
+  };
+
+  const openEditDialog = (c: CompanyRow) => {
+    setEditingCompany(c);
+    setFormName(c.name);
+    setFormIce(c.ice);
+    setFormCity(c.city);
+    setFormPhone(c.phone);
+    setFormEmail(c.email);
+    setFormCertifications((c.certifications || []).join(", "));
+    setFormServiceAreas(c.service_areas || []);
+    setShowAddDialog(true);
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setSaving(true);
+
+    const payload = {
+      name: formName.trim(),
+      ice: formIce.trim(),
+      city: formCity,
+      phone: formPhone.trim(),
+      email: formEmail.trim(),
+      certifications: formCertifications.split(",").map(c => c.trim()).filter(Boolean),
+      service_areas: formServiceAreas,
+    };
+
+    try {
+      if (editingCompany) {
+        const { error } = await supabase.from("companies").update(payload).eq("id", editingCompany.id);
+        if (error) throw error;
+        toast({ title: "Partenaire modifié" });
+      } else {
+        // Admin creates company directly — uses admin's user_id and creates a stub profile
+        const { data: profile, error: profileError } = await supabase
+          .from("partner_profiles")
+          .insert({ user_id: user.id, status: "approved", setup_complete: false, email: formEmail.trim() })
+          .select("id")
+          .single();
+        if (profileError) throw profileError;
+
+        const { error } = await supabase.from("companies").insert({
+          ...payload,
+          user_id: user.id,
+          profile_id: profile.id,
+        });
+        if (error) throw error;
+        toast({ title: "Partenaire ajouté" });
+      }
+      setShowAddDialog(false);
+      resetForm();
+      await fetchCompanies();
+    } catch (error: any) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Supprimer ce partenaire ?")) return;
+    setDeleting(id);
+    const { error } = await supabase.from("companies").delete().eq("id", id);
     if (error) {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: newStatus === "approved" ? "Partenaire approuvé" : "Partenaire refusé" });
-      setPartners((prev) => prev.map((p) => (p.id === profileId ? { ...p, status: newStatus } : p)));
+      toast({ title: "Partenaire supprimé" });
+      setCompanies(prev => prev.filter(c => c.id !== id));
     }
-    setUpdating(null);
-  };
-
-  const handleDownloadDoc = async (filePath: string, fileName: string) => {
-    const { data, error } = await supabase.storage.from("partner-documents").download(filePath);
-    if (error || !data) { toast({ title: "Erreur", description: "Impossible de télécharger.", variant: "destructive" }); return; }
-    const url = URL.createObjectURL(data);
-    const a = document.createElement("a"); a.href = url; a.download = fileName; a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleToggleCotisations = async (profileId: string, currentValue: boolean) => {
-    const newValue = !currentValue;
-    const { error } = await supabase.from("partner_profiles").update({ cotisations_a_jour: newValue }).eq("id", profileId);
-    if (error) { toast({ title: "Erreur", description: error.message, variant: "destructive" }); return; }
-    toast({ title: newValue ? "Cotisations à jour" : "Cotisations non à jour" });
-    setPartners((prev) => prev.map((p) => (p.id === profileId ? { ...p, cotisations_a_jour: newValue } : p)));
-  };
-
-  const handleValidateDoc = async (docId: string, validated: boolean) => {
-    const { error } = await supabase.from("partner_documents").update({ validated }).eq("id", docId);
-    if (error) { toast({ title: "Erreur", description: error.message, variant: "destructive" }); return; }
-    toast({ title: validated ? "Document validé" : "Document invalidé" });
-    setPartners((prev) => prev.map((p) => ({ ...p, docDetails: p.docDetails.map((d) => (d.id === docId ? { ...d, validated } : d)) })));
+    setDeleting(null);
   };
 
   const handleSignOut = async () => { await supabase.auth.signOut(); navigate("/"); };
+
+  const formValid = formName.trim() && /^\d{15}$/.test(formIce) && formCity && formPhone.trim() && formEmail.trim();
 
   if (adminLoading || loadingData) {
     return (
@@ -150,16 +187,6 @@ const AdminDashboardContent = () => {
   }
 
   if (!isAdmin) return null;
-
-  const isFullyComplete = (p: PartnerRequest) =>
-    !!p.company && p.hasKits && p.hasTarifs && p.cotisations_a_jour &&
-    p.docDetails.some((d) => d.doc_type === "rc" && d.validated) &&
-    p.docDetails.some((d) => d.doc_type === "modele_j" && d.validated);
-
-  const pending = partners.filter((p) => p.status === "pending");
-  const credited = partners.filter((p) => p.status === "approved" && isFullyComplete(p));
-  const approved = partners.filter((p) => p.status === "approved" && !isFullyComplete(p));
-  const rejected = partners.filter((p) => p.status === "rejected");
 
   return (
     <div className="min-h-screen bg-background">
@@ -197,170 +224,201 @@ const AdminDashboardContent = () => {
               </TabsTrigger>
             </TabsList>
 
-            {/* Axe 1 — Packages */}
             <TabsContent value="packages" className="mt-6">
               <PackagesManager />
             </TabsContent>
 
-            {/* Axe 2 — Devis */}
             <TabsContent value="quotes" className="mt-6">
               <QuoteRequestsManager />
             </TabsContent>
 
-            {/* Partenaires (existant) */}
+            {/* Partenaires — gestion directe */}
             <TabsContent value="partners" className="mt-6">
               <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-semibold flex items-center gap-2">
-                    <Users className="w-5 h-5 text-primary" />
-                    Gestion des Partenaires
-                  </h2>
-                  <p className="text-sm text-muted-foreground mt-0.5">Approuvez ou refusez les demandes d'inscription</p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-semibold flex items-center gap-2">
+                      <Users className="w-5 h-5 text-primary" />
+                      Partenaires installateurs
+                    </h2>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                      {companies.length} partenaire{companies.length !== 1 ? "s" : ""} enregistré{companies.length !== 1 ? "s" : ""}
+                    </p>
+                  </div>
+                  <Button onClick={openAddDialog} className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    Ajouter un partenaire
+                  </Button>
                 </div>
 
-                <div className="grid grid-cols-4 gap-4">
-                  {[
-                    { count: pending.length, label: "En attente", color: "text-amber-500" },
-                    { count: approved.length, label: "Approuvés", color: "text-green-500" },
-                    { count: credited.length, label: "Crédités", color: "text-blue-500" },
-                    { count: rejected.length, label: "Refusés", color: "text-destructive" },
-                  ].map((s) => (
-                    <Card key={s.label}><CardContent className="py-4 text-center"><div className={`text-3xl font-bold ${s.color}`}>{s.count}</div><p className="text-sm text-muted-foreground">{s.label}</p></CardContent></Card>
-                  ))}
-                </div>
-
-                {pending.length > 0 && <PartnerSection title="En attente" icon={<Clock className="w-5 h-5 text-amber-500" />} partners={pending} updating={updating} onApprove={(id) => updateStatus(id, "approved")} onReject={(id) => updateStatus(id, "rejected")} onDownloadDoc={handleDownloadDoc} onValidateDoc={handleValidateDoc} onToggleCotisations={handleToggleCotisations} />}
-                {approved.length > 0 && <PartnerSection title="Approuvés" icon={<CheckCircle2 className="w-5 h-5 text-green-500" />} partners={approved} updating={updating} onApprove={(id) => updateStatus(id, "approved")} onReject={(id) => updateStatus(id, "rejected")} onDownloadDoc={handleDownloadDoc} onValidateDoc={handleValidateDoc} onToggleCotisations={handleToggleCotisations} />}
-                {credited.length > 0 && <PartnerSection title="Crédités" icon={<ShieldCheck className="w-5 h-5 text-blue-500" />} partners={credited} updating={updating} onApprove={(id) => updateStatus(id, "approved")} onReject={(id) => updateStatus(id, "rejected")} onDownloadDoc={handleDownloadDoc} onValidateDoc={handleValidateDoc} onToggleCotisations={handleToggleCotisations} />}
-                {rejected.length > 0 && <PartnerSection title="Refusés" icon={<XCircle className="w-5 h-5 text-destructive" />} partners={rejected} updating={updating} onApprove={(id) => updateStatus(id, "approved")} onReject={(id) => updateStatus(id, "rejected")} onDownloadDoc={handleDownloadDoc} onValidateDoc={handleValidateDoc} onToggleCotisations={handleToggleCotisations} />}
-                {partners.length === 0 && <Card><CardContent className="py-12 text-center text-muted-foreground">Aucune demande de partenaire.</CardContent></Card>}
+                {companies.length === 0 ? (
+                  <Card>
+                    <CardContent className="py-12 text-center text-muted-foreground">
+                      Aucun partenaire enregistré. Cliquez sur "Ajouter un partenaire" pour commencer.
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="space-y-3">
+                    {companies.map(c => (
+                      <Card key={c.id}>
+                        <CardContent className="py-4">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="space-y-2 flex-1">
+                              <div className="flex items-center gap-3">
+                                <h3 className="font-semibold text-lg">{c.name}</h3>
+                                <Badge variant="secondary" className="text-xs">ICE: {c.ice}</Badge>
+                              </div>
+                              <div className="grid sm:grid-cols-2 gap-2 text-sm text-muted-foreground">
+                                <div className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5" />{c.city}</div>
+                                <div className="flex items-center gap-2"><Phone className="w-3.5 h-3.5" />{c.phone}</div>
+                                <div className="flex items-center gap-2"><Mail className="w-3.5 h-3.5" />{c.email}</div>
+                                <div className="flex items-center gap-2">
+                                  <Building2 className="w-3.5 h-3.5" />
+                                  {(c.certifications || []).length > 0 ? c.certifications!.join(", ") : "Aucune certification"}
+                                </div>
+                              </div>
+                              {(c.service_areas || []).length > 0 && (
+                                <div className="flex flex-wrap gap-1.5 mt-1">
+                                  <span className="text-xs text-muted-foreground font-medium">Zones :</span>
+                                  {c.service_areas!.map(zone => (
+                                    <Badge key={zone} variant="outline" className="text-xs">{zone}</Badge>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex gap-2 shrink-0">
+                              <Button size="sm" variant="outline" onClick={() => openEditDialog(c)}>
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => handleDelete(c.id)}
+                                disabled={deleting === c.id}
+                              >
+                                {deleting === c.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </div>
             </TabsContent>
           </Tabs>
+
+          {/* Dialog ajout/modification partenaire */}
+          <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-primary" />
+                  {editingCompany ? "Modifier le partenaire" : "Ajouter un partenaire"}
+                </DialogTitle>
+                <DialogDescription>
+                  {editingCompany ? "Modifiez les informations du partenaire." : "Remplissez les informations de l'installateur à ajouter."}
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSave} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Nom de l'entreprise *</Label>
+                    <Input value={formName} onChange={e => setFormName(e.target.value)} placeholder="Solar Maroc SARL" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>ICE (15 chiffres) *</Label>
+                    <Input value={formIce} onChange={e => setFormIce(e.target.value.replace(/\D/g, "").slice(0, 15))} placeholder="001234567000089" required minLength={15} maxLength={15} />
+                    {formIce.length > 0 && formIce.length < 15 && (
+                      <p className="text-xs text-destructive">{formIce.length}/15 chiffres</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Ville *</Label>
+                    <select value={formCity} onChange={e => setFormCity(e.target.value)} className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm" required>
+                      {allCities.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Téléphone *</Label>
+                    <Input value={formPhone} onChange={e => setFormPhone(e.target.value)} placeholder="+212 6XX XXX XXX" required />
+                  </div>
+                  <div className="space-y-2 col-span-2">
+                    <Label>Email *</Label>
+                    <Input type="email" value={formEmail} onChange={e => setFormEmail(e.target.value)} placeholder="contact@solaire.ma" required />
+                  </div>
+                  <div className="space-y-2 col-span-2">
+                    <Label>Certifications (séparées par des virgules)</Label>
+                    <Input value={formCertifications} onChange={e => setFormCertifications(e.target.value)} placeholder="RGE, QualiPV, ISO 9001" />
+                  </div>
+                </div>
+
+                {/* Zones d'intervention */}
+                <div className="space-y-2">
+                  <Label>Zones d'intervention</Label>
+                  <div className="flex gap-2">
+                    <select value={selectedRegion} onChange={e => setSelectedRegion(e.target.value)} className="flex-1 h-10 rounded-md border border-input bg-background px-3 text-sm">
+                      <option value="">-- Région --</option>
+                      {Object.keys(moroccoRegions).map(r => <option key={r} value={r}>{r}</option>)}
+                    </select>
+                    <select
+                      disabled={!selectedRegion}
+                      onChange={e => {
+                        const val = e.target.value;
+                        if (val && !formServiceAreas.includes(val)) setFormServiceAreas([...formServiceAreas, val]);
+                        e.target.value = "";
+                      }}
+                      className="flex-1 h-10 rounded-md border border-input bg-background px-3 text-sm disabled:opacity-50"
+                    >
+                      <option value="">-- Ville --</option>
+                      {selectedRegion && moroccoRegions[selectedRegion]?.map(c => (
+                        <option key={c} value={c} disabled={formServiceAreas.includes(c)}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                  {selectedRegion && (
+                    <Button type="button" variant="outline" size="sm" className="text-xs mt-1" onClick={() => {
+                      const regionCities = moroccoRegions[selectedRegion] || [];
+                      const newAreas = [...new Set([...formServiceAreas, ...regionCities])];
+                      setFormServiceAreas(newAreas);
+                    }}>
+                      <CheckCircle2 className="w-3 h-3 mr-1" />
+                      Ajouter toute la région
+                    </Button>
+                  )}
+                  {formServiceAreas.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {formServiceAreas.map(zone => (
+                        <Badge key={zone} variant="secondary" className="text-xs gap-1 pr-1">
+                          {zone}
+                          <button type="button" onClick={() => setFormServiceAreas(formServiceAreas.filter(z => z !== zone))} className="ml-0.5 hover:text-destructive">
+                            <X className="w-3 h-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                      <button type="button" onClick={() => setFormServiceAreas([])} className="text-xs text-destructive hover:underline ml-1">
+                        Tout effacer
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-3 justify-end pt-2">
+                  <Button type="button" variant="outline" onClick={() => setShowAddDialog(false)}>Annuler</Button>
+                  <Button type="submit" disabled={!formValid || saving}>
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                    {editingCompany ? "Enregistrer" : "Ajouter"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </main>
       <Footer />
     </div>
   );
 };
-
-// ─── Partner Section ─────────────────────────────────────────
-const PartnerSection = ({ title, icon, partners, updating, onApprove, onReject, onDownloadDoc, onValidateDoc, onToggleCotisations }: {
-  title: string; icon: React.ReactNode; partners: PartnerRequest[]; updating: string | null;
-  onApprove: (id: string) => void; onReject: (id: string) => void;
-  onDownloadDoc: (fp: string, fn: string) => void;
-  onValidateDoc: (id: string, v: boolean) => void;
-  onToggleCotisations: (id: string, v: boolean) => void;
-}) => (
-  <div className="space-y-4">
-    <h2 className="text-xl font-semibold flex items-center gap-2">{icon}{title} ({partners.length})</h2>
-    {partners.map((p) => (
-      <PartnerCard key={p.id} partner={p} updating={updating}
-        onApprove={() => onApprove(p.id)} onReject={() => onReject(p.id)}
-        onDownloadDoc={onDownloadDoc} onValidateDoc={onValidateDoc} onToggleCotisations={onToggleCotisations} />
-    ))}
-  </div>
-);
-
-const DOC_LABELS: Record<string, { label: string; icon: React.ReactNode }> = {
-  rc: { label: "RC", icon: <FileText className="w-3.5 h-3.5" /> },
-  modele_j: { label: "Modèle J", icon: <FileCheck className="w-3.5 h-3.5" /> },
-};
-
-const PartnerCard = ({ partner, updating, onApprove, onReject, onDownloadDoc, onValidateDoc, onToggleCotisations }: {
-  partner: PartnerRequest; updating: string | null;
-  onApprove: () => void; onReject: () => void;
-  onDownloadDoc: (fp: string, fn: string) => void;
-  onValidateDoc: (id: string, v: boolean) => void;
-  onToggleCotisations: (id: string, v: boolean) => void;
-}) => {
-  const statusBadge: Record<string, React.ReactNode> = {
-    pending: <Badge variant="outline" className="border-amber-500 text-amber-500">En attente</Badge>,
-    approved: <Badge variant="outline" className="border-green-500 text-green-500">Approuvé</Badge>,
-    rejected: <Badge variant="destructive">Refusé</Badge>,
-  };
-  return (
-    <Card>
-      <CardContent className="py-5">
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-2 flex-1">
-            <div className="flex items-center gap-3">
-              {partner.company ? <h3 className="font-semibold text-lg">{partner.company.name}</h3> : <h3 className="font-semibold text-lg text-muted-foreground italic">Entreprise non enregistrée</h3>}
-              {statusBadge[partner.status]}
-            </div>
-            {partner.user_email && <p className="text-sm flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-muted-foreground" />{partner.user_email}</p>}
-            <p className="text-xs text-muted-foreground">Inscrit le {new Date(partner.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</p>
-            {partner.company && (
-              <div className="grid sm:grid-cols-2 gap-2 mt-3 text-sm">
-                <div className="flex items-center gap-2 text-muted-foreground"><Building2 className="w-3.5 h-3.5" />ICE: {partner.company.ice}</div>
-                <div className="flex items-center gap-2 text-muted-foreground"><MapPin className="w-3.5 h-3.5" />{partner.company.city}</div>
-                <div className="flex items-center gap-2 text-muted-foreground"><Phone className="w-3.5 h-3.5" />{partner.company.phone}</div>
-                <div className="flex items-center gap-2 text-muted-foreground"><Mail className="w-3.5 h-3.5" />{partner.company.email}</div>
-                {partner.company.certifications?.length ? (
-                  <div className="sm:col-span-2 flex flex-wrap gap-1 mt-1">
-                    {partner.company.certifications.map((c) => <Badge key={c} variant="secondary" className="text-xs">{c}</Badge>)}
-                  </div>
-                ) : null}
-              </div>
-            )}
-            {partner.status === "approved" && (
-              <div className="mt-3 space-y-2">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">État du profil</p>
-                <div className="flex flex-wrap gap-2">
-                  <ValidationBadge done={!!partner.company} label="Entreprise" icon={<Building2 className="w-3 h-3" />} />
-                  <ValidationBadge done={partner.hasKits} label="Kits" icon={<Package className="w-3 h-3" />} />
-                  <ValidationBadge done={partner.hasTarifs} label="Tarifs" icon={<Truck className="w-3 h-3" />} />
-                </div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-3">Documents</p>
-                <div className="space-y-1.5">
-                  {(["rc", "modele_j"] as const).map((docType) => {
-                    const doc = partner.docDetails.find((d) => d.doc_type === docType);
-                    const config = DOC_LABELS[docType];
-                    return (
-                      <div key={docType} className="flex items-center gap-2">
-                        <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full border ${doc?.validated ? "bg-green-500/10 text-green-700 border-green-500/20" : doc ? "bg-blue-500/10 text-blue-700 border-blue-500/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20"}`}>
-                          {config.icon}{config.label}
-                          {doc?.validated ? <CheckCircle2 className="w-2.5 h-2.5" /> : doc ? <Clock className="w-2.5 h-2.5" /> : <XCircle className="w-2.5 h-2.5" />}
-                        </span>
-                        {doc ? (
-                          <div className="flex gap-1">
-                            <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]" onClick={() => onDownloadDoc(doc.file_path, doc.file_name)}><Download className="w-3 h-3 mr-1" />Télécharger</Button>
-                            {!doc.validated ? (
-                              <Button variant="outline" size="sm" className="h-6 px-2 text-[10px] border-green-500 text-green-600" onClick={() => onValidateDoc(doc.id, true)}><CheckCircle2 className="w-3 h-3 mr-1" />Valider</Button>
-                            ) : (
-                              <Button variant="outline" size="sm" className="h-6 px-2 text-[10px] border-amber-500 text-amber-600" onClick={() => onValidateDoc(doc.id, false)}><XCircle className="w-3 h-3 mr-1" />Invalider</Button>
-                            )}
-                          </div>
-                        ) : <span className="text-[10px] text-muted-foreground italic">Non envoyé</span>}
-                      </div>
-                    );
-                  })}
-                  <div className="flex items-center gap-2">
-                    <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full border ${partner.cotisations_a_jour ? "bg-green-500/10 text-green-700 border-green-500/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20"}`}>
-                      <CreditCard className="w-3.5 h-3.5" />Cotisations{partner.cotisations_a_jour ? <CheckCircle2 className="w-2.5 h-2.5" /> : <XCircle className="w-2.5 h-2.5" />}
-                    </span>
-                    <Button variant="outline" size="sm" className={`h-6 px-2 text-[10px] ${partner.cotisations_a_jour ? "border-amber-500 text-amber-600" : "border-green-500 text-green-600"}`} onClick={() => onToggleCotisations(partner.id, partner.cotisations_a_jour)}>
-                      {partner.cotisations_a_jour ? <><XCircle className="w-3 h-3 mr-1" />Non à jour</> : <><CheckCircle2 className="w-3 h-3 mr-1" />À jour</>}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="flex gap-2 shrink-0">
-            {partner.status !== "approved" && <Button size="sm" onClick={onApprove} disabled={updating === partner.id}>{updating === partner.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4 mr-1" />}Approuver</Button>}
-            {partner.status !== "rejected" && <Button size="sm" variant="destructive" onClick={onReject} disabled={updating === partner.id}>{updating === partner.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4 mr-1" />}Refuser</Button>}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
-const ValidationBadge = ({ done, label, icon }: { done: boolean; label: string; icon: React.ReactNode }) => (
-  <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full border ${done ? "bg-green-500/10 text-green-700 border-green-500/20" : "bg-red-500/10 text-red-600 border-red-500/20"}`}>
-    {icon}{label}{done ? <CheckCircle2 className="w-2.5 h-2.5" /> : <XCircle className="w-2.5 h-2.5" />}
-  </span>
-);
 
 export default AdminDashboardContent;
