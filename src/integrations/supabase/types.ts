@@ -530,15 +530,10 @@ export type Database = {
       lookup_quote_by_ref: {
         Args: { ref_prefix: string }
         Returns: {
-          adresse_projet: string
-          annual_consumption: string
           city: string
-          client_name: string
           created_at: string
           housing_type: string
           id: string
-          objectif: string
-          project_type: string
           status: string
           ville_projet: string
         }[]
