@@ -1,6 +1,6 @@
 import { MessageCircle } from "lucide-react";
 
-const WHATSAPP_NUMBER = "212600000000"; // Remplacez par votre numéro WhatsApp
+const WHATSAPP_NUMBER = "212600116007";
 const DEFAULT_MESSAGE = "Bonjour, je souhaite avoir plus d'informations sur vos solutions solaires.";
 
 const WhatsAppBubble = () => {
