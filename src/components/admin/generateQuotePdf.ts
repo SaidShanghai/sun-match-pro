@@ -37,70 +37,64 @@ interface PackageInfo {
   specs: Record<string, any> | null;
 }
 
-function getRecommendation(req: QuoteData, packages: PackageInfo[]): { recommended: PackageInfo | null; reasoning: string[]; warnings: string[] } {
+/* ── Helpers ─────────────────────────────────────── */
+
+/** Safe number formatter that avoids weird "/" separators in jsPDF */
+function fmtNum(n: number): string {
+  return n.toLocaleString("fr-FR").replace(/\s/g, " ");
+}
+
+function getRecommendation(req: QuoteData, packages: PackageInfo[]) {
   const warnings: string[] = [];
   const reasoning: string[] = [];
 
-  // Parse consumption
   const consoMatch = req.annual_consumption?.match(/(\d[\d\s]*)/);
   const consoKwh = consoMatch ? parseInt(consoMatch[1].replace(/\s/g, "")) : 0;
-
-  // Parse surface
   const surfMatch = req.roof_surface?.match(/(\d+)/);
   const surfM2 = surfMatch ? parseInt(surfMatch[1]) : 0;
 
-  const isTriphasé = req.type_abonnement?.toLowerCase().includes("triphasé");
+  const isTriphase = req.type_abonnement?.toLowerCase().includes("triphasé");
   const wantAutonomy = req.objectif?.toLowerCase().includes("autonomie");
   const wantReduceFact = req.objectif?.toLowerCase().includes("rédu");
 
-  // Filter residential solarbox packages
   const solarBoxes = packages
     .filter(p => p.name.toLowerCase().includes("solarbox"))
     .sort((a, b) => a.power_kwc - b.power_kwc);
 
   if (solarBoxes.length === 0) {
-    return { recommended: null, reasoning: ["Aucun package SolarBox disponible dans le catalogue."], warnings: [] };
+    return { recommended: null, reasoning: ["Aucun package SolarBox disponible."], warnings: [] };
   }
 
-  // Estimate needed power (kWc) based on consumption and ~1700 kWh/kWc average Morocco
   const neededKwc = consoKwh > 0 ? Math.ceil(consoKwh / 1700) : 3;
-  reasoning.push(`Consommation annuelle : ${consoKwh > 0 ? consoKwh.toLocaleString("fr-FR") + " kWh" : "non renseignée"}`);
-  reasoning.push(`Puissance PV estimée nécessaire : ~${neededKwc} kWc`);
+  reasoning.push(`Consommation annuelle estimée : ${consoKwh > 0 ? fmtNum(consoKwh) + " kWh" : "non renseignée"}`);
+  reasoning.push(`Puissance PV nécessaire estimée : ~${neededKwc} kWc`);
 
-  // Find best match
   let recommended: PackageInfo | null = null;
 
-  if (isTriphasé) {
-    // Prefer 380V models
-    const triphaséBoxes = solarBoxes.filter(p => p.name.includes("380V"));
-    if (triphaséBoxes.length > 0) {
-      recommended = triphaséBoxes.find(p => p.power_kwc >= neededKwc) || triphaséBoxes[triphaséBoxes.length - 1];
-      reasoning.push(`Abonnement triphasé → systèmes 380V privilégiés.`);
+  if (isTriphase) {
+    const tri = solarBoxes.filter(p => p.name.includes("380V"));
+    if (tri.length > 0) {
+      recommended = tri.find(p => p.power_kwc >= neededKwc) || tri[tri.length - 1];
+      reasoning.push("Abonnement triphasé détecté — systèmes 380V privilégiés.");
     } else {
       recommended = solarBoxes.find(p => p.power_kwc >= neededKwc) || solarBoxes[solarBoxes.length - 1];
-      warnings.push("Abonnement triphasé détecté mais aucun système 380V disponible. Vérifier la compatibilité.");
+      warnings.push("Abonnement triphasé détecté mais aucun système 380V disponible. Compatibilité à vérifier.");
     }
   } else {
-    // Prefer 220V models
-    const monoBoxes = solarBoxes.filter(p => p.name.includes("220V"));
-    if (monoBoxes.length > 0) {
-      recommended = monoBoxes.find(p => p.power_kwc >= neededKwc) || monoBoxes[monoBoxes.length - 1];
+    const mono = solarBoxes.filter(p => p.name.includes("220V"));
+    if (mono.length > 0) {
+      recommended = mono.find(p => p.power_kwc >= neededKwc) || mono[mono.length - 1];
     } else {
       recommended = solarBoxes.find(p => p.power_kwc >= neededKwc) || solarBoxes[solarBoxes.length - 1];
     }
   }
 
-  if (wantAutonomy) {
-    reasoning.push(`Objectif "Autonomie énergétique" → système hybride avec stockage recommandé.`);
-  }
-  if (wantReduceFact) {
-    reasoning.push(`Objectif "Réduction facture" → panneaux + onduleur suffisants, stockage optionnel.`);
-  }
+  if (wantAutonomy) reasoning.push("Objectif autonomie énergétique — système hybride avec stockage recommandé.");
+  if (wantReduceFact) reasoning.push("Objectif réduction de facture — panneaux + onduleur suffisants, stockage optionnel.");
 
-  // Orientation warning
   if (req.roof_orientation && !req.roof_orientation.toLowerCase().includes("sud")) {
-    const orientLoss = req.roof_orientation.toLowerCase().includes("ouest") || req.roof_orientation.toLowerCase().includes("est") ? "15-20%" : "25-30%";
-    warnings.push(`Orientation ${req.roof_orientation} : perte estimée de ${orientLoss} vs Sud. Production reste viable.`);
+    const loss = req.roof_orientation.toLowerCase().includes("ouest") || req.roof_orientation.toLowerCase().includes("est") ? "15-20 %" : "25-30 %";
+    warnings.push(`Orientation ${req.roof_orientation} : perte estimée de ${loss} vs Sud. Production reste viable.`);
   }
 
   if (recommended) {
@@ -110,11 +104,53 @@ function getRecommendation(req: QuoteData, packages: PackageInfo[]): { recommend
     reasoning.push(`Solution recommandée : ${recommended.name}`);
     if (battKwh) reasoning.push(`Stockage : ${battKwh} kWh (batteries LFP, ${specs.cycles_de_vie || 6000} cycles)`);
     if (nbPanneaux) reasoning.push(`Configuration : ${nbPanneaux} panneaux PVS 585W`);
-    reasoning.push(`Prix TTC : ${recommended.price_ttc.toLocaleString("fr-FR")} DH`);
+    reasoning.push(`Prix TTC : ${fmtNum(recommended.price_ttc)} DH`);
   }
 
   return { recommended, reasoning, warnings };
 }
+
+/* ── Colours ─────────────────────────────────────── */
+const ORANGE: [number, number, number] = [249, 115, 22];
+const DARK: [number, number, number] = [30, 30, 30];
+const GREY: [number, number, number] = [100, 100, 100];
+const LIGHT_BG: [number, number, number] = [255, 248, 240];
+const WHITE: [number, number, number] = [255, 255, 255];
+
+/* ── Draw helpers ────────────────────────────────── */
+
+function drawSectionTitle(doc: jsPDF, title: string, y: number, margin: number): number {
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...ORANGE);
+  doc.text(title.toUpperCase(), margin, y);
+  y += 2;
+  doc.setDrawColor(...ORANGE);
+  doc.setLineWidth(0.6);
+  doc.line(margin, y, margin + doc.getTextWidth(title.toUpperCase()) + 4, y);
+  return y + 6;
+}
+
+function drawKeyValue(doc: jsPDF, label: string, value: string, x: number, y: number, labelW = 55): number {
+  doc.setFontSize(9.5);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...GREY);
+  doc.text(label, x, y);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...DARK);
+  doc.text(value, x + labelW, y);
+  return y + 5.5;
+}
+
+function ensurePage(doc: jsPDF, y: number, needed = 30): number {
+  if (y + needed > 275) {
+    doc.addPage();
+    return 25;
+  }
+  return y;
+}
+
+/* ── Main generator ──────────────────────────────── */
 
 export function generateQuotePdf(
   req: QuoteData,
@@ -124,163 +160,222 @@ export function generateQuotePdf(
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const ref = req.id.slice(0, 8).toUpperCase();
   const pageW = doc.internal.pageSize.getWidth();
-  const margin = 20;
-  let y = 20;
+  const margin = 18;
+  const contentW = pageW - 2 * margin;
 
-  // --- Header ---
-  doc.setFillColor(249, 115, 22); // orange
-  doc.rect(0, 0, pageW, 40, "F");
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(22);
+  // ─── PAGE HEADER ───────────────────────────────
+  // Orange gradient header bar
+  doc.setFillColor(...ORANGE);
+  doc.rect(0, 0, pageW, 38, "F");
+  // Lighter overlay strip
+  doc.setFillColor(255, 140, 60);
+  doc.rect(0, 32, pageW, 6, "F");
+
+  doc.setTextColor(...WHITE);
+  doc.setFontSize(26);
   doc.setFont("helvetica", "bold");
-  doc.text("NOORIA", margin, 18);
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  doc.text("Votre partenaire solaire au Maroc", margin, 26);
-  doc.setFontSize(12);
-  doc.text(`Analyse Technique – Réf. #${ref}`, margin, 35);
+  doc.text("NOORIA", margin, 17);
+
   doc.setFontSize(9);
-  doc.text(new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }), pageW - margin, 35, { align: "right" });
+  doc.setFont("helvetica", "normal");
+  doc.text("Votre partenaire solaire au Maroc", margin, 24);
 
-  y = 50;
-  doc.setTextColor(50, 50, 50);
-
-  // --- Section: Profil Client ---
-  doc.setFontSize(13);
+  // Reference & date right-aligned
+  doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(249, 115, 22);
-  doc.text("📋 Profil du Prospect", margin, y);
-  y += 3;
+  doc.text(`Devis #${ref}`, pageW - margin, 15, { align: "right" });
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "normal");
+  const dateStr = new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+  doc.text(dateStr, pageW - margin, 21, { align: "right" });
 
-  const clientRows: string[][] = [
-    ["Client", req.client_name],
+  let y = 48;
+
+  // ─── SECTION: CLIENT ───────────────────────────
+  y = drawSectionTitle(doc, "Profil du prospect", y, margin);
+
+  // Two-column layout for client info
+  const clientFields: [string, string | null][] = [
+    ["Nom", req.client_name],
     ["Email", req.client_email],
-  ];
-  if (req.client_phone) clientRows.push(["Téléphone", req.client_phone]);
-  if (req.project_type) clientRows.push(["Type de projet", req.project_type]);
-  if (req.housing_type) clientRows.push(["Type de logement", req.housing_type]);
-  if (req.objectif) clientRows.push(["Objectif", req.objectif]);
-  if (req.annual_consumption) clientRows.push(["Consommation annuelle", req.annual_consumption]);
-  if (req.budget) clientRows.push(["Budget / Facture", req.budget]);
-  if (req.type_abonnement) clientRows.push(["Abonnement", req.type_abonnement]);
-  if (req.puissance_souscrite) clientRows.push(["Puissance souscrite", req.puissance_souscrite]);
-  if (req.roof_type) clientRows.push(["Type de toiture", req.roof_type]);
-  if (req.roof_orientation) clientRows.push(["Orientation", req.roof_orientation]);
-  if (req.roof_surface) clientRows.push(["Surface disponible", req.roof_surface]);
-  if (req.ville_projet) clientRows.push(["Ville", req.ville_projet]);
-  if (req.adresse_projet) clientRows.push(["Adresse", req.adresse_projet]);
+    ["Téléphone", req.client_phone],
+    ["Type de projet", req.project_type],
+    ["Type de logement", req.housing_type],
+    ["Objectif", req.objectif],
+    ["Consommation", req.annual_consumption],
+    ["Budget / Facture", req.budget],
+    ["Abonnement", req.type_abonnement],
+    ["Puissance souscrite", req.puissance_souscrite],
+    ["Toiture", req.roof_type],
+    ["Orientation", req.roof_orientation],
+    ["Surface", req.roof_surface],
+    ["Ville", req.ville_projet || req.city],
+    ["Adresse", req.adresse_projet],
+  ].filter(([_, v]) => v != null) as [string, string][];
 
-  autoTable(doc, {
-    startY: y,
-    head: [],
-    body: clientRows,
-    theme: "plain",
-    margin: { left: margin, right: margin },
-    styles: { fontSize: 10, cellPadding: 2 },
-    columnStyles: {
-      0: { fontStyle: "bold", textColor: [100, 100, 100], cellWidth: 50 },
-      1: { textColor: [30, 30, 30] },
-    },
-  });
+  // Split into two columns
+  const midIdx = Math.ceil(clientFields.length / 2);
+  const col1 = clientFields.slice(0, midIdx);
+  const col2 = clientFields.slice(midIdx);
+  const colX1 = margin;
+  const colX2 = margin + contentW / 2 + 2;
 
-  y = (doc as any).lastAutoTable.finalY + 10;
+  // Light background card
+  const cardH = Math.max(col1.length, col2.length) * 5.5 + 6;
+  doc.setFillColor(...LIGHT_BG);
+  doc.roundedRect(margin - 2, y - 4, contentW + 4, cardH, 3, 3, "F");
 
-  // --- Section: Potentiel Solaire ---
+  let yCol1 = y;
+  let yCol2 = y;
+  for (const [label, val] of col1) {
+    yCol1 = drawKeyValue(doc, label, val, colX1, yCol1, 42);
+  }
+  for (const [label, val] of col2) {
+    yCol2 = drawKeyValue(doc, label, val, colX2, yCol2, 42);
+  }
+  y = Math.max(yCol1, yCol2) + 6;
+
+  // ─── SECTION: SOLAR POTENTIAL ──────────────────
   if (solar && (solar.yearlyIrradiationKwhM2 || solar.yearlyProductionKwh)) {
-    doc.setFontSize(13);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(249, 115, 22);
-    doc.text("☀️ Potentiel Solaire du Site", margin, y);
-    y += 3;
+    y = ensurePage(doc, y, 60);
+    y = drawSectionTitle(doc, "Potentiel solaire du site", y, margin);
 
-    const solarRows: string[][] = [];
-    if (solar.yearlyIrradiationKwhM2) solarRows.push(["Irradiation annuelle", `${solar.yearlyIrradiationKwhM2.toLocaleString("fr-FR")} kWh/m²/an`]);
-    if (solar.yearlyProductionKwh) solarRows.push(["Production (1 kWc)", `${solar.yearlyProductionKwh.toLocaleString("fr-FR")} kWh/an`]);
-    if (solar.optimalInclination != null) solarRows.push(["Inclinaison optimale", `${solar.optimalInclination}°`]);
-    if (solar.co2SavedKg) solarRows.push(["CO₂ évité", `${solar.co2SavedKg.toLocaleString("fr-FR")} kg/an`]);
-    if (solar.savingsMad) solarRows.push(["Économies estimées", `${solar.savingsMad.toLocaleString("fr-FR")} MAD/an`]);
+    // KPI cards in a row
+    const kpis: { label: string; value: string; unit: string }[] = [];
+    if (solar.yearlyIrradiationKwhM2) kpis.push({ label: "Irradiation", value: fmtNum(solar.yearlyIrradiationKwhM2), unit: "kWh/m²/an" });
+    if (solar.yearlyProductionKwh) kpis.push({ label: "Production (1 kWc)", value: fmtNum(solar.yearlyProductionKwh), unit: "kWh/an" });
+    if (solar.optimalInclination != null) kpis.push({ label: "Inclinaison optimale", value: `${solar.optimalInclination}`, unit: "°" });
+    if (solar.co2SavedKg) kpis.push({ label: "CO₂ évité", value: fmtNum(solar.co2SavedKg), unit: "kg/an" });
+    if (solar.savingsMad) kpis.push({ label: "Économies", value: fmtNum(solar.savingsMad), unit: "MAD/an" });
 
-    autoTable(doc, {
-      startY: y,
-      head: [],
-      body: solarRows,
-      theme: "plain",
-      margin: { left: margin, right: margin },
-      styles: { fontSize: 10, cellPadding: 2 },
-      columnStyles: {
-        0: { fontStyle: "bold", textColor: [100, 100, 100], cellWidth: 50 },
-        1: { textColor: [30, 30, 30] },
-      },
+    const kpiW = contentW / Math.min(kpis.length, 4);
+    const kpiH = 22;
+    doc.setFillColor(...LIGHT_BG);
+    doc.roundedRect(margin - 2, y - 2, contentW + 4, kpiH + 4, 3, 3, "F");
+
+    kpis.slice(0, 4).forEach((kpi, i) => {
+      const kx = margin + i * kpiW;
+      // Value
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...ORANGE);
+      doc.text(kpi.value, kx + kpiW / 2, y + 8, { align: "center" });
+      // Unit
+      doc.setFontSize(7);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(...GREY);
+      doc.text(kpi.unit, kx + kpiW / 2, y + 13, { align: "center" });
+      // Label
+      doc.setFontSize(7.5);
+      doc.setTextColor(...DARK);
+      doc.text(kpi.label, kx + kpiW / 2, y + 19, { align: "center" });
     });
-    y = (doc as any).lastAutoTable.finalY + 10;
+
+    y += kpiH + 10;
+
+    // If more than 4 KPIs, show the rest below
+    if (kpis.length > 4) {
+      for (let i = 4; i < kpis.length; i++) {
+        y = drawKeyValue(doc, kpis[i].label, `${kpis[i].value} ${kpis[i].unit}`, margin, y);
+      }
+      y += 4;
+    }
   }
 
-  // --- Section: Recommandation ---
+  // ─── SECTION: RECOMMENDATION ───────────────────
+  y = ensurePage(doc, y, 60);
   const { recommended, reasoning, warnings } = getRecommendation(req, packages);
 
-  doc.setFontSize(13);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(249, 115, 22);
-  doc.text("🔍 Analyse & Recommandation", margin, y);
-  y += 7;
+  y = drawSectionTitle(doc, "Analyse & Recommandation", y, margin);
 
-  doc.setFontSize(10);
+  doc.setFontSize(9.5);
   doc.setFont("helvetica", "normal");
-  doc.setTextColor(50, 50, 50);
+  doc.setTextColor(...DARK);
 
   for (const line of reasoning) {
-    if (y > 265) { doc.addPage(); y = 20; }
-    doc.text(`• ${line}`, margin + 2, y);
+    y = ensurePage(doc, y, 8);
+    // Bullet point with orange dot
+    doc.setFillColor(...ORANGE);
+    doc.circle(margin + 1.5, y - 1.2, 1, "F");
+    doc.text(line, margin + 5, y);
     y += 6;
   }
 
   if (warnings.length > 0) {
-    y += 4;
+    y += 3;
+    y = ensurePage(doc, y, 10 + warnings.length * 6);
+    // Warning box
+    doc.setFillColor(255, 243, 224);
+    doc.setDrawColor(255, 180, 100);
+    doc.setLineWidth(0.3);
+    const warnH = warnings.length * 6 + 10;
+    doc.roundedRect(margin, y - 4, contentW, warnH, 2, 2, "FD");
+
+    doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(200, 100, 0);
-    doc.text("⚠️ Points d'attention :", margin, y);
-    y += 6;
+    doc.text("POINTS D'ATTENTION", margin + 4, y + 2);
+    y += 8;
+
     doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
     for (const w of warnings) {
-      if (y > 265) { doc.addPage(); y = 20; }
-      doc.text(`• ${w}`, margin + 2, y);
+      doc.text(`• ${w}`, margin + 4, y);
       y += 6;
     }
+    y += 4;
   }
 
-  // --- Recommended package specs table ---
+  // ─── SECTION: PACKAGE SPECS ────────────────────
   if (recommended && recommended.specs) {
-    y += 6;
-    if (y > 230) { doc.addPage(); y = 20; }
-    doc.setFontSize(12);
+    y = ensurePage(doc, y, 50);
+    y += 4;
+
+    // Package name highlight bar
+    doc.setFillColor(...ORANGE);
+    doc.roundedRect(margin, y - 5, contentW, 10, 2, 2, "F");
+    doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(249, 115, 22);
-    doc.text(`📦 ${recommended.name}`, margin, y);
-    y += 3;
+    doc.setTextColor(...WHITE);
+    doc.text(recommended.name, margin + 4, y + 1);
+    doc.setFontSize(9);
+    doc.text(`${fmtNum(recommended.price_ttc)} DH TTC`, pageW - margin - 4, y + 1, { align: "right" });
+    y += 12;
 
     const specs = recommended.specs;
-    const specRows: string[][] = [];
     const specLabels: Record<string, string> = {
-      puissance_onduleur_kw: "Puissance onduleur (kW)",
-      capacite_batterie_kwh: "Capacité batterie (kWh)",
-      capacite_utilisable_kwh: "Capacité utilisable (kWh)",
-      tension_batterie_v: "Tension batterie (V)",
+      puissance_onduleur_kw: "Puissance onduleur",
+      capacite_batterie_kwh: "Capacité batterie",
+      capacite_utilisable_kwh: "Capacité utilisable",
+      tension_batterie_v: "Tension batterie",
       cycles_de_vie: "Cycles de vie",
       nb_mppt: "Nombre de MPPT",
       nb_panneaux_recommandes: "Panneaux recommandés",
       nb_panneaux_max: "Panneaux max",
-      garantie_ans: "Garantie (ans)",
+      garantie_ans: "Garantie",
       type_batterie: "Type batterie",
       type_onduleur: "Type onduleur",
-      efficacite_max_pct: "Efficacité max (%)",
-      dod_pct: "Profondeur de décharge (%)",
-      poids_kg: "Poids (kg)",
+      efficacite_max_pct: "Efficacité max",
+      dod_pct: "Profondeur de décharge",
+      poids_kg: "Poids",
+    };
+    const specUnits: Record<string, string> = {
+      puissance_onduleur_kw: "kW",
+      capacite_batterie_kwh: "kWh",
+      capacite_utilisable_kwh: "kWh",
+      tension_batterie_v: "V",
+      garantie_ans: "ans",
+      efficacite_max_pct: "%",
+      dod_pct: "%",
+      poids_kg: "kg",
     };
 
+    const specRows: string[][] = [];
     for (const [key, label] of Object.entries(specLabels)) {
       if (specs[key] != null) {
-        const val = Array.isArray(specs[key]) ? specs[key].join(", ") : String(specs[key]);
-        specRows.push([label, val]);
+        const raw = Array.isArray(specs[key]) ? specs[key].join(", ") : String(specs[key]);
+        const unit = specUnits[key] || "";
+        specRows.push([label, unit ? `${raw} ${unit}` : raw]);
       }
     }
 
@@ -289,28 +384,64 @@ export function generateQuotePdf(
         startY: y,
         head: [["Caractéristique", "Valeur"]],
         body: specRows,
-        theme: "striped",
+        theme: "grid",
         margin: { left: margin, right: margin },
-        styles: { fontSize: 9, cellPadding: 2.5 },
-        headStyles: { fillColor: [249, 115, 22], textColor: 255 },
-        columnStyles: { 0: { cellWidth: 60 } },
+        styles: {
+          fontSize: 8.5,
+          cellPadding: 3,
+          lineColor: [230, 230, 230],
+          lineWidth: 0.2,
+        },
+        headStyles: {
+          fillColor: ORANGE,
+          textColor: 255,
+          fontStyle: "bold",
+          fontSize: 9,
+        },
+        alternateRowStyles: {
+          fillColor: [253, 249, 245],
+        },
+        columnStyles: {
+          0: { cellWidth: 55, fontStyle: "bold", textColor: GREY },
+          1: { textColor: DARK },
+        },
       });
-      y = (doc as any).lastAutoTable.finalY + 10;
+      y = (doc as any).lastAutoTable.finalY + 8;
     }
   }
 
-  // --- Footer ---
-  if (y > 250) { doc.addPage(); y = 20; }
-  y += 5;
-  doc.setDrawColor(230, 230, 230);
-  doc.line(margin, y, pageW - margin, y);
-  y += 8;
-  doc.setFontSize(9);
-  doc.setTextColor(150, 150, 150);
-  doc.setFont("helvetica", "italic");
-  doc.text("Ce document est une analyse préliminaire à titre indicatif. Les valeurs définitives seront confirmées après visite technique.", margin, y, { maxWidth: pageW - 2 * margin });
-  y += 10;
-  doc.text("NOORIA – Votre partenaire solaire au Maroc | sungpt.ma | contact@sungpt.ma", margin, y);
+  // ─── FOOTER ────────────────────────────────────
+  // Draw footer on every page
+  const totalPages = doc.getNumberOfPages();
+  for (let p = 1; p <= totalPages; p++) {
+    doc.setPage(p);
+    const pH = doc.internal.pageSize.getHeight();
+
+    // Footer line
+    doc.setDrawColor(230, 230, 230);
+    doc.setLineWidth(0.3);
+    doc.line(margin, pH - 22, pageW - margin, pH - 22);
+
+    // Disclaimer
+    doc.setFontSize(7);
+    doc.setTextColor(170, 170, 170);
+    doc.setFont("helvetica", "italic");
+    doc.text(
+      "Ce document est une analyse préliminaire à titre indicatif. Les valeurs définitives seront confirmées après visite technique.",
+      margin,
+      pH - 17,
+      { maxWidth: contentW }
+    );
+
+    // Company info
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(...GREY);
+    doc.text("NOORIA — sungpt.ma — contact@sungpt.ma", margin, pH - 10);
+
+    // Page number
+    doc.text(`${p} / ${totalPages}`, pageW - margin, pH - 10, { align: "right" });
+  }
 
   doc.save(`NOORIA-Devis-${ref}.pdf`);
 }
