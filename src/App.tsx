@@ -9,7 +9,7 @@ import Results from "./pages/Results";
 import Profil from "./pages/Profil";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
-import WhatsAppBubble from "./components/WhatsAppBubble";
+
 
 const queryClient = new QueryClient();
 
@@ -29,7 +29,7 @@ const App = () => (
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-        <WhatsAppBubble />
+        
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
