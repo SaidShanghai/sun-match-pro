@@ -23,12 +23,8 @@ type LookupResult = {
   ref: string;
   created_at: string;
   status: string;
-  client_name: string;
   city: string | null;
-  project_type: string | null;
   housing_type: string | null;
-  objectif: string | null;
-  annual_consumption: string | null;
 };
 
 const AuthPortal = () => {
@@ -278,7 +274,6 @@ const AuthPortal = () => {
                   </Badge>
                 </div>
                 <div className="space-y-1.5 text-xs text-muted-foreground">
-                  <p><span className="font-medium text-foreground">Nom :</span> {lookupResult.client_name}</p>
                   {lookupResult.city && (
                     <p className="flex items-center gap-1">
                       <MapPin className="w-3 h-3" /> {lookupResult.city}
@@ -287,11 +282,6 @@ const AuthPortal = () => {
                   {lookupResult.housing_type && (
                     <p className="flex items-center gap-1">
                       <Home className="w-3 h-3" /> {lookupResult.housing_type}
-                    </p>
-                  )}
-                  {lookupResult.annual_consumption && (
-                    <p className="flex items-center gap-1">
-                      <Zap className="w-3 h-3" /> {lookupResult.annual_consumption}
                     </p>
                   )}
                   <p className="text-[11px] pt-1 border-t border-border">
