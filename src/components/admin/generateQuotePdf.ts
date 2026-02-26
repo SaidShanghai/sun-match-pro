@@ -19,6 +19,7 @@ interface QuoteData {
   puissance_souscrite: string | null;
   adresse_projet: string | null;
   ville_projet: string | null;
+  selected_usages: string[] | null;
   created_at: string;
 }
 
@@ -42,6 +43,50 @@ interface PackageInfo {
 function fmtNum(n: number): string {
   return n.toLocaleString("fr-FR").replace(/\s/g, " ");
 }
+
+/** Monthly solar irradiation distribution factors for Morocco (sum ≈ 1.0) */
+const SOLAR_MONTHLY_FACTORS = [
+  0.065, 0.072, 0.088, 0.092, 0.100, 0.105,
+  0.108, 0.104, 0.093, 0.082, 0.050, 0.041,
+];
+
+/** Get monthly consumption profile based on usages */
+function getMonthlyConsumption(annualKwh: number, usages: string[]): number[] {
+  // Base flat distribution
+  const base = Array(12).fill(1 / 12);
+
+  const hasClim = usages.some(u => u.includes("Climatisation"));
+  const hasChauffage = usages.some(u => u.includes("Chauffage"));
+  const hasPiscine = usages.some(u => u.includes("Piscine"));
+  const hasChambreFroide = usages.some(u => u.includes("Chambre froide"));
+
+  // Summer peaks (Jun-Sep) for AC & pool
+  if (hasClim) {
+    [5, 6, 7, 8].forEach(i => base[i] += 0.025);
+    [0, 1, 11].forEach(i => base[i] -= 0.015);
+  }
+  // Winter peaks (Nov-Feb) for heating
+  if (hasChauffage) {
+    [0, 1, 10, 11].forEach(i => base[i] += 0.02);
+    [5, 6, 7].forEach(i => base[i] -= 0.015);
+  }
+  // Pool in summer
+  if (hasPiscine) {
+    [4, 5, 6, 7, 8].forEach(i => base[i] += 0.012);
+    [0, 1, 10, 11].forEach(i => base[i] -= 0.01);
+  }
+  // Cold storage peaks in summer
+  if (hasChambreFroide) {
+    [5, 6, 7, 8].forEach(i => base[i] += 0.015);
+    [0, 1, 11].forEach(i => base[i] -= 0.01);
+  }
+
+  // Normalize
+  const sum = base.reduce((a, b) => a + b, 0);
+  return base.map(f => Math.round((f / sum) * annualKwh));
+}
+
+const MONTH_LABELS = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"];
 
 function getRecommendation(req: QuoteData, packages: PackageInfo[]) {
   const warnings: string[] = [];
@@ -110,6 +155,8 @@ const DARK: [number, number, number] = [40, 40, 40];
 const GREY: [number, number, number] = [120, 120, 120];
 const LIGHT_LINE: [number, number, number] = [220, 220, 220];
 const SUBTLE_BG: [number, number, number] = [248, 248, 248];
+const BLUE: [number, number, number] = [59, 130, 246];
+const ORANGE_LIGHT: [number, number, number] = [253, 186, 116];
 
 /* ── Draw helpers ────────────────────────────────── */
 
@@ -135,6 +182,113 @@ function drawSectionTitle(doc: jsPDF, title: string, y: number, margin: number):
   return y + 4;
 }
 
+/** Draw a combined chart: bars for consumption, line for production */
+function drawChart(
+  doc: jsPDF,
+  production: number[],
+  consumption: number[],
+  x: number,
+  y: number,
+  chartW: number,
+  chartH: number,
+  margin: number
+) {
+  const allValues = [...production, ...consumption];
+  const maxVal = Math.max(...allValues) * 1.15;
+  const barGroupW = chartW / 12;
+  const barW = barGroupW * 0.5;
+
+  // Y-axis scale
+  const gridLines = 4;
+  doc.setFontSize(5.5);
+  doc.setFont("helvetica", "normal");
+
+  for (let i = 0; i <= gridLines; i++) {
+    const gy = y + chartH - (i / gridLines) * chartH;
+    const val = Math.round((i / gridLines) * maxVal);
+    // Grid line
+    doc.setDrawColor(240, 240, 240);
+    doc.setLineWidth(0.15);
+    doc.line(x, gy, x + chartW, gy);
+    // Label
+    doc.setTextColor(...GREY);
+    doc.text(fmtNum(val), x - 2, gy + 1.5, { align: "right" });
+  }
+
+  // Draw bars (consumption) with rounded tops
+  for (let i = 0; i < 12; i++) {
+    const bx = x + i * barGroupW + (barGroupW - barW) / 2;
+    const bh = (consumption[i] / maxVal) * chartH;
+    const by = y + chartH - bh;
+
+    // Bar with subtle gradient effect: darker at top
+    doc.setFillColor(...ORANGE_LIGHT);
+    doc.roundedRect(bx, by, barW, bh, 1, 1, "F");
+    // Darker top portion
+    doc.setFillColor(...ORANGE);
+    doc.roundedRect(bx, by, barW, Math.min(bh, 3), 1, 1, "F");
+
+    // Month label
+    doc.setFontSize(5.5);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...GREY);
+    doc.text(MONTH_LABELS[i], bx + barW / 2, y + chartH + 4, { align: "center" });
+  }
+
+  // Draw line (production) with dots
+  doc.setDrawColor(...BLUE);
+  doc.setLineWidth(0.6);
+  const points: { px: number; py: number }[] = [];
+
+  for (let i = 0; i < 12; i++) {
+    const px = x + i * barGroupW + barGroupW / 2;
+    const py = y + chartH - (production[i] / maxVal) * chartH;
+    points.push({ px, py });
+  }
+
+  // Draw smooth line segments
+  for (let i = 0; i < points.length - 1; i++) {
+    doc.line(points[i].px, points[i].py, points[i + 1].px, points[i + 1].py);
+  }
+
+  // Draw dots
+  for (const { px, py } of points) {
+    doc.setFillColor(255, 255, 255);
+    doc.circle(px, py, 1.3, "F");
+    doc.setFillColor(...BLUE);
+    doc.circle(px, py, 0.9, "F");
+  }
+
+  // Baseline
+  doc.setDrawColor(...DARK);
+  doc.setLineWidth(0.3);
+  doc.line(x, y + chartH, x + chartW, y + chartH);
+
+  // Y-axis label
+  doc.setFontSize(5);
+  doc.setTextColor(...GREY);
+  doc.text("kWh", x - 2, y - 2);
+
+  // Legend
+  const legendY = y + chartH + 10;
+  // Production legend (line)
+  doc.setFillColor(...BLUE);
+  doc.circle(x + 2, legendY - 0.5, 1, "F");
+  doc.setDrawColor(...BLUE);
+  doc.setLineWidth(0.5);
+  doc.line(x - 2, legendY - 0.5, x + 6, legendY - 0.5);
+  doc.setFontSize(6);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...DARK);
+  doc.text("Production solaire (kWh)", x + 9, legendY);
+
+  // Consumption legend (bar)
+  const leg2X = x + chartW / 2;
+  doc.setFillColor(...ORANGE);
+  doc.roundedRect(leg2X - 3, legendY - 2.5, 5, 4, 0.5, 0.5, "F");
+  doc.text("Consommation estimée (kWh)", leg2X + 5, legendY);
+}
+
 /* ── Main generator ──────────────────────────────── */
 
 export function generateQuotePdf(
@@ -150,34 +304,30 @@ export function generateQuotePdf(
   const contentW = pageW - 2 * margin;
   const colW = contentW / 2 - 2;
 
-  // ─── HEADER ────────────────────────────────────
-  // Thin orange accent line at top
+  // ─── PAGE 1 HEADER ─────────────────────────────
   doc.setFillColor(...ORANGE);
   doc.rect(0, 0, pageW, 2.5, "F");
 
   let y = 14;
   drawLogo(doc, margin, y);
 
-  // Right side: ref + date
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...GREY);
   const dateStr = new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
   doc.text(`Réf. #${ref}  |  ${dateStr}`, pageW - margin, y - 2, { align: "right" });
 
-  // Subtitle
   doc.setFontSize(7.5);
   doc.setTextColor(...GREY);
   doc.text("Analyse technique & recommandation solaire", margin, y + 5);
 
-  // Separator
   y = 24;
   doc.setDrawColor(...LIGHT_LINE);
   doc.setLineWidth(0.3);
   doc.line(margin, y, pageW - margin, y);
   y += 5;
 
-  // ─── CLIENT INFO (compact two-column) ──────────
+  // ─── CLIENT INFO ───────────────────────────────
   y = drawSectionTitle(doc, "Profil du prospect", y, margin);
 
   const clientFields: [string, string][] = ([
@@ -212,7 +362,6 @@ export function generateQuotePdf(
       doc.text(label, startX, cy);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(...DARK);
-      // Truncate long values
       const maxW = colW - 28;
       let displayVal = val;
       while (doc.getTextWidth(displayVal) > maxW && displayVal.length > 3) {
@@ -229,7 +378,7 @@ export function generateQuotePdf(
   const yCol2 = drawCol(col2, margin + colW + 4, y);
   y = Math.max(yCol1, yCol2) + 3;
 
-  // ─── SOLAR POTENTIAL (inline KPIs) ─────────────
+  // ─── SOLAR KPIs ────────────────────────────────
   if (solar && (solar.yearlyIrradiationKwhM2 || solar.yearlyProductionKwh)) {
     y = drawSectionTitle(doc, "Potentiel solaire du site", y, margin);
 
@@ -243,7 +392,6 @@ export function generateQuotePdf(
     const kpiCount = Math.min(kpis.length, 5);
     const kpiW = contentW / kpiCount;
 
-    // Subtle background
     doc.setFillColor(...SUBTLE_BG);
     doc.roundedRect(margin - 1, y - 3, contentW + 2, 16, 2, 2, "F");
 
@@ -299,7 +447,6 @@ export function generateQuotePdf(
   if (recommended && recommended.specs) {
     y += 2;
 
-    // Package header: name + price in a thin dark bar
     doc.setFillColor(...BLACK);
     doc.roundedRect(margin, y - 4, contentW, 8, 1.5, 1.5, "F");
     doc.setFontSize(9);
@@ -361,7 +508,6 @@ export function generateQuotePdf(
           if (data.row.index % 2 === 0) {
             doc.setFillColor(...SUBTLE_BG);
             doc.rect(data.cell.x, data.cell.y, data.cell.width, data.cell.height, "F");
-            // Redraw text on top
             const style = data.column.index === 0 ? "bold" : "normal";
             const color = data.column.index === 0 ? GREY : DARK;
             doc.setFont("helvetica", style);
@@ -375,25 +521,159 @@ export function generateQuotePdf(
     }
   }
 
-  // ─── FOOTER ────────────────────────────────────
-  // Thin orange line at bottom
-  doc.setFillColor(...ORANGE);
-  doc.rect(0, pageH - 2.5, pageW, 2.5, "F");
+  // ─── PAGE 2: CHARTS ────────────────────────────
+  const consoMatch = req.annual_consumption?.match(/(\d[\d\s]*)/);
+  const annualKwh = consoMatch ? parseInt(consoMatch[1].replace(/\s/g, "")) : 0;
+  const yearlyProd = solar?.yearlyProductionKwh || 0;
+  const recPower = recommended?.power_kwc || 3;
 
-  // Footer text
-  doc.setDrawColor(...LIGHT_LINE);
-  doc.setLineWidth(0.2);
-  doc.line(margin, pageH - 16, pageW - margin, pageH - 16);
+  if (annualKwh > 0 || yearlyProd > 0) {
+    doc.addPage();
 
-  doc.setFontSize(6);
-  doc.setTextColor(180, 180, 180);
-  doc.setFont("helvetica", "italic");
-  doc.text("Analyse préliminaire à titre indicatif. Valeurs définitives après visite technique.", margin, pageH - 12);
+    // Page 2 header
+    doc.setFillColor(...ORANGE);
+    doc.rect(0, 0, pageW, 2.5, "F");
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(6.5);
-  doc.setTextColor(...GREY);
-  doc.text("NOORIA — sungpt.ma — contact@sungpt.ma", margin, pageH - 7);
+    let cy = 14;
+    drawLogo(doc, margin, cy);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...GREY);
+    doc.text(`Réf. #${ref}  |  Projections énergétiques`, pageW - margin, cy - 2, { align: "right" });
+
+    cy = 24;
+    doc.setDrawColor(...LIGHT_LINE);
+    doc.setLineWidth(0.3);
+    doc.line(margin, cy, pageW - margin, cy);
+    cy += 6;
+
+    // Chart title
+    cy = drawSectionTitle(doc, "Production vs Consommation — Projection mensuelle", cy, margin);
+    cy += 2;
+
+    // Compute monthly data
+    const usages = req.selected_usages || [];
+    const monthlyConsumption = annualKwh > 0
+      ? getMonthlyConsumption(annualKwh, usages)
+      : Array(12).fill(0);
+
+    // Production = yearly production per kWc × recommended kWc × monthly solar factors
+    const totalProd = yearlyProd > 0 ? yearlyProd * recPower : 0;
+    const monthlyProduction = SOLAR_MONTHLY_FACTORS.map(f => Math.round(f * totalProd));
+
+    // Draw chart
+    const chartX = margin + 14;
+    const chartW = contentW - 18;
+    const chartH = 65;
+    drawChart(doc, monthlyProduction, monthlyConsumption, chartX, cy, chartW, chartH, margin);
+
+    cy += chartH + 20;
+
+    // ─── Summary stats below chart ───────────────
+    cy = drawSectionTitle(doc, "Bilan annuel", cy, margin);
+
+    const totalProdYear = monthlyProduction.reduce((a, b) => a + b, 0);
+    const totalConsoYear = monthlyConsumption.reduce((a, b) => a + b, 0);
+    const coverageRate = totalConsoYear > 0 ? Math.min(100, Math.round((totalProdYear / totalConsoYear) * 100)) : 0;
+    const surplus = Math.max(0, totalProdYear - totalConsoYear);
+    const deficit = Math.max(0, totalConsoYear - totalProdYear);
+
+    // KPI boxes
+    const kpiData = [
+      { label: "Production annuelle", value: fmtNum(totalProdYear), unit: "kWh", color: BLUE },
+      { label: "Consommation annuelle", value: fmtNum(totalConsoYear), unit: "kWh", color: ORANGE },
+      { label: "Taux de couverture", value: `${coverageRate}`, unit: "%", color: coverageRate >= 80 ? [34, 197, 94] as [number, number, number] : ORANGE },
+      { label: surplus > 0 ? "Surplus injectable" : "Déficit réseau", value: fmtNum(surplus > 0 ? surplus : deficit), unit: "kWh", color: surplus > 0 ? [34, 197, 94] as [number, number, number] : [239, 68, 68] as [number, number, number] },
+    ];
+
+    const kpiBoxW = contentW / 4 - 2;
+    doc.setFillColor(...SUBTLE_BG);
+    doc.roundedRect(margin - 1, cy - 3, contentW + 2, 22, 2, 2, "F");
+
+    kpiData.forEach((kpi, i) => {
+      const kx = margin + i * (kpiBoxW + 2.6) + kpiBoxW / 2;
+      doc.setFontSize(13);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...kpi.color);
+      doc.text(kpi.value, kx, cy + 5, { align: "center" });
+      doc.setFontSize(7);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(...GREY);
+      doc.text(kpi.unit, kx, cy + 10, { align: "center" });
+      doc.setFontSize(6);
+      doc.setTextColor(...DARK);
+      doc.text(kpi.label, kx, cy + 15, { align: "center" });
+    });
+
+    cy += 30;
+
+    // ─── Monthly detail table ────────────────────
+    cy = drawSectionTitle(doc, "Détail mensuel (kWh)", cy, margin);
+
+    const monthRows = MONTH_LABELS.map((m, i) => [
+      m,
+      fmtNum(monthlyProduction[i]),
+      fmtNum(monthlyConsumption[i]),
+      monthlyProduction[i] >= monthlyConsumption[i] ? `+${fmtNum(monthlyProduction[i] - monthlyConsumption[i])}` : `-${fmtNum(monthlyConsumption[i] - monthlyProduction[i])}`,
+    ]);
+
+    autoTable(doc, {
+      startY: cy,
+      head: [["Mois", "Production", "Consommation", "Solde"]],
+      body: monthRows,
+      theme: "grid",
+      margin: { left: margin, right: margin },
+      styles: {
+        fontSize: 7,
+        cellPadding: 1.8,
+        lineColor: [240, 240, 240],
+        lineWidth: 0.15,
+      },
+      headStyles: {
+        fillColor: BLACK,
+        textColor: 255,
+        fontStyle: "bold",
+        fontSize: 7,
+      },
+      alternateRowStyles: { fillColor: [252, 250, 248] },
+      columnStyles: {
+        0: { cellWidth: 18, fontStyle: "bold" },
+        1: { halign: "right", textColor: BLUE },
+        2: { halign: "right", textColor: ORANGE },
+        3: { halign: "right" },
+      },
+      didParseCell: (data: any) => {
+        if (data.section === "body" && data.column.index === 3) {
+          const text = data.cell.raw as string;
+          data.cell.styles.textColor = text.startsWith("+") ? [34, 197, 94] : [239, 68, 68];
+          data.cell.styles.fontStyle = "bold";
+        }
+      },
+    });
+  }
+
+  // ─── FOOTER on all pages ───────────────────────
+  const totalPages = doc.getNumberOfPages();
+  for (let p = 1; p <= totalPages; p++) {
+    doc.setPage(p);
+    doc.setFillColor(...ORANGE);
+    doc.rect(0, pageH - 2.5, pageW, 2.5, "F");
+
+    doc.setDrawColor(...LIGHT_LINE);
+    doc.setLineWidth(0.2);
+    doc.line(margin, pageH - 16, pageW - margin, pageH - 16);
+
+    doc.setFontSize(6);
+    doc.setTextColor(180, 180, 180);
+    doc.setFont("helvetica", "italic");
+    doc.text("Analyse préliminaire à titre indicatif. Valeurs définitives après visite technique.", margin, pageH - 12);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(6.5);
+    doc.setTextColor(...GREY);
+    doc.text("NOORIA — sungpt.ma — contact@sungpt.ma", margin, pageH - 7);
+    doc.text(`${p} / ${totalPages}`, pageW - margin, pageH - 7, { align: "right" });
+  }
 
   doc.save(`NOORIA-Devis-${ref}.pdf`);
 }
