@@ -7,9 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { FileText, Loader2, Mail, Phone, MapPin, Calendar, ChevronDown, ChevronUp, StickyNote, Sun, Zap, Leaf, LayoutGrid, Search, Copy, Clock } from "lucide-react";
+import { FileText, Loader2, Mail, Phone, MapPin, Calendar, ChevronDown, ChevronUp, StickyNote, Sun, Zap, Leaf, LayoutGrid, Search, Copy, Clock, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import SatelliteMapPreview from "@/components/admin/SatelliteMapPreview";
+import { generateQuotePdf } from "@/components/admin/generateQuotePdf";
 
 interface SolarResult {
   source?: string;
@@ -113,9 +114,10 @@ const QuoteRequestsManager = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [mapsKey, setMapsKey] = useState<string | null>(null);
   const [solarCache, setSolarCache] = useState<Record<string, SolarResult | "loading" | null>>({});
+  const [allPackages, setAllPackages] = useState<{ name: string; power_kwc: number; price_ttc: number; specs: Record<string, any> | null }[]>([]);
   const { toast } = useToast();
 
-  useEffect(() => { fetchRequests(); fetchMapsKey(); }, []);
+  useEffect(() => { fetchRequests(); fetchMapsKey(); fetchPackages(); }, []);
 
   const fetchSolarForRequest = useCallback(async (reqId: string, lat: number, lng: number) => {
     if (solarCache[reqId]) return;
@@ -138,6 +140,15 @@ const QuoteRequestsManager = () => {
       if (data?.key) setMapsKey(data.key);
     } catch {}
   };
+
+  const fetchPackages = async () => {
+    const { data } = await supabase
+      .from("packages")
+      .select("name, power_kwc, price_ttc, specs")
+      .eq("is_active", true);
+    if (data) setAllPackages(data as any);
+  };
+
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -476,9 +487,25 @@ const QuoteRequestsManager = () => {
                             );
                           })()}
                         </div>
-                      )}
-                    </div>
-                  )}
+                        )}
+
+                        {/* CTA Émettre un Devis */}
+                        <div className="flex justify-end pt-4 border-t">
+                          <Button
+                            onClick={() => {
+                              const solar = solarCache[req.id];
+                              const solarData = solar && solar !== "loading" && !solar.error ? solar as any : null;
+                              generateQuotePdf(req, solarData, allPackages);
+                              toast({ title: "PDF généré !", description: `Devis #${req.id.slice(0, 8).toUpperCase()} téléchargé.` });
+                            }}
+                            className="gap-2"
+                          >
+                            <Download className="w-4 h-4" />
+                            Émettre un Devis
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                 </CardContent>
               </Card>
             );
