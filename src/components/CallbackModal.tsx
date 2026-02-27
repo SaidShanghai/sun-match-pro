@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { z } from "zod";
 import { formatPhoneInput } from "@/lib/formatPhone";
 import { Phone, CheckCircle, X, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,14 +17,22 @@ const CallbackModal = ({ open, onOpenChange }: CallbackModalProps) => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
-  const phoneRegex = /^(\+212|0)([ \-]?[0-9]){9}$/;
+  const callbackSchema = z.object({
+    nom: z.string().trim().min(1, "Veuillez entrer votre prénom.").max(50, "Prénom trop long."),
+    telephone: z.string().trim().regex(/^(\+212|0)([ \-]?[0-9]){9}$/, "Numéro invalide (ex : 06 12 34 56 78)"),
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!nom.trim()) { setError("Veuillez entrer votre prénom."); return; }
-    if (!phoneRegex.test(telephone.replace(/\s/g, ""))) {
-      setError("Numéro invalide (ex : 06 12 34 56 78)");
+
+    const result = callbackSchema.safeParse({
+      nom,
+      telephone: telephone.replace(/\s/g, ""),
+    });
+
+    if (!result.success) {
+      setError(result.error.errors[0].message);
       return;
     }
     setSubmitted(true);
