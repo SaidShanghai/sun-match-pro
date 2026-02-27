@@ -448,16 +448,28 @@ export function generateQuotePdf(
   const yCol2 = drawCol(col2, margin + colW + 4, y);
   y = Math.max(yCol1, yCol2) + 3;
 
+  // ─── Compute system size for scaling ─────────
+  const consoMatchPdf = req.annual_consumption?.match(/(\d[\d\s]*)/);
+  const consoKwhPdf = consoMatchPdf ? parseInt(consoMatchPdf[1].replace(/\s/g, "")) : 0;
+  const neededKwcPdf = consoKwhPdf > 0 ? Math.ceil(consoKwhPdf / 1700) : 1;
+
   // ─── SOLAR KPIs ────────────────────────────────
   if (solar && (solar.yearlyIrradiationKwhM2 || solar.yearlyProductionKwh)) {
     y = drawSectionTitle(doc, "Potentiel solaire du site", y, margin);
 
+    const prodPerKwc = solar.yearlyProductionKwh || 0;
+    const scaledProd = neededKwcPdf * prodPerKwc;
+    const scaledCo2 = neededKwcPdf * (solar.co2SavedKg || 0);
+
     const kpis: { label: string; value: string; unit: string }[] = [];
     if (solar.yearlyIrradiationKwhM2) kpis.push({ label: "Irradiation", value: fmtNum(solar.yearlyIrradiationKwhM2), unit: "kWh/m²/an" });
-    if (solar.yearlyProductionKwh) kpis.push({ label: "Production", value: fmtNum(solar.yearlyProductionKwh), unit: "kWh/an" });
+    if (scaledProd > 0) kpis.push({ label: `Production (${neededKwcPdf} kWc)`, value: fmtNum(scaledProd), unit: "kWh/an" });
     if (solar.optimalInclination != null) kpis.push({ label: "Inclinaison", value: `${solar.optimalInclination}°`, unit: "" });
-    if (solar.co2SavedKg) kpis.push({ label: "CO₂ évité", value: fmtNum(solar.co2SavedKg), unit: "kg/an" });
-    if (solar.savingsMad) kpis.push({ label: "Économies", value: fmtNum(solar.savingsMad), unit: "MAD/an" });
+    if (scaledCo2 > 0) kpis.push({ label: "CO₂ évité", value: fmtNum(Math.round(scaledCo2)), unit: "kg/an" });
+    if (consoKwhPdf > 0 && scaledProd > 0) {
+      const coveragePct = Math.round((scaledProd / consoKwhPdf) * 100);
+      kpis.push({ label: "Couverture", value: `${coveragePct}%`, unit: "de la conso." });
+    }
 
     const kpiCount = Math.min(kpis.length, 5);
     const kpiW = contentW / kpiCount;
