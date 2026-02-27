@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { z } from "zod";
 import { formatPhoneInput } from "@/lib/formatPhone";
 import { X, ArrowRight, CheckCircle, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,13 @@ interface QuotePanelProps {
   pic?: PIC | null;
 }
 
+const quoteFormSchema = z.object({
+  nom: z.string().trim().min(2, "Veuillez entrer votre nom complet.").max(100, "Nom trop long (100 caractères max)."),
+  email: z.string().trim().email("Adresse email invalide.").max(255, "Email trop long."),
+  telephone: z.string().trim().regex(/^(\+212|0)([ \-]?[0-9]){9}$/, "Numéro invalide (ex : 06 12 34 56 78)"),
+  ville: z.string().trim().min(1, "Veuillez indiquer votre ville.").max(100, "Ville trop longue."),
+});
+
 const phoneRegex = /^(\+212|0)([ \-]?[0-9]){9}$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -66,20 +74,15 @@ const QuotePanel = ({ open, onOpenChange, installerName, onSuccess, diagnosticDa
     e.preventDefault();
     setError("");
 
-    if (!nom.trim() || nom.trim().length < 2) {
-      setError("Veuillez entrer votre nom complet.");
-      return;
-    }
-    if (!emailRegex.test(email.trim())) {
-      setError("Adresse email invalide.");
-      return;
-    }
-    if (!phoneRegex.test(telephone.replace(/\s/g, ""))) {
-      setError("Numéro invalide (ex : 06 12 34 56 78)");
-      return;
-    }
-    if (!ville.trim()) {
-      setError("Veuillez indiquer votre ville.");
+    const result = quoteFormSchema.safeParse({
+      nom,
+      email: user?.email || email,
+      telephone: telephone.replace(/\s/g, ""),
+      ville,
+    });
+
+    if (!result.success) {
+      setError(result.error.errors[0].message);
       return;
     }
 
