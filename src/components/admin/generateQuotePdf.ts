@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { scaleSolar, parseConsoKwh, neededKwc as calcNeededKwc } from "@/lib/solarScaling";
 
 interface QuoteData {
   id: string;
@@ -92,8 +93,7 @@ function getRecommendation(req: QuoteData, packages: PackageInfo[]) {
   const warnings: string[] = [];
   const reasoning: string[] = [];
 
-  const consoMatch = req.annual_consumption?.match(/(\d[\d\s]*)/);
-  const consoKwh = consoMatch ? parseInt(consoMatch[1].replace(/\s/g, "")) : 0;
+  const consoKwh = parseConsoKwh(req.annual_consumption);
 
   const abonnement = (req.type_abonnement || "").toLowerCase();
   const isTriphase = abonnement.includes("triphasé") || abonnement.includes("haute tension");
@@ -101,7 +101,7 @@ function getRecommendation(req: QuoteData, packages: PackageInfo[]) {
   const wantAutonomy = req.objectif?.toLowerCase().includes("autonomie");
   const wantReduceFact = req.objectif?.toLowerCase().includes("rédu");
 
-  const neededKwc = consoKwh > 0 ? Math.ceil(consoKwh / 1700) : 3;
+  const neededKwc = calcNeededKwc(consoKwh, 3);
   reasoning.push(`Consommation annuelle : ${consoKwh > 0 ? fmtNum(consoKwh) + " kWh" : "N/R"}`);
   reasoning.push(`Puissance PV nécessaire : ~${neededKwc} kWc`);
   if (isHauteTension) reasoning.push("Abonnement Haute Tension — profil Commercial & Industriel.");
@@ -448,27 +448,19 @@ export function generateQuotePdf(
   const yCol2 = drawCol(col2, margin + colW + 4, y);
   y = Math.max(yCol1, yCol2) + 3;
 
-  // ─── Compute system size for scaling ─────────
-  const consoMatchPdf = req.annual_consumption?.match(/(\d[\d\s]*)/);
-  const consoKwhPdf = consoMatchPdf ? parseInt(consoMatchPdf[1].replace(/\s/g, "")) : 0;
-  const neededKwcPdf = consoKwhPdf > 0 ? Math.ceil(consoKwhPdf / 1700) : 1;
-
-  // ─── SOLAR KPIs ────────────────────────────────
+  // ─── SOLAR KPIs (scaled via shared utility) ─────────────────
   if (solar && (solar.yearlyIrradiationKwhM2 || solar.yearlyProductionKwh)) {
     y = drawSectionTitle(doc, "Potentiel solaire du site", y, margin);
 
-    const prodPerKwc = solar.yearlyProductionKwh || 0;
-    const scaledProd = neededKwcPdf * prodPerKwc;
-    const scaledCo2 = neededKwcPdf * (solar.co2SavedKg || 0);
+    const scaled = scaleSolar(solar, parseConsoKwh(req.annual_consumption));
 
     const kpis: { label: string; value: string; unit: string }[] = [];
     if (solar.yearlyIrradiationKwhM2) kpis.push({ label: "Irradiation", value: fmtNum(solar.yearlyIrradiationKwhM2), unit: "kWh/m²/an" });
-    if (scaledProd > 0) kpis.push({ label: `Production (${neededKwcPdf} kWc)`, value: fmtNum(scaledProd), unit: "kWh/an" });
+    if (scaled && scaled.production > 0) kpis.push({ label: `Production (${scaled.systemKwc} kWc)`, value: fmtNum(scaled.production), unit: "kWh/an" });
     if (solar.optimalInclination != null) kpis.push({ label: "Inclinaison", value: `${solar.optimalInclination}°`, unit: "" });
-    if (scaledCo2 > 0) kpis.push({ label: "CO₂ évité", value: fmtNum(Math.round(scaledCo2)), unit: "kg/an" });
-    if (consoKwhPdf > 0 && scaledProd > 0) {
-      const coveragePct = Math.round((scaledProd / consoKwhPdf) * 100);
-      kpis.push({ label: "Couverture", value: `${coveragePct}%`, unit: "de la conso." });
+    if (scaled && scaled.co2Saved > 0) kpis.push({ label: "CO₂ évité", value: fmtNum(scaled.co2Saved), unit: "kg/an" });
+    if (scaled && scaled.coveragePct > 0) {
+      kpis.push({ label: "Couverture", value: `${scaled.coveragePct}%`, unit: "de la conso." });
     }
 
     const kpiCount = Math.min(kpis.length, 5);

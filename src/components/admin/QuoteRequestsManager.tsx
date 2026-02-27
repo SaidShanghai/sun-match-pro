@@ -11,6 +11,7 @@ import { FileText, Loader2, Mail, Phone, MapPin, Calendar, ChevronDown, ChevronU
 import { useToast } from "@/hooks/use-toast";
 import SatelliteMapPreview from "@/components/admin/SatelliteMapPreview";
 import { generateQuotePdf } from "@/components/admin/generateQuotePdf";
+import { parseConsoKwh, scaleSolar } from "@/lib/solarScaling";
 
 interface SolarResult {
   source?: string;
@@ -434,91 +435,85 @@ const QuoteRequestsManager = () => {
                             if (!solar || solar.error) {
                               return <p className="text-sm text-muted-foreground italic">{solar && typeof solar === 'object' && solar.message ? solar.message : "Aucune donnée solaire disponible pour cette zone."}</p>;
                             }
-                              // Scale production to recommended system size
-                              const consoMatch = req.annual_consumption?.match(/(\d[\d\s]*)/);
-                              const consoKwh = consoMatch ? parseInt(consoMatch[1].replace(/\s/g, "")) : 0;
-                              const neededKwc = consoKwh > 0 ? Math.ceil(consoKwh / 1700) : 0;
-                              const prodPerKwc = solar.yearlyProductionKwh || 0;
-                              const scaledProd = neededKwc > 0 && prodPerKwc > 0 ? neededKwc * prodPerKwc : 0;
-                              const scaledCo2 = neededKwc > 0 && solar.co2SavedKg ? neededKwc * solar.co2SavedKg : solar.co2SavedKg;
+                            const scaled = scaleSolar(solar, parseConsoKwh(req.annual_consumption));
 
-                              return (
-                               <div className="grid sm:grid-cols-2 gap-2 text-sm">
-                                 {solar.yearlyIrradiationKwhM2 != null && (
-                                   <div className="flex items-center gap-2">
-                                     <Sun className="w-3.5 h-3.5 text-amber-500" />
-                                     <span className="text-muted-foreground">Irradiation :</span>
-                                     <span className="font-medium">{solar.yearlyIrradiationKwhM2.toLocaleString("fr-FR")} kWh/m²/an</span>
-                                   </div>
-                                 )}
-                                 {solar.yearlyProductionKwh != null && (
-                                   <div className="flex items-center gap-2">
-                                     <Zap className="w-3.5 h-3.5 text-yellow-500" />
-                                     <span className="text-muted-foreground">Prod. unitaire :</span>
-                                     <span className="font-medium">{solar.yearlyProductionKwh.toLocaleString("fr-FR")} kWh/kWc/an</span>
-                                   </div>
-                                 )}
-                                 {scaledProd > 0 && (
-                                   <div className="flex items-center gap-2 sm:col-span-2 bg-emerald-500/10 rounded-lg px-2 py-1">
-                                     <Zap className="w-3.5 h-3.5 text-emerald-600" />
-                                     <span className="text-muted-foreground">Production système ({neededKwc} kWc) :</span>
-                                     <span className="font-bold text-emerald-700">{scaledProd.toLocaleString("fr-FR")} kWh/an</span>
-                                     {consoKwh > 0 && (
-                                       <span className="text-xs text-muted-foreground ml-1">
-                                         ({Math.round((scaledProd / consoKwh) * 100)}% de la conso.)
-                                       </span>
-                                     )}
-                                   </div>
-                                 )}
-                                 {solar.optimalInclination != null && (
-                                   <div className="flex items-center gap-2">
-                                     <LayoutGrid className="w-3.5 h-3.5 text-primary" />
-                                     <span className="text-muted-foreground">Inclinaison optimale :</span>
-                                     <span className="font-medium">{solar.optimalInclination}°</span>
-                                   </div>
-                                 )}
-                                 {solar.optimalAzimuth != null && (
-                                   <div className="flex items-center gap-2">
-                                     <LayoutGrid className="w-3.5 h-3.5 text-muted-foreground" />
-                                     <span className="text-muted-foreground">Azimut optimal :</span>
-                                     <span className="font-medium">{solar.optimalAzimuth}°</span>
-                                   </div>
-                                 )}
-                                 {scaledCo2 != null && scaledCo2 > 0 && (
-                                   <div className="flex items-center gap-2">
-                                     <Leaf className="w-3.5 h-3.5 text-green-500" />
-                                     <span className="text-muted-foreground">CO₂ évité ({neededKwc} kWc) :</span>
-                                     <span className="font-medium">{Math.round(scaledCo2).toLocaleString("fr-FR")} kg/an</span>
-                                   </div>
-                                 )}
-                                 {solar.database && (
-                                   <div className="text-xs text-muted-foreground sm:col-span-2">
-                                     Source : {solar.source} ({solar.database})
-                                   </div>
-                                 )}
-                               </div>
-                             );
+                            return (
+                              <div className="grid sm:grid-cols-2 gap-2 text-sm">
+                                {solar.yearlyIrradiationKwhM2 != null && (
+                                  <div className="flex items-center gap-2">
+                                    <Sun className="w-3.5 h-3.5 text-amber-500" />
+                                    <span className="text-muted-foreground">Irradiation :</span>
+                                    <span className="font-medium">{solar.yearlyIrradiationKwhM2.toLocaleString("fr-FR")} kWh/m²/an</span>
+                                  </div>
+                                )}
+                                {solar.yearlyProductionKwh != null && (
+                                  <div className="flex items-center gap-2">
+                                    <Zap className="w-3.5 h-3.5 text-yellow-500" />
+                                    <span className="text-muted-foreground">Prod. unitaire :</span>
+                                    <span className="font-medium">{solar.yearlyProductionKwh.toLocaleString("fr-FR")} kWh/kWc/an</span>
+                                  </div>
+                                )}
+                                {scaled && scaled.production > 0 && (
+                                  <div className="flex items-center gap-2 sm:col-span-2 bg-emerald-500/10 rounded-lg px-2 py-1">
+                                    <Zap className="w-3.5 h-3.5 text-emerald-600" />
+                                    <span className="text-muted-foreground">Production système ({scaled.systemKwc} kWc) :</span>
+                                    <span className="font-bold text-emerald-700">{scaled.production.toLocaleString("fr-FR")} kWh/an</span>
+                                    {scaled.coveragePct > 0 && (
+                                      <span className="text-xs text-muted-foreground ml-1">
+                                        ({scaled.coveragePct}% de la conso.)
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+                                {solar.optimalInclination != null && (
+                                  <div className="flex items-center gap-2">
+                                    <LayoutGrid className="w-3.5 h-3.5 text-primary" />
+                                    <span className="text-muted-foreground">Inclinaison optimale :</span>
+                                    <span className="font-medium">{solar.optimalInclination}°</span>
+                                  </div>
+                                )}
+                                {solar.optimalAzimuth != null && (
+                                  <div className="flex items-center gap-2">
+                                    <LayoutGrid className="w-3.5 h-3.5 text-muted-foreground" />
+                                    <span className="text-muted-foreground">Azimut optimal :</span>
+                                    <span className="font-medium">{solar.optimalAzimuth}°</span>
+                                  </div>
+                                )}
+                                {scaled && scaled.co2Saved > 0 && (
+                                  <div className="flex items-center gap-2">
+                                    <Leaf className="w-3.5 h-3.5 text-green-500" />
+                                    <span className="text-muted-foreground">CO₂ évité ({scaled.systemKwc} kWc) :</span>
+                                    <span className="font-medium">{scaled.co2Saved.toLocaleString("fr-FR")} kg/an</span>
+                                  </div>
+                                )}
+                                {solar.database && (
+                                  <div className="text-xs text-muted-foreground sm:col-span-2">
+                                    Source : {solar.source} ({solar.database})
+                                  </div>
+                                )}
+                              </div>
+                            );
                           })()}
-                        </div>
-                        )}
 
-                        {/* CTA Émettre un Devis */}
-                        <div className="flex justify-end pt-4 border-t">
-                          <Button
-                            onClick={() => {
-                              const solar = solarCache[req.id];
-                              const solarData = solar && solar !== "loading" && !solar.error ? solar as any : null;
-                              generateQuotePdf(req, solarData, allPackages);
-                              toast({ title: "PDF généré !", description: `Devis #${req.id.slice(0, 8).toUpperCase()} téléchargé.` });
-                            }}
-                            className="gap-2"
-                          >
-                            <Download className="w-4 h-4" />
-                            Émettre un Devis
-                          </Button>
+                          {/* CTA Émettre un Devis */}
+                          <div className="flex justify-end pt-4 border-t">
+                            <Button
+                              onClick={() => {
+                                const solar = solarCache[req.id];
+                                const solarData = solar && solar !== "loading" && !solar.error ? solar as any : null;
+                                generateQuotePdf(req, solarData, allPackages);
+                                toast({ title: "PDF généré !", description: `Devis #${req.id.slice(0, 8).toUpperCase()} téléchargé.` });
+                              }}
+                              className="gap-2"
+                            >
+                              <Download className="w-4 h-4" />
+                              Émettre un Devis
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             );
