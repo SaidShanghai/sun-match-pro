@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { useDiagnosticPersistence } from "@/hooks/useDiagnosticPersistence";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
@@ -82,6 +83,7 @@ const surfaces = [
 ];
 
 const Diagnostic = () => {
+  const { save, load, clear } = useDiagnosticPersistence();
   const [screen, setScreen] = useState<Screen>("landing");
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [objectif, setObjectif] = useState<"facture" | "autonomie" | null>(null);
@@ -124,6 +126,66 @@ const Diagnostic = () => {
   const { toast } = useToast();
   const [projetPlaceholderIndex, setProjetPlaceholderIndex] = useState(0);
   const [projetPlaceholderVisible, setProjetPlaceholderVisible] = useState(true);
+  const restoredRef = useRef(false);
+
+  // ── Restore draft on mount ──
+  useEffect(() => {
+    if (restoredRef.current) return;
+    restoredRef.current = true;
+    const draft = load();
+    if (!draft) return;
+
+    setScreen(draft.screen as Screen);
+    setSelectedType(draft.selectedType);
+    setObjectif(draft.objectif as any);
+    setTypeBatiment(draft.typeBatiment as any);
+    setConso(draft.conso);
+    setFacture(draft.facture);
+    setPuissanceSouscrite(draft.puissanceSouscrite);
+    setTypeAbonnement(draft.typeAbonnement as any);
+    setVille(draft.ville);
+    setPanelAccess(draft.panelAccess);
+    setSelectedSurface(draft.selectedSurface);
+    setSelectedUsages(draft.selectedUsages);
+    setDescriptionProjet(draft.descriptionProjet);
+    setAdresseProjet(draft.adresseProjet);
+    setVilleProjet(draft.villeProjet);
+    setRoofLat(draft.roofLat);
+    setRoofLng(draft.roofLng);
+    setDateDebut(draft.dateDebut);
+    setDateFin(draft.dateFin);
+    setPvExistante(draft.pvExistante as any);
+    setExtensionInstall(draft.extensionInstall as any);
+    setSubventionRecue(draft.subventionRecue as any);
+    setEligDecl(draft.eligDecl as any);
+
+    toast({ title: "Diagnostic en cours retrouvé", description: "Vos réponses ont été restaurées." });
+  }, []);
+
+  // ── Auto-save on every meaningful state change ──
+  useEffect(() => {
+    if (!restoredRef.current) return;
+    save({
+      screen, selectedType, objectif, typeBatiment, conso, facture,
+      puissanceSouscrite, typeAbonnement, ville, panelAccess,
+      selectedSurface, selectedUsages, descriptionProjet, adresseProjet,
+      villeProjet, roofLat, roofLng, dateDebut, dateFin,
+      pvExistante, extensionInstall, subventionRecue, eligDecl,
+    });
+  }, [screen, selectedType, objectif, typeBatiment, conso, facture,
+    puissanceSouscrite, typeAbonnement, ville, panelAccess,
+    selectedSurface, selectedUsages, descriptionProjet, adresseProjet,
+    villeProjet, roofLat, roofLng, dateDebut, dateFin,
+    pvExistante, extensionInstall, subventionRecue, eligDecl]);
+
+  // ── Clear draft on successful submission ──
+  const handleQuoteSuccess = useCallback((id: string, name: string, email: string) => {
+    clear();
+    setQuoteRef(id);
+    setContactNom(name);
+    setContactEmail(email);
+    setScreen("merci");
+  }, [clear]);
 
   /** Build the current PIC object from all state */
   const buildPic = (): PIC | null => {
@@ -989,11 +1051,8 @@ const Diagnostic = () => {
         }}
         pic={buildPic()}
         onSuccess={(id, clientName, clientEmail) => {
-          setQuoteRef(id);
-          setContactNom(clientName);
-          setContactEmail(clientEmail);
           setQuoteOpen(false);
-          setScreen("merci");
+          handleQuoteSuccess(id, clientName, clientEmail);
         }}
       />
     </div>
