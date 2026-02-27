@@ -95,10 +95,84 @@ function getRecommendation(req: QuoteData, packages: PackageInfo[]) {
   const consoMatch = req.annual_consumption?.match(/(\d[\d\s]*)/);
   const consoKwh = consoMatch ? parseInt(consoMatch[1].replace(/\s/g, "")) : 0;
 
-  const isTriphase = req.type_abonnement?.toLowerCase().includes("triphasé");
+  const abonnement = (req.type_abonnement || "").toLowerCase();
+  const isTriphase = abonnement.includes("triphasé") || abonnement.includes("haute tension");
+  const isHauteTension = abonnement.includes("haute tension");
   const wantAutonomy = req.objectif?.toLowerCase().includes("autonomie");
   const wantReduceFact = req.objectif?.toLowerCase().includes("rédu");
 
+  const neededKwc = consoKwh > 0 ? Math.ceil(consoKwh / 1700) : 3;
+  reasoning.push(`Consommation annuelle : ${consoKwh > 0 ? fmtNum(consoKwh) + " kWh" : "N/R"}`);
+  reasoning.push(`Puissance PV nécessaire : ~${neededKwc} kWc`);
+  if (isHauteTension) reasoning.push("Abonnement Haute Tension — profil Commercial & Industriel.");
+  if (isTriphase) reasoning.push("Configuration triphasée détectée.");
+
+  // ── C&I path: large consumption (> 100 kWc needed) or Haute Tension ──
+  const isCI = neededKwc > 100 || isHauteTension;
+
+  if (isCI) {
+    // Look for AIO BOX (industrial batteries) and BCT onduleurs
+    const aioBoxes = packages
+      .filter(p => p.name.toLowerCase().includes("aio box"))
+      .sort((a, b) => a.power_kwc - b.power_kwc);
+    const bctOnduleurs = packages
+      .filter(p => p.name.toLowerCase().includes("bct"))
+      .sort((a, b) => a.power_kwc - b.power_kwc);
+
+    let recommended: PackageInfo | null = null;
+
+    if (aioBoxes.length > 0) {
+      // Pick the AIO BOX that covers the needed power, or the largest one
+      recommended = aioBoxes.find(p => p.power_kwc >= neededKwc) || aioBoxes[aioBoxes.length - 1];
+
+      // Calculate how many units needed if largest is still too small
+      const nbUnits = Math.ceil(neededKwc / (recommended.power_kwc || 1));
+      if (nbUnits > 1) {
+        reasoning.push(`${nbUnits}× ${recommended.name} nécessaires pour couvrir ${neededKwc} kWc.`);
+        warnings.push(`Dimensionnement important : ${nbUnits} unités AIO BOX requises. Étude sur mesure recommandée.`);
+      }
+
+      // Add BCT onduleur info
+      if (bctOnduleurs.length > 0) {
+        const onduleur = bctOnduleurs[bctOnduleurs.length - 1];
+        const nbOnduleurs = Math.ceil(neededKwc / (onduleur.power_kwc || 110));
+        reasoning.push(`Onduleurs : ${nbOnduleurs}× ${onduleur.name} (${onduleur.power_kwc} kW)`);
+      }
+
+      // Panel count
+      const panelWc = 585;
+      const nbPanneaux = Math.ceil((neededKwc * 1000) / panelWc);
+      reasoning.push(`Panneaux : ~${nbPanneaux} × PVS ${panelWc}W (ratio DC/AC ~1.2)`);
+    } else {
+      // Fallback to largest SolarBox 380V
+      const tri380 = packages
+        .filter(p => p.name.toLowerCase().includes("solarbox") && p.name.includes("380V"))
+        .sort((a, b) => a.power_kwc - b.power_kwc);
+      recommended = tri380.length > 0 ? tri380[tri380.length - 1] : null;
+
+      if (recommended) {
+        const nbUnits = Math.ceil(neededKwc / (recommended.power_kwc || 1));
+        reasoning.push(`Pas d'AIO BOX dispo — fallback ${nbUnits}× ${recommended.name}`);
+        warnings.push("Solution sous-dimensionnée pour ce profil C&I. Étude sur mesure requise.");
+      } else {
+        warnings.push("Aucun système C&I disponible dans le catalogue. Étude sur mesure requise.");
+        return { recommended: null, reasoning, warnings };
+      }
+    }
+
+    if (recommended) {
+      const specs = recommended.specs || {};
+      const battKwh = specs.capacite_batterie_kwh || specs.capacite_utilisable_kwh;
+      if (battKwh) reasoning.push(`Stockage : ${battKwh} kWh LFP (${specs.cycles_de_vie || 6000} cycles)`);
+    }
+
+    if (wantAutonomy) reasoning.push("Objectif autonomie — stockage dimensionné en conséquence.");
+    if (wantReduceFact) reasoning.push("Objectif réduction facture — injection réseau prioritaire.");
+
+    return { recommended, reasoning, warnings };
+  }
+
+  // ── Residential / Small Commercial path (SolarBox) ──
   const solarBoxes = packages
     .filter(p => p.name.toLowerCase().includes("solarbox"))
     .sort((a, b) => a.power_kwc - b.power_kwc);
@@ -106,10 +180,6 @@ function getRecommendation(req: QuoteData, packages: PackageInfo[]) {
   if (solarBoxes.length === 0) {
     return { recommended: null, reasoning: ["Aucun package SolarBox disponible."], warnings: [] };
   }
-
-  const neededKwc = consoKwh > 0 ? Math.ceil(consoKwh / 1700) : 3;
-  reasoning.push(`Consommation annuelle : ${consoKwh > 0 ? fmtNum(consoKwh) + " kWh" : "N/R"}`);
-  reasoning.push(`Puissance PV nécessaire : ~${neededKwc} kWc`);
 
   let recommended: PackageInfo | null = null;
 
