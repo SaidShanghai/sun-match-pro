@@ -63,7 +63,7 @@ const features = [
   },
 ];
 
-const heroWords = ["Le solaire,", "Le diagnostic,", "Le soutien,", "Le financement,", "Le chantier,", "Le suivi,"];
+const heroWords = ["Le conseil,", "Le projet,", "Le pilotage,", "Le parcours,", "Le déploiement,"];
 const heroWordsEntreprise = ["SR500,", "TATWIR,", "GEFF,", "PPA,", "Le chantier,", "Le suivi,", "Le diagnostic,", "Le soutien,", "Le financement,"];
 
 const HeroRotatingTitle = ({ entreprise = false, activeIndex }: { entreprise?: boolean; activeIndex: number }) => {
