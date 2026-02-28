@@ -248,7 +248,7 @@ const Index = () => {
                 <Button
                   asChild
                   size="lg"
-                  className="group h-14 px-8 text-base text-black"
+                  className="group h-14 px-8 text-base text-black animate-[pulse_1.5s_ease-in-out_infinite] hover:animate-none"
                 >
                   <Link to="/diagnostic">
                     Voir mes économies
@@ -282,7 +282,7 @@ const Index = () => {
               <div>
                 <button
                   onClick={handleAideCTA}
-                  className="flex items-center gap-2 h-14 px-8 text-base font-semibold bg-black text-white rounded-md animate-[pulse_1.5s_ease-in-out_infinite] hover:animate-none hover:scale-105 transition-transform"
+                  className="flex items-center gap-2 h-14 px-8 text-base font-semibold bg-black text-white rounded-md hover:scale-105 transition-transform"
                 >
                   <span className="w-2 h-2 bg-white rounded-full shrink-0" />
                   Aides d'état SR500, TATWIR
