@@ -251,7 +251,7 @@ const Index = () => {
                   className="group h-14 px-8 text-base"
                 >
                   <Link to="/diagnostic">
-                    Lancer mon diagnostic
+                    Voir mes économies
                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
