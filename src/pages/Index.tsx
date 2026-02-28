@@ -86,7 +86,7 @@ const HeroRotatingTitle = ({ entreprise = false, activeIndex }: { entreprise?: b
           </motion.span>
         </AnimatePresence>
       </span>
-      <span className="text-gradient">simplifié</span>
+      <span className="text-gradient">solaire simplifié</span>
     </h1>
   );
 };
@@ -226,7 +226,7 @@ const Index = () => {
         <div className="absolute inset-0 bg-background/20" />
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="grid lg:grid-cols-[1fr_auto_1fr] gap-6 items-center">
+          <div className="grid lg:grid-cols-[1.2fr_auto_0.8fr] gap-6 items-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
