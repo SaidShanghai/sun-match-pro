@@ -248,7 +248,7 @@ const Index = () => {
                 <Button
                   asChild
                   size="lg"
-                  className="group h-14 px-8 text-base"
+                  className="group h-14 px-8 text-base text-black"
                 >
                   <Link to="/diagnostic">
                     Voir mes économies
