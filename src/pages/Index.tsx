@@ -251,7 +251,7 @@ const Index = () => {
                   className="group h-14 px-8 text-base text-black animate-[pulse_1.5s_ease-in-out_infinite] hover:animate-none"
                 >
                   <Link to="/diagnostic">
-                    Voir mes économies
+                    VOIR MES ÉCONOMIES
                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
