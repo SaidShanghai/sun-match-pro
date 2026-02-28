@@ -279,7 +279,17 @@ const Index = () => {
                 </div>
               </div>
 
-              <div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    const el = document.getElementById("diagnostic");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="flex items-center gap-2 h-14 px-8 text-base font-semibold bg-black text-white rounded-md hover:scale-105 transition-transform"
+                >
+                  <span className="w-2 h-2 bg-white rounded-full shrink-0" />
+                  PARTICULIERS
+                </button>
                 <button
                   onClick={handleAideCTA}
                   className="flex items-center gap-2 h-14 px-8 text-base font-semibold bg-black text-white rounded-md hover:scale-105 transition-transform"
