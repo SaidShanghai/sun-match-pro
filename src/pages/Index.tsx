@@ -39,6 +39,8 @@ import EligibiliteScreen from "@/components/EligibiliteScreen";
 import { villesMaroc } from "@/data/moroccanCities";
 import MiniMapMockup from "@/components/MiniMapMockup";
 import JsonLd from "@/components/JsonLd";
+import AnimatedCounter from "@/components/AnimatedCounter";
+import BeforeAfterBill from "@/components/BeforeAfterBill";
 
 const features = [
   {
@@ -265,16 +267,16 @@ const Index = () => {
               {/* Trust indicators */}
               <div className="flex items-center gap-8 pt-8 border-t border-border">
                 <div className="text-center">
-                  <div className="text-3xl font-bold">15K+</div>
+                  <AnimatedCounter end={15} suffix="K+" className="text-3xl font-bold" />
                   <div className="text-sm text-muted-foreground">Diagnostics</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold">30+</div>
+                  <AnimatedCounter end={30} suffix="+" className="text-3xl font-bold" />
                   <div className="text-sm text-muted-foreground">Installateurs</div>
                 </div>
                 <div className="flex items-center gap-1">
                   <Star className="w-5 h-5 text-warning fill-warning" />
-                  <span className="text-3xl font-bold">4.9</span>
+                  <AnimatedCounter end={4.9} decimals={1} className="text-3xl font-bold" />
                   <span className="text-sm text-muted-foreground">/5</span>
                 </div>
               </div>
@@ -1475,6 +1477,8 @@ const Index = () => {
       </section>
 
 
+      <BeforeAfterBill />
+
       {/* CTA */}
       <section className="py-24 bg-foreground text-background">
         <div className="container mx-auto px-4">
@@ -1517,22 +1521,22 @@ const Index = () => {
             >
               <div className="p-6 bg-background/5 rounded-2xl">
                 <Leaf className="w-10 h-10 mb-4" />
-                <div className="text-3xl font-bold">15K+</div>
+                <AnimatedCounter end={15} suffix="K+" className="text-3xl font-bold" />
                 <div className="text-background/70">Diagnostics réalisés</div>
               </div>
               <div className="p-6 bg-background/5 rounded-2xl">
                 <Sun className="w-10 h-10 mb-4" />
-                <div className="text-3xl font-bold">30+</div>
+                <AnimatedCounter end={30} suffix="+" className="text-3xl font-bold" />
                 <div className="text-background/70">Installateurs certifiés</div>
               </div>
               <div className="p-6 bg-background/5 rounded-2xl">
                 <PiggyBank className="w-10 h-10 mb-4" />
-                <div className="text-3xl font-bold">30%</div>
+                <AnimatedCounter end={30} suffix="%" className="text-3xl font-bold" />
                 <div className="text-background/70">Économies moyennes</div>
               </div>
               <div className="p-6 bg-background/5 rounded-2xl">
                 <Star className="w-10 h-10 mb-4" />
-                <div className="text-3xl font-bold">4.9</div>
+                <AnimatedCounter end={4.9} decimals={1} className="text-3xl font-bold" />
                 <div className="text-background/70">Note moyenne</div>
               </div>
             </motion.div>
