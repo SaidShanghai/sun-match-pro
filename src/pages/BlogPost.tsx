@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import ReactMarkdown from "react-markdown";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Loader2, Calendar, ArrowLeft, User, BookOpen } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2, Calendar, ArrowLeft, BookOpen, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
 interface Post {
@@ -15,7 +18,20 @@ interface Post {
   category: string;
   cover_image_url: string | null;
   published_at: string | null;
-  author_name: string;
+  meta_description: string | null;
+}
+
+const CATEGORY_BADGE: Record<string, { label: string; className: string }> = {
+  guide: { label: "Guide", className: "bg-green-500/10 text-green-600 border-green-500/20" },
+  actualite: { label: "Actualité", className: "bg-blue-500/10 text-blue-600 border-blue-500/20" },
+};
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 export default function BlogPost() {
@@ -25,26 +41,43 @@ export default function BlogPost() {
 
   useEffect(() => {
     if (!slug) return;
-    const fetch = async () => {
+    const fetchPost = async () => {
       const { data } = await supabase
         .from("blog_posts")
-        .select("*")
+        .select("id, title, slug, excerpt, content, category, cover_image_url, published_at, meta_description")
         .eq("slug", slug)
         .eq("is_published", true)
         .single();
       if (data) setPost(data as Post);
       setLoading(false);
     };
-    fetch();
+    fetchPost();
   }, [slug]);
+
+  // Set document title for SEO
+  useEffect(() => {
+    if (post) {
+      document.title = `${post.title} | NOORIA Blog`;
+    }
+    return () => {
+      document.title = "NOORIA – Énergie Solaire au Maroc";
+    };
+  }, [post]);
 
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <div className="flex-1 flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        </div>
+        <main className="flex-1 pt-24 pb-16">
+          <div className="container mx-auto px-4 max-w-3xl space-y-6">
+            <Skeleton className="h-4 w-48" />
+            <Skeleton className="h-[400px] w-full rounded-2xl" />
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-2/3" />
+          </div>
+        </main>
       </div>
     );
   }
@@ -56,14 +89,18 @@ export default function BlogPost() {
         <div className="flex-1 flex flex-col items-center justify-center gap-4">
           <BookOpen className="w-12 h-12 text-muted-foreground/40" />
           <p className="text-lg text-muted-foreground">Article introuvable</p>
-          <Link to="/blog" className="text-primary font-medium hover:underline">
-            ← Retour au blog
-          </Link>
+          <Button asChild variant="outline">
+            <Link to="/blog">
+              <ArrowLeft className="w-4 h-4 mr-2" /> Retour au blog
+            </Link>
+          </Button>
         </div>
         <Footer />
       </div>
     );
   }
+
+  const badge = CATEGORY_BADGE[post.category];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -71,35 +108,77 @@ export default function BlogPost() {
       <main className="flex-1 pt-24 pb-16">
         <article className="container mx-auto px-4 max-w-3xl">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Link to="/blog" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6">
-              <ArrowLeft className="w-4 h-4" /> Retour au blog
-            </Link>
+            {/* Breadcrumb */}
+            <nav className="flex items-center gap-1 text-sm text-muted-foreground mb-6">
+              <Link to="/" className="hover:text-primary transition-colors">Accueil</Link>
+              <ChevronRight className="w-3.5 h-3.5" />
+              <Link to="/blog" className="hover:text-primary transition-colors">Blog</Link>
+              <ChevronRight className="w-3.5 h-3.5" />
+              <span className="text-foreground truncate max-w-[200px]">{post.title}</span>
+            </nav>
 
-            {post.cover_image_url && (
-              <div className="rounded-2xl overflow-hidden mb-8 aspect-video">
-                <img src={post.cover_image_url} alt={post.title} className="w-full h-full object-cover" />
+            {/* Cover image */}
+            {post.cover_image_url ? (
+              <div className="rounded-2xl overflow-hidden mb-8 max-h-[400px]">
+                <img
+                  src={post.cover_image_url}
+                  alt={post.title}
+                  className="w-full h-full object-cover max-h-[400px]"
+                />
+              </div>
+            ) : (
+              <div className="rounded-2xl mb-8 h-[300px] bg-gradient-to-br from-primary/30 to-amber-400/30 flex items-center justify-center">
+                <BookOpen className="w-16 h-16 text-primary/30" />
               </div>
             )}
 
-            <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
-              <span className="flex items-center gap-1">
-                <User className="w-3.5 h-3.5" /> {post.author_name}
-              </span>
+            {/* Category + date */}
+            <div className="flex items-center gap-3 mb-4">
+              {badge && (
+                <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full border ${badge.className}`}>
+                  {badge.label}
+                </span>
+              )}
               {post.published_at && (
-                <span className="flex items-center gap-1">
+                <span className="text-sm text-muted-foreground flex items-center gap-1">
                   <Calendar className="w-3.5 h-3.5" />
-                  {new Date(post.published_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                  {formatDate(post.published_at)}
                 </span>
               )}
             </div>
 
-            <h1 className="text-3xl md:text-4xl font-bold mb-6">{post.title}</h1>
+            {/* Title */}
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">{post.title}</h1>
 
-            {/* Render content as HTML or plain text */}
-            <div
-              className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-a:text-primary"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+            {/* Meta description as subtitle */}
+            {post.meta_description && (
+              <p className="text-lg text-muted-foreground italic mb-6">{post.meta_description}</p>
+            )}
+
+            {/* Divider */}
+            <hr className="border-border mb-8" />
+
+            {/* Markdown content */}
+            <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-a:text-primary prose-img:rounded-xl">
+              <ReactMarkdown>{post.content}</ReactMarkdown>
+            </div>
+
+            {/* Bottom CTA */}
+            <div className="mt-16 rounded-2xl bg-gradient-to-r from-primary to-amber-500 p-8 md:p-10 text-white text-center">
+              <h2 className="text-2xl md:text-3xl font-bold mb-3">
+                Prêt à passer au solaire ?
+              </h2>
+              <p className="text-white/90 mb-6 max-w-lg mx-auto">
+                Calculez gratuitement la rentabilité de votre projet avec SunGPT.
+              </p>
+              <Button
+                asChild
+                size="lg"
+                className="bg-white text-primary hover:bg-white/90 font-semibold"
+              >
+                <Link to="/">Lancer mon diagnostic →</Link>
+              </Button>
+            </div>
           </motion.div>
         </article>
       </main>
