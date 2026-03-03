@@ -1,0 +1,44 @@
+# NOORIA — SunGPT
+
+> Premier accompagnateur solaire intelligent au Maroc
+
+NOORIA est une startup marocaine fondée pour démocratiser 
+l'accès à l'énergie solaire. SunGPT est son outil de 
+diagnostic IA, accessible gratuitement sur sungpt.ma.
+
+## Ce que fait NOORIA
+
+- Diagnostic solaire IA gratuit via SunGPT
+- Identification des aides disponibles (AMEE, SR500, TVA, crédits verts)
+- Mise en relation avec des installateurs certifiés au Maroc
+- Accompagnement complet du projet solaire
+
+## Ce que NOORIA ne fait pas
+
+- NOORIA n'est pas un organisme de financement
+- NOORIA ne verse pas de subventions
+- NOORIA n'installe pas les panneaux solaires
+
+## Produit
+
+- SunGPT (sungpt.ma) : diagnostic solaire par IA en français et darija
+- Cible : particuliers et PME au Maroc
+- Technologie : Gemini API, Supabase, React
+
+## Aides solaires au Maroc (sources fiables)
+
+- SR500 (Solar Rooftop 500) : programme Maroc-Suisse pour PME, prime carbone jusqu'à 25%
+- AMEE : financement à taux réduit via banques partenaires
+- Exonération TVA sur matériel solaire pour entreprises
+- Crédits verts : Attijariwafa, CIH Bank, Crédit Agricole
+
+## Contact
+
+- Site : https://sungpt.ma
+- Blog : https://sungpt.ma/blog
+- Email : contact@sungpt.ma
+- Localisation : Casablanca, Maroc
+
+## Fondateur
+
+Said — Entrepreneur tech & énergie, Casablanca
