@@ -19,6 +19,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PackagesManager from "@/components/admin/PackagesManager";
 import QuoteRequestsManager from "@/components/admin/QuoteRequestsManager";
+import BlogManager from "@/components/admin/BlogManager";
 
 const moroccoRegions: Record<string, string[]> = {
   "Casablanca-Settat": ["Casablanca", "Mohammedia", "Settat", "Berrechid", "El Jadida", "Benslimane", "Médiouna"],
@@ -249,15 +250,18 @@ const AdminDashboardContent = () => {
 
           {/* Onglets principaux */}
           <Tabs defaultValue="packages">
-            <TabsList className="grid w-full grid-cols-3 h-11">
+            <TabsList className="grid w-full grid-cols-4 h-11">
               <TabsTrigger value="packages" className="gap-2">
-                <Package className="w-4 h-4" />Packages & Prix
+                <Package className="w-4 h-4" />Packages
               </TabsTrigger>
               <TabsTrigger value="quotes" className="gap-2">
-                <FileText className="w-4 h-4" />Demandes de devis
+                <FileText className="w-4 h-4" />Devis
               </TabsTrigger>
               <TabsTrigger value="partners" className="gap-2">
                 <Users className="w-4 h-4" />Partenaires
+              </TabsTrigger>
+              <TabsTrigger value="blog" className="gap-2">
+                <FileText className="w-4 h-4" />Blog
               </TabsTrigger>
             </TabsList>
 
@@ -376,6 +380,10 @@ const AdminDashboardContent = () => {
                   </div>
                 )}
               </div>
+            </TabsContent>
+
+            <TabsContent value="blog" className="mt-6">
+              <BlogManager />
             </TabsContent>
           </Tabs>
 

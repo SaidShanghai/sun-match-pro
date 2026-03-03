@@ -10,6 +10,8 @@ import Profil from "./pages/Profil";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 
 
 const queryClient = new QueryClient();
@@ -29,6 +31,8 @@ const App = () => (
           <Route path="/admin" element={<Navigate to="/profil" replace />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/mentions-legales" element={<MentionsLegales />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         
