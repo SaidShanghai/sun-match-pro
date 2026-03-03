@@ -1,165 +1,218 @@
-import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { TrendingDown, Zap, Sun } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Zap, Sun, TrendingDown, ArrowDown } from "lucide-react";
+import AnimatedCounter from "./AnimatedCounter";
 
 export default function BeforeAfterBill() {
-  const [inView, setInView] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const [tab, setTab] = useState<"before" | "after">("before");
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setInView(true); },
-      { threshold: 0.3 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+  const beforeData = {
+    conso: 850,
+    tarif: 1.60,
+    total: 1850,
+    emoji: "😰",
+    title: "Avant",
+    desc: (
+      <>
+        Facture ONEE de <span className="font-bold text-destructive">1850 MAD/mois</span>. 100% dépendant du réseau, prix en hausse constante.
+      </>
+    ),
+  };
 
-  const beforeItems = [
-    { label: "T1 (0–100 kWh)", kwh: 100, price: 92.76 },
-    { label: "T2 (101–150 kWh)", kwh: 50, price: 55.15 },
-    { label: "T3 (151–300 kWh)", kwh: 150, price: 183.94 },
-  ];
-  const beforeTotal = 1650;
+  const afterData = {
+    conso: 850,
+    consoReseau: 320,
+    tarif: 1.10,
+    total: 550,
+    emoji: "😎",
+    title: "Après NOORIA",
+    desc: (
+      <>
+        Facture réduite à <span className="font-bold text-primary">550 MAD/mois</span>. Autoconsommation solaire, retour sur investissement en 4-5 ans.
+      </>
+    ),
+  };
 
-  const afterItems = [
-    { label: "T1 (0–100 kWh)", kwh: 100, price: 92.76 },
-    { label: "T2 (résidu)", kwh: 30, price: 33.09 },
-  ];
-  const afterTotal = 495;
+  const savingMonthly = beforeData.total - afterData.total;
+  const savingLifetime = savingMonthly * 12 * 25;
 
-  const saving = beforeTotal - afterTotal;
-  const savingPct = Math.round((saving / beforeTotal) * 100);
+  const current = tab === "before" ? beforeData : afterData;
 
   return (
-    <section className="py-24 bg-muted/20" ref={ref}>
+    <section className="py-24 bg-muted/20">
       <div className="container mx-auto px-4">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-14"
+          className="text-center mb-12"
         >
-          <h2 className="text-4xl font-bold mb-4">Avant / Après solaire</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Visualisez l'impact concret sur votre facture ONEE — simulation pour 300 kWh/mois.
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            Votre facture <span className="text-primary">ONEE</span>, avant et après
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+            Découvrez l'impact réel du solaire sur votre facture d'électricité
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
-          {/* AVANT */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6 }}
-            className="relative rounded-2xl border-2 border-destructive/30 bg-card p-6 flex flex-col"
-          >
-            <div className="flex items-center gap-2 mb-5">
-              <Zap className="w-5 h-5 text-destructive" />
-              <span className="font-bold text-lg">Avant solaire</span>
-            </div>
-
-            <div className="space-y-3 flex-1">
-              {beforeItems.map((item, i) => (
-                <motion.div
-                  key={item.label}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={inView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ delay: 0.3 + i * 0.15 }}
-                  className="flex justify-between items-center text-sm"
-                >
-                  <span className="text-muted-foreground">{item.label}</span>
-                  <span className="font-semibold">{item.price.toFixed(2)} DH</span>
-                </motion.div>
-              ))}
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={inView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ delay: 0.8 }}
-              className="mt-6 pt-4 border-t border-border"
+        {/* Tabs */}
+        <div className="flex justify-center mb-12">
+          <div className="inline-flex bg-muted rounded-full p-1 gap-1">
+            <button
+              onClick={() => setTab("before")}
+              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                tab === "before"
+                  ? "bg-destructive text-white shadow-md"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
             >
-              <div className="flex justify-between items-end">
-                <span className="text-sm text-muted-foreground">Facture annuelle</span>
-                <span className="text-3xl font-bold text-destructive">{beforeTotal.toLocaleString()} DH</span>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* APRÈS */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative rounded-2xl border-2 border-primary/30 bg-card p-6 flex flex-col"
-          >
-            <div className="absolute -top-3 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
-              -{savingPct}%
-            </div>
-
-            <div className="flex items-center gap-2 mb-5">
-              <Sun className="w-5 h-5 text-primary" />
-              <span className="font-bold text-lg">Avec solaire</span>
-            </div>
-
-            <div className="space-y-3 flex-1">
-              {afterItems.map((item, i) => (
-                <motion.div
-                  key={item.label}
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={inView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ delay: 0.5 + i * 0.15 }}
-                  className="flex justify-between items-center text-sm"
-                >
-                  <span className="text-muted-foreground">{item.label}</span>
-                  <span className="font-semibold">{item.price.toFixed(2)} DH</span>
-                </motion.div>
-              ))}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={inView ? { opacity: 1 } : {}}
-                transition={{ delay: 0.8 }}
-                className="flex justify-between items-center text-sm text-primary"
-              >
-                <span>Production solaire couverte</span>
-                <span className="font-semibold">~170 kWh/mois</span>
-              </motion.div>
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={inView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ delay: 1 }}
-              className="mt-6 pt-4 border-t border-border"
+              Avant solaire
+            </button>
+            <button
+              onClick={() => setTab("after")}
+              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                tab === "after"
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
             >
-              <div className="flex justify-between items-end">
-                <span className="text-sm text-muted-foreground">Facture annuelle</span>
-                <span className="text-3xl font-bold text-primary">{afterTotal.toLocaleString()} DH</span>
-              </div>
-            </motion.div>
-          </motion.div>
+              Après solaire ☀️
+            </button>
+          </div>
         </div>
 
-        {/* Savings bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 1.2 }}
-          className="max-w-4xl mx-auto mt-10"
-        >
-          <div className="flex items-center justify-center gap-4 p-6 rounded-2xl bg-primary/10 border border-primary/20">
-            <TrendingDown className="w-8 h-8 text-primary shrink-0" />
-            <div className="text-center">
-              <p className="text-2xl font-bold text-primary">{saving.toLocaleString()} DH / an économisés</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Soit environ {Math.round(saving / 12).toLocaleString()} DH/mois en moins sur votre facture
-              </p>
+        {/* Content */}
+        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 items-start">
+          {/* Left: Bill card */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={tab}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.35 }}
+              className={`rounded-2xl border-2 bg-card shadow-lg overflow-hidden ${
+                tab === "before" ? "border-destructive/30" : "border-primary/30"
+              }`}
+            >
+              {/* Red/green top bar */}
+              <div className={`h-1.5 ${tab === "before" ? "bg-destructive" : "bg-primary"}`} />
+
+              <div className="p-6">
+                <div className="flex items-center gap-3 mb-1">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    tab === "before" ? "bg-destructive/10" : "bg-primary/10"
+                  }`}>
+                    {tab === "before" ? (
+                      <Zap className="w-5 h-5 text-destructive" />
+                    ) : (
+                      <Sun className="w-5 h-5 text-primary" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-bold text-lg">Facture ONEE</p>
+                    <p className="text-xs text-muted-foreground">Consommation mensuelle moyenne</p>
+                  </div>
+                </div>
+
+                <div className="mt-6 space-y-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Consommation réseau</span>
+                    <span className="font-semibold">
+                      {tab === "before" ? "850 kWh" : "320 kWh"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Tarif moyen/kWh</span>
+                    <span className="font-semibold">
+                      {tab === "before" ? "1.60 MAD" : "1.10 MAD"}
+                    </span>
+                  </div>
+                  {tab === "after" && (
+                    <div className="flex justify-between text-sm text-primary">
+                      <span>Production solaire couverte</span>
+                      <span className="font-semibold">~530 kWh</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-border flex justify-between items-end">
+                  <span className="font-bold">Total TTC</span>
+                  <span className={`text-3xl font-bold ${
+                    tab === "before" ? "text-destructive" : "text-primary"
+                  }`}>
+                    {current.total.toLocaleString()} MAD
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Right: Explanation cards */}
+          <div className="flex flex-col gap-6">
+            {/* Before card */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className={`rounded-xl border bg-card p-5 flex gap-4 items-start transition-all ${
+                tab === "before" ? "border-destructive/30 shadow-md" : "border-border opacity-60"
+              }`}
+            >
+              <span className="text-2xl mt-0.5">😰</span>
+              <div>
+                <p className="font-bold mb-1">Avant</p>
+                <p className="text-sm text-muted-foreground">
+                  Facture ONEE de <span className="font-bold text-destructive">1850 MAD/mois</span>. 100% dépendant du réseau, prix en hausse constante.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Arrow */}
+            <div className="flex justify-center">
+              <ArrowDown className="w-5 h-5 text-muted-foreground" />
             </div>
+
+            {/* After card */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className={`rounded-xl border bg-card p-5 flex gap-4 items-start transition-all ${
+                tab === "after" ? "border-primary/30 shadow-md" : "border-border opacity-60"
+              }`}
+            >
+              <span className="text-2xl mt-0.5">😎</span>
+              <div>
+                <p className="font-bold mb-1">Après NOORIA</p>
+                <p className="text-sm text-muted-foreground">
+                  Facture réduite à <span className="font-bold text-primary">550 MAD/mois</span>. Autoconsommation solaire, retour sur investissement en 4-5 ans.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Lifetime savings */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="rounded-xl bg-muted/60 border border-border p-5"
+            >
+              <p className="text-sm font-medium mb-1">
+                📊 Sur 25 ans (durée de vie des panneaux)
+              </p>
+              <p className="text-3xl font-bold text-primary">
+                <AnimatedCounter end={savingLifetime} suffix=" MAD" />
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">
+                d'économies cumulées estimées
+              </p>
+            </motion.div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
