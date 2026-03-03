@@ -159,7 +159,7 @@ export default function BlogPost() {
             <hr className="border-border mb-8" />
 
             {/* Markdown content */}
-            <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-a:text-primary prose-img:rounded-xl">
+            <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-a:text-primary prose-img:rounded-xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:mt-8 prose-h3:mb-3 prose-p:mb-4 prose-p:leading-relaxed prose-li:my-1 prose-ul:my-4 prose-ol:my-4 prose-blockquote:my-6 prose-blockquote:border-primary/40 prose-blockquote:bg-muted/30 prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-strong:text-foreground prose-hr:my-8">
               <ReactMarkdown>{post.content}</ReactMarkdown>
             </div>
 
