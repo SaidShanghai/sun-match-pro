@@ -1,25 +1,31 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdmin } from "@/hooks/useAdmin";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
 
-const NAV_LINKS = [
-  { to: "/", label: "Accueil" },
-  { to: "/diagnostic", label: "Diagnostic IA" },
-  { to: "/nos-solutions", label: "Nos solutions" },
-  { to: "/blog", label: "Blog" },
-  { to: "/profil", label: "Mon diagnostic" },
-];
-
 const Header = () => {
   const { user } = useAuth();
+  const { isAdmin } = useAdmin();
   const navigate = useNavigate();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [showLogout, setShowLogout] = useState(false);
+
+  const NAV_LINKS = useMemo(() => {
+    const links = [
+      { to: "/", label: "Accueil" },
+      ...(isAdmin ? [{ to: "/profil", label: "Tableau de bord" }] : []),
+      { to: "/diagnostic", label: "Diagnostic IA" },
+      { to: "/nos-solutions", label: "Nos solutions" },
+      { to: "/blog", label: "Blog" },
+      ...(!isAdmin ? [{ to: "/profil", label: "Mon diagnostic" }] : []),
+    ];
+    return links;
+  }, [isAdmin]);
 
   const getScale = (i: number) => {
     if (hoveredIndex === null) return 1;
