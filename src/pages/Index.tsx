@@ -251,7 +251,8 @@ const Index = () => {
 
               <p className="text-xl text-foreground/80 max-w-lg font-medium">
                 Uploadez votre facture. Notre IA analyse votre consommation, calcule votre installation idéale
-                <br />et vous connecte aux meilleurs installateurs certifiés près de chez vous.
+                et vous connecte aux meilleurs installateurs certifiés
+                <br />près de chez vous.
                 <br /><strong>Gratuit. Sans engagement.</strong>
               </p>
 
