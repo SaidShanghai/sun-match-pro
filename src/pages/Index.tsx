@@ -1384,7 +1384,7 @@ const Index = () => {
                 },
                 {
                   label: "Suivi",
-                  sub: "Jusqu'à -70%",
+                  sub: "70% à 100% d'économies",
                   sketch: (
                     <svg viewBox="0 0 48 48" className="w-full h-full" fill="none" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M24 4l6 2 6 0 2 6 4 4-2 6 2 6-4 4-2 6-6 0-6 2-6-2-6 0-2-6-4-4 2-6-2-6 4-4 2-6 6 0z" stroke="currentColor" strokeWidth="1.3" strokeDasharray="3 2" />
