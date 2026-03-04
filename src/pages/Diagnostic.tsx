@@ -3,6 +3,8 @@ import { useDiagnosticPersistence } from "@/hooks/useDiagnosticPersistence";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import JsonLd from "@/components/seo/JsonLd";
+import { diagnosticSchema } from "@/config/seoSchemas";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -313,6 +315,7 @@ const Diagnostic = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <JsonLd schema={diagnosticSchema} />
       <Header />
 
       {screen === "landing" ? (

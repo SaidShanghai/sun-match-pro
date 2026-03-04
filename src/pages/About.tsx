@@ -9,35 +9,7 @@ import { STATS } from "@/config/stats";
 import { Button } from "@/components/ui/button";
 import { usePageMeta } from "@/hooks/usePageMeta";
 
-const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "NOORIA",
-  alternateName: "SunGPT",
-  url: "https://sungpt.ma",
-  logo: "https://sungpt.ma/logo.png",
-  foundingDate: "2024",
-  foundingLocation: {
-    "@type": "Place",
-    name: "Casablanca, Maroc",
-  },
-  description:
-    "Plateforme IA de diagnostic solaire au Maroc. NOORIA connecte particuliers et entreprises aux installateurs certifiés via SunGPT, son moteur d'intelligence artificielle.",
-  knowsAbout: [
-    "énergie solaire",
-    "photovoltaïque",
-    "ONEE",
-    "MASEN",
-    "autoconsommation",
-    "panneaux solaires Maroc",
-    "diagnostic solaire IA",
-  ],
-  areaServed: {
-    "@type": "Country",
-    name: "Morocco",
-  },
-  sameAs: ["https://solarcompare.ma"],
-};
+import { aboutSchema } from "@/config/seoSchemas";
 
 const fadeUp = {
   initial: { opacity: 0, y: 30 },
@@ -79,7 +51,7 @@ export default function About() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <JsonLd schema={organizationSchema} />
+      <JsonLd schema={aboutSchema} />
       <Header />
 
       {/* Hero */}

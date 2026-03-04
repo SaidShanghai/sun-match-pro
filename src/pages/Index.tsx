@@ -45,7 +45,8 @@ import AnimatedCounter from "@/components/AnimatedCounter";
 import BeforeAfterBill from "@/components/BeforeAfterBill";
 import FAQSection from "@/components/FAQSection";
 import JsonLd from "@/components/seo/JsonLd";
-import { faqData, buildFaqSchema } from "@/data/faq";
+import { homepageSchema } from "@/config/seoSchemas";
+import { faqData } from "@/data/faq";
 
 const features = [
   {
@@ -226,7 +227,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      
+      <JsonLd schema={homepageSchema} />
       <Header />
 
       {/* Hero */}

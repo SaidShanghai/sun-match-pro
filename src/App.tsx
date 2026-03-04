@@ -3,8 +3,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import JsonLd from "@/components/seo/JsonLd";
-import { defaultSchemas } from "@/config/seoSchemas";
 import Index from "./pages/Index";
 import Diagnostic from "./pages/Diagnostic";
 import Results from "./pages/Results";
@@ -23,7 +21,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <JsonLd schema={defaultSchemas} />
+      
       <Toaster />
       <Sonner />
       <BrowserRouter>

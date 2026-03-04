@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/seo/JsonLd";
+import { buildArticleSchema } from "@/config/seoSchemas";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Loader2, Calendar, ArrowLeft, BookOpen, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -107,31 +108,7 @@ export default function BlogPost() {
 
   const badge = CATEGORY_BADGE[post.category];
 
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    description: post.meta_description || post.excerpt || "",
-    image: post.cover_image_url || "https://sungpt.ma/og-image.png",
-    datePublished: post.published_at || undefined,
-    dateModified: post.published_at || undefined,
-    author: {
-      "@type": "Organization",
-      name: "NOORIA",
-      url: "https://sungpt.ma",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "NOORIA",
-      logo: { "@type": "ImageObject", url: "https://sungpt.ma/logo.png" },
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `https://sungpt.ma/blog/${post.slug}`,
-    },
-    about: { "@type": "Thing", name: "Énergie solaire au Maroc" },
-    inLanguage: "fr-MA",
-  };
+  const articleSchema = buildArticleSchema(post);
 
   return (
     <div className="min-h-screen flex flex-col">
