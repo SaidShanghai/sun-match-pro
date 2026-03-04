@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { STATS } from "@/config/stats";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
@@ -264,17 +265,16 @@ const Index = () => {
               {/* Trust indicators */}
               <div className="flex items-center gap-8 pt-8 border-t border-border">
                 <div className="text-center">
-                  <AnimatedCounter end={15} suffix="K+" className="text-3xl font-bold" />
-                  <div className="text-sm text-muted-foreground">Diagnostics</div>
+                  <AnimatedCounter end={STATS.diagnostics.value} suffix={STATS.diagnostics.suffix} className="text-3xl font-bold" />
+                  <div className="text-sm text-muted-foreground">{STATS.diagnostics.label}</div>
                 </div>
                 <div className="text-center">
-                  <AnimatedCounter end={30} suffix="+" className="text-3xl font-bold" />
-                  <div className="text-sm text-muted-foreground">Installateurs</div>
+                  <AnimatedCounter end={STATS.installateurs.value} suffix={STATS.installateurs.suffix} className="text-3xl font-bold" />
+                  <div className="text-sm text-muted-foreground">{STATS.installateurs.label}</div>
                 </div>
                 <div className="flex items-center gap-1">
                   <Star className="w-5 h-5 text-warning fill-warning" />
-                  <AnimatedCounter end={4.9} decimals={1} className="text-3xl font-bold" />
-                  <span className="text-sm text-muted-foreground">/5</span>
+                  <AnimatedCounter end={STATS.rating.value} decimals={STATS.rating.decimals} suffix={STATS.rating.suffix} className="text-3xl font-bold" />
                 </div>
               </div>
 
@@ -1518,23 +1518,23 @@ const Index = () => {
             >
               <div className="p-6 bg-background/5 rounded-2xl">
                 <Leaf className="w-10 h-10 mb-4" />
-                <AnimatedCounter end={15} suffix="K+" className="text-3xl font-bold" />
-                <div className="text-background/70">Diagnostics réalisés</div>
+                <AnimatedCounter end={STATS.diagnostics.value} suffix={STATS.diagnostics.suffix} className="text-3xl font-bold" />
+                <div className="text-background/70">{STATS.diagnostics.label}</div>
               </div>
               <div className="p-6 bg-background/5 rounded-2xl">
                 <Sun className="w-10 h-10 mb-4" />
-                <AnimatedCounter end={30} suffix="+" className="text-3xl font-bold" />
-                <div className="text-background/70">Installateurs certifiés</div>
+                <AnimatedCounter end={STATS.installateurs.value} suffix={STATS.installateurs.suffix} className="text-3xl font-bold" />
+                <div className="text-background/70">{STATS.installateurs.label}</div>
               </div>
               <div className="p-6 bg-background/5 rounded-2xl">
                 <PiggyBank className="w-10 h-10 mb-4" />
-                <AnimatedCounter end={30} suffix="%" className="text-3xl font-bold" />
-                <div className="text-background/70">Économies moyennes</div>
+                <AnimatedCounter end={STATS.savings.value} suffix={STATS.savings.suffix} className="text-3xl font-bold" />
+                <div className="text-background/70">{STATS.savings.label}</div>
               </div>
               <div className="p-6 bg-background/5 rounded-2xl">
                 <Star className="w-10 h-10 mb-4" />
-                <AnimatedCounter end={4.9} decimals={1} className="text-3xl font-bold" />
-                <div className="text-background/70">Note moyenne</div>
+                <AnimatedCounter end={STATS.rating.value} decimals={STATS.rating.decimals} suffix={STATS.rating.suffix} className="text-3xl font-bold" />
+                <div className="text-background/70">{STATS.rating.label}</div>
               </div>
             </motion.div>
           </div>
