@@ -17,16 +17,19 @@ export default function AnimatedCounter({
   prefix = "",
   className = "",
 }: AnimatedCounterProps) {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(end);
   const [hasStarted, setHasStarted] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !hasStarted) setHasStarted(true);
+        if (entry.isIntersecting && !hasStarted) {
+          setHasStarted(true);
+          setValue(0); // reset to 0 then animate up
+        }
       },
       { threshold: 0.3 }
     );

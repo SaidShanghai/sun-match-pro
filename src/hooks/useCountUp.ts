@@ -9,7 +9,7 @@ interface UseCountUpOptions {
 }
 
 export function useCountUp({ end, duration = 2000, decimals = 0, suffix = "", prefix = "" }: UseCountUpOptions) {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(end);
   const [hasStarted, setHasStarted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
