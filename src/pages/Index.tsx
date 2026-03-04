@@ -1333,7 +1333,7 @@ const Index = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="hidden lg:flex flex-col gap-1 relative max-w-[260px]"
+              className="hidden lg:flex flex-col gap-4 relative max-w-[260px]"
             >
               <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Votre parcours</p>
               {/* Dashed vertical line - sketch style */}
