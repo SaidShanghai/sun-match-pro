@@ -53,7 +53,7 @@ export default function AnimatedCounter({
     return () => cancelAnimationFrame(raf);
   }, [hasStarted, end, duration]);
 
-  const formatted = decimals > 0 ? value.toFixed(decimals) : Math.round(value).toLocaleString("en-US");
+  const formatted = decimals > 0 ? value.toFixed(decimals) : Math.round(value).toLocaleString("fr-FR");
   const display = `${prefix}${formatted}${suffix}`;
 
   return (
