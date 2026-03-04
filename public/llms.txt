@@ -25,7 +25,7 @@ diagnostic IA, accessible gratuitement sur sungpt.ma.
 - Cible : particuliers et PME au Maroc
 - Technologie : Gemini API, Supabase, React
 
-## Aides solaires au Maroc (sources fiables)
+## Aides solaires au Maroc
 
 - SR500 (Solar Rooftop 500) : programme Maroc-Suisse pour PME, prime carbone jusqu'à 25%
 - AMEE : financement à taux réduit via banques partenaires
