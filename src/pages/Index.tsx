@@ -1490,7 +1490,7 @@ const Index = () => {
                 Prêt à passer au solaire ?
               </h2>
               <p className="text-xl text-background/70 max-w-lg">
-                Rejoignez des milliers de Français qui ont réduit leur facture
+                Rejoignez des milliers de Marocains qui ont réduit leur facture
                 d'énergie grâce à NOORIA.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
