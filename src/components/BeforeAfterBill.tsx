@@ -14,7 +14,7 @@ export default function BeforeAfterBill() {
     title: "Avant",
     desc: (
       <>
-        Facture ONEE de <span className="font-bold text-destructive">1,850 MAD/mois</span>. 100% dépendant du réseau, prix en hausse constante.
+        Facture ONEE de <span className="font-bold text-destructive">1 850 dirhams (MAD)/mois</span>. 100% dépendant du réseau, prix en hausse constante.
       </>
     ),
   };
@@ -28,7 +28,7 @@ export default function BeforeAfterBill() {
     title: "Après NOORIA",
     desc: (
       <>
-        Facture réduite à <span className="font-bold text-primary">550 MAD/mois</span>. Autoconsommation solaire, retour sur investissement en 4-5 ans.
+        Facture réduite à <span className="font-bold text-primary">550 dirhams (MAD)/mois</span>. Autoconsommation solaire, retour sur investissement en 4-5 ans.
       </>
     ),
   };
@@ -164,7 +164,7 @@ export default function BeforeAfterBill() {
               <div>
                 <p className="font-bold mb-1">Avant</p>
                 <p className="text-sm text-muted-foreground">
-                  Facture ONEE de <span className="font-bold text-destructive">1 850 MAD/mois</span>. 100% dépendant du réseau, prix en hausse constante.
+                  Facture ONEE de <span className="font-bold text-destructive">1 850 dirhams (MAD)/mois</span>. 100% dépendant du réseau, prix en hausse constante.
                 </p>
               </div>
             </motion.div>
@@ -188,7 +188,7 @@ export default function BeforeAfterBill() {
               <div>
                 <p className="font-bold mb-1">Après NOORIA</p>
                 <p className="text-sm text-muted-foreground">
-                  Facture réduite à <span className="font-bold text-primary">550 MAD/mois</span>. Autoconsommation solaire, retour sur investissement en 4-5 ans.
+                  Facture réduite à <span className="font-bold text-primary">550 dirhams (MAD)/mois</span>. Autoconsommation solaire, retour sur investissement en 4-5 ans.
                 </p>
               </div>
             </motion.div>
@@ -205,10 +205,10 @@ export default function BeforeAfterBill() {
                 📊 Sur 25 ans (durée de vie des panneaux)
               </p>
               <p className="text-3xl font-bold text-primary">
-                <AnimatedCounter end={savingLifetime} suffix=" MAD" />
+                <AnimatedCounter end={savingLifetime} suffix=" DH" />
               </p>
               <p className="text-sm text-muted-foreground mt-1">
-                d'économies cumulées estimées
+                d'économies cumulées estimées en dirhams (MAD)
               </p>
             </motion.div>
           </div>

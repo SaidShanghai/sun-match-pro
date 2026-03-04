@@ -7,7 +7,7 @@ export const faqData: FAQItem[] = [
   {
     question: "Quel est le coût d'une installation solaire au Maroc en 2025 ?",
     answer:
-      "En 2025, le coût d'une installation solaire résidentielle au Maroc varie entre 30 000 et 90 000 MAD selon la puissance (3 à 10 kWc). Pour un foyer moyen consommant 500 kWh/mois, un kit de 5 kWc coûte environ 55 000 MAD TTC pose incluse. Les prix ont baissé de 15 % en 3 ans grâce à la concurrence et aux aides d'état comme le programme SR500.",
+      "En 2025, le coût d'une installation solaire résidentielle au Maroc varie entre 30 000 et 90 000 dirhams (MAD) selon la puissance (3 à 10 kWc). Pour un foyer moyen consommant 500 kWh/mois, un kit de 5 kWc coûte environ 55 000 dirhams (MAD) TTC pose incluse. Les prix ont baissé de 15 % en 3 ans grâce à la concurrence et aux aides d'état comme le programme SR500.",
   },
   {
     question: "Combien de temps pour amortir des panneaux solaires au Maroc ?",
@@ -22,7 +22,7 @@ export const faqData: FAQItem[] = [
   {
     question: "Quelles économies puis-je espérer sur ma facture ONEE ?",
     answer:
-      "Avec une installation solaire correctement dimensionnée, vous pouvez réduire votre facture ONEE de 50 à 80 %. Pour une consommation de 1 500 MAD/mois, l'économie typique est de 900 à 1 200 MAD/mois. Sur 25 ans, cela représente 270 000 à 360 000 MAD d'économies cumulées, soit un rendement bien supérieur à un placement bancaire.",
+      "Avec une installation solaire correctement dimensionnée, vous pouvez réduire votre facture ONEE de 50 à 80 %. Pour une consommation de 1 500 dirhams (MAD) par mois, l'économie typique est de 900 à 1 200 dirhams (MAD) par mois. Sur 25 ans, cela représente entre 270 000 et 360 000 dirhams (MAD) d'économies cumulées, soit un rendement bien supérieur à un placement bancaire.",
   },
   {
     question: "L'autoconsommation est-elle légale au Maroc ?",
