@@ -27,6 +27,7 @@ export default function FAQSection({
           </div>
         )}
 
+        {/* Interactive accordion for users */}
         <div className="space-y-3">
           {items.map((item, i) => (
             <details
@@ -52,6 +53,22 @@ export default function FAQSection({
                 {item.answer}
               </div>
             </details>
+          ))}
+        </div>
+
+        {/* Crawler-visible plain-text FAQ — hidden from visual users, fully readable by AI crawlers */}
+        <div
+          className="sr-only"
+          aria-hidden="true"
+          data-nosnippet=""
+        >
+          {items.map((item, i) => (
+            <div key={i} itemScope itemType="https://schema.org/Question">
+              <h3 itemProp="name">{item.question}</h3>
+              <div itemScope itemType="https://schema.org/Answer" itemProp="acceptedAnswer">
+                <p itemProp="text">{item.answer}</p>
+              </div>
+            </div>
           ))}
         </div>
       </div>
