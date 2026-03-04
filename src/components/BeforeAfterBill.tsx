@@ -142,7 +142,7 @@ export default function BeforeAfterBill() {
                   <span className={`text-3xl font-bold ${
                     tab === "before" ? "text-destructive" : "text-primary"
                   }`}>
-                    {current.total.toLocaleString("en-US")} MAD
+                    {current.total.toLocaleString("fr-FR")} MAD
                   </span>
                 </div>
               </div>
@@ -164,7 +164,7 @@ export default function BeforeAfterBill() {
               <div>
                 <p className="font-bold mb-1">Avant</p>
                 <p className="text-sm text-muted-foreground">
-                  Facture ONEE de <span className="font-bold text-destructive">1,850 MAD/mois</span>. 100% dépendant du réseau, prix en hausse constante.
+                  Facture ONEE de <span className="font-bold text-destructive">1 850 MAD/mois</span>. 100% dépendant du réseau, prix en hausse constante.
                 </p>
               </div>
             </motion.div>
