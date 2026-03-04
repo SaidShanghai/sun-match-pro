@@ -249,11 +249,14 @@ const Index = () => {
 
               <HeroRotatingTitle entreprise={selectedType === "Entreprise"} activeIndex={heroStepIndex} />
 
-              <p className="text-xl text-foreground/80 max-w-xl font-medium text-center leading-relaxed">
-                Uploadez votre facture. Notre IA analyse votre consommation et génère votre plan solaire personnalisé : puissance idéale, économies estimées et retour sur investissement
-                <br /><strong>en moins de 2 minutes.</strong>
-                <br /><strong>Gratuit. Sans engagement.</strong>
-              </p>
+              <div className="max-w-xl text-center space-y-3">
+                <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
+                  Uploadez votre facture. Notre IA analyse votre consommation et génère votre plan solaire personnalisé&nbsp;: puissance idéale, économies estimées et retour sur investissement.
+                </p>
+                <p className="text-lg md:text-xl font-bold text-foreground">
+                  En moins de 2 minutes. Gratuit. Sans engagement.
+                </p>
+              </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
