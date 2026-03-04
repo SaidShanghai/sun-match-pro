@@ -250,7 +250,10 @@ const Index = () => {
               <HeroRotatingTitle entreprise={selectedType === "Entreprise"} activeIndex={heroStepIndex} />
 
               <p className="text-xl text-foreground/80 max-w-lg font-medium">
-                NOORIA prend en charge votre projet solaire de A à Z avec diagnostic gratuit, devis personnalisé, installation sur site et suivi de performance, dans une approche claire, structurée et opérationnelle.
+                Uploadez votre facture. Notre IA analyse votre consommation,
+                <br />calcule votre installation idéale et vous connecte
+                <br />aux meilleurs installateurs certifiés près de chez vous.
+                <br /><strong>Gratuit. Sans engagement.</strong>
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
