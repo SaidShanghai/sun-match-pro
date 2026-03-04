@@ -230,27 +230,21 @@ export default function About() {
         </motion.div>
       </section>
 
-      {/* Ils parlent de nous (press section) */}
+      {/* Presse */}
       <section className="py-20 px-4 bg-muted/50">
-        <motion.div {...fadeUp} className="container mx-auto max-w-4xl text-center">
+        <motion.div {...fadeUp} className="container mx-auto max-w-2xl text-center">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-sm font-medium mb-6">
             <Newspaper className="w-4 h-4" />
             Presse
           </div>
-          <h2 className="text-3xl font-bold text-foreground mb-4">Ils parlent de nous</h2>
-          <p className="text-muted-foreground mb-12 max-w-xl mx-auto">
-            NOORIA dans les médias et la presse spécialisée
+          <p className="text-muted-foreground text-lg leading-relaxed">
+            NOORIA est en cours de référencement dans les médias spécialisés.
+            <br />
+            Vous êtes journaliste ?{" "}
+            <a href="mailto:presse@sungpt.ma" className="text-primary font-medium hover:underline">
+              Contactez-nous&nbsp;: presse@sungpt.ma
+            </a>
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {["Média 1", "Média 2", "Média 3", "Média 4"].map((name) => (
-              <div
-                key={name}
-                className="p-8 bg-card border border-border rounded-2xl flex items-center justify-center hover:shadow-md transition-shadow"
-              >
-                <span className="text-lg font-semibold text-muted-foreground/40">{name}</span>
-              </div>
-            ))}
-          </div>
         </motion.div>
       </section>
 
