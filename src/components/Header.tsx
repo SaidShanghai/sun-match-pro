@@ -22,7 +22,7 @@ const Header = () => {
       { to: "/diagnostic", label: "Diagnostic IA" },
       { to: "/nos-solutions", label: "Nos solutions" },
       { to: "/blog", label: "Blog" },
-      { to: "/about", label: "À propos" },
+      { to: "/a-propos", label: "À propos" },
       ...(!isAdmin ? [{ to: "/profil", label: "Mon diagnostic" }] : []),
     ];
     return links;
