@@ -142,7 +142,7 @@ export default function BeforeAfterBill() {
                   <span className={`text-3xl font-bold ${
                     tab === "before" ? "text-destructive" : "text-primary"
                   }`}>
-                    {current.total.toLocaleString()} MAD
+                    {current.total.toLocaleString("en-US")} MAD
                   </span>
                 </div>
               </div>
