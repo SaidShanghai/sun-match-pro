@@ -27,17 +27,40 @@ export default function FAQSection({
           </div>
         )}
 
-        {/* Interactive accordion for users */}
-        <div className="space-y-3">
+        {/* FAQ accordion – answers always in DOM for crawlers */}
+        <div className="space-y-3" itemScope itemType="https://schema.org/FAQPage">
           {items.map((item, i) => (
-            <details
+            <div
               key={i}
-              className="group border border-border rounded-xl px-5 open:shadow-md transition-shadow"
+              className="group border border-border rounded-xl px-5"
+              itemScope
+              itemType="https://schema.org/Question"
+              itemProp="mainEntity"
             >
-              <summary className="flex items-center justify-between cursor-pointer py-5 text-left text-base font-medium text-foreground list-none [&::-webkit-details-marker]:hidden">
-                <span>{item.question}</span>
+              <button
+                type="button"
+                className="flex w-full items-center justify-between cursor-pointer py-5 text-left text-base font-medium text-foreground"
+                onClick={(e) => {
+                  const content = e.currentTarget.nextElementSibling as HTMLElement;
+                  const isOpen = content.style.maxHeight && content.style.maxHeight !== "0px";
+                  const chevron = e.currentTarget.querySelector("svg");
+                  if (isOpen) {
+                    content.style.maxHeight = "0px";
+                    content.style.opacity = "0";
+                    chevron?.classList.remove("rotate-180");
+                    e.currentTarget.closest(".group")?.classList.remove("shadow-md");
+                  } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    content.style.opacity = "1";
+                    chevron?.classList.add("rotate-180");
+                    e.currentTarget.closest(".group")?.classList.add("shadow-md");
+                  }
+                }}
+                aria-expanded="false"
+              >
+                <span itemProp="name">{item.question}</span>
                 <svg
-                  className="w-4 h-4 shrink-0 ml-4 text-muted-foreground transition-transform duration-200 group-open:rotate-180"
+                  className="w-4 h-4 shrink-0 ml-4 text-muted-foreground transition-transform duration-200"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="none"
@@ -48,25 +71,17 @@ export default function FAQSection({
                 >
                   <path d="m6 9 6 6 6-6" />
                 </svg>
-              </summary>
-              <div className="text-muted-foreground leading-relaxed pb-5">
-                {item.answer}
-              </div>
-            </details>
-          ))}
-        </div>
-
-        {/* Crawler-visible plain-text FAQ — hidden from visual users, fully readable by AI crawlers */}
-        <div
-          className="sr-only"
-          aria-hidden="true"
-          data-nosnippet=""
-        >
-          {items.map((item, i) => (
-            <div key={i} itemScope itemType="https://schema.org/Question">
-              <h3 itemProp="name">{item.question}</h3>
-              <div itemScope itemType="https://schema.org/Answer" itemProp="acceptedAnswer">
-                <p itemProp="text">{item.answer}</p>
+              </button>
+              <div
+                className="overflow-hidden transition-all duration-300 ease-in-out"
+                style={{ maxHeight: "0px", opacity: 0 }}
+                itemScope
+                itemType="https://schema.org/Answer"
+                itemProp="acceptedAnswer"
+              >
+                <p className="text-muted-foreground leading-relaxed pb-5" itemProp="text">
+                  {item.answer}
+                </p>
               </div>
             </div>
           ))}
