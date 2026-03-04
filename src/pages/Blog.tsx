@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar, ArrowRight, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 interface BlogPost {
   id: string;
@@ -56,6 +57,10 @@ function PostCardSkeleton() {
 }
 
 export default function Blog() {
+  usePageMeta({
+    title: "Blog Solaire Maroc – Guides, Prix & Réglementation | NOORIA",
+    description: "Guides complets sur l'installation solaire, les prix en dirhams (MAD), la Loi 82-21 et les aides disponibles au Maroc en 2025.",
+  });
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string | null>(null);

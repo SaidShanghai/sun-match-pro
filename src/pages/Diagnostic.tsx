@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useDiagnosticPersistence } from "@/hooks/useDiagnosticPersistence";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -83,6 +84,10 @@ const surfaces = [
 ];
 
 const Diagnostic = () => {
+  usePageMeta({
+    title: "Diagnostic Solaire IA Gratuit – Résultat en 2 min | NOORIA",
+    description: "Analysez votre facture ONEE et obtenez un diagnostic solaire personnalisé gratuit en 2 minutes grâce à l'IA NOORIA.",
+  });
   const { save, load, clear } = useDiagnosticPersistence();
   const [screen, setScreen] = useState<Screen>("landing");
   const [selectedType, setSelectedType] = useState<string | null>(null);

@@ -55,10 +55,14 @@ export default function BlogPost() {
     fetchPost();
   }, [slug]);
 
-  // Set document title for SEO
+  // Set document title and meta description for SEO
   useEffect(() => {
     if (post) {
-      document.title = `${post.title} | NOORIA Blog`;
+      document.title = `${post.title} | NOORIA`;
+      const metaDesc = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+      if (metaDesc) {
+        metaDesc.content = post.meta_description || (post.content?.substring(0, 155) + "…") || "";
+      }
     }
     return () => {
       document.title = "NOORIA – Énergie Solaire au Maroc";
@@ -125,6 +129,8 @@ export default function BlogPost() {
       "@type": "WebPage",
       "@id": `https://sungpt.ma/blog/${post.slug}`,
     },
+    about: { "@type": "Thing", name: "Énergie solaire au Maroc" },
+    inLanguage: "fr-MA",
   };
 
   return (

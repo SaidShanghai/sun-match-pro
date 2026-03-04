@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { STATS } from "@/config/stats";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
@@ -98,6 +99,10 @@ const HeroRotatingTitle = ({ entreprise = false, activeIndex }: { entreprise?: b
 };
 
 const Index = () => {
+  usePageMeta({
+    title: "NOORIA – 1ère IA Solaire du Maroc | Diagnostic Gratuit en 2 min",
+    description: "Diagnostic solaire IA gratuit en 2 minutes. Économisez jusqu'à 70% sur votre facture ONEE. Installateurs certifiés RGE partout au Maroc.",
+  });
   const [heroStepIndex, setHeroStepIndex] = useState(0);
   const [phoneScreen, setPhoneScreen] = useState<"intro" | "type" | "form" | "informations" | "site" | "eligibilite" | "analyse" | "solutions" | "contact" | "merci">("intro");
   const [selectedType, setSelectedType] = useState<string | null>(null);

@@ -2,14 +2,19 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FAQSection from "@/components/FAQSection";
 import JsonLd from "@/components/seo/JsonLd";
-import { faqData, buildFaqSchema } from "@/data/faq";
-
-const faqSchema = buildFaqSchema(faqData);
+import { faqData } from "@/data/faq";
+import { fullFaqSchema } from "@/config/seoSchemas";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function FAQ() {
+  usePageMeta({
+    title: "FAQ Solaire Maroc 2025 – 12 Questions Répondues | NOORIA",
+    description: "Coûts, Loi 82-21, ONEE, aides AMEE... Toutes les réponses sur l'installation solaire au Maroc par les experts NOORIA.",
+  });
+
   return (
     <div className="min-h-screen flex flex-col">
-      <JsonLd schema={faqSchema} />
+      <JsonLd schema={fullFaqSchema} />
       <Header />
 
       <main className="flex-1 pt-16">

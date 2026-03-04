@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sun, Shield, Brain, Users, CheckCircle, ArrowRight, Zap, Lock, Award } from "lucide-react";
+import { Sun, Shield, Brain, Users, CheckCircle, ArrowRight, Zap, Lock, Award, Newspaper } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/seo/JsonLd";
 import AnimatedCounter from "@/components/AnimatedCounter";
 import { STATS } from "@/config/stats";
 import { Button } from "@/components/ui/button";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -71,6 +72,11 @@ const TRUST_POINTS = [
 ];
 
 export default function About() {
+  usePageMeta({
+    title: "À Propos de NOORIA – Experts Solaire IA au Maroc | sungpt.ma",
+    description: "NOORIA est la première plateforme IA dédiée au solaire au Maroc. Notre mission : rendre l'énergie solaire accessible à chaque Marocain.",
+  });
+
   return (
     <div className="min-h-screen flex flex-col">
       <JsonLd schema={organizationSchema} />
@@ -85,7 +91,7 @@ export default function About() {
             À propos de NOORIA
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6">
-            La première <span className="text-primary">IA dédiée</span> au diagnostic solaire au Maroc
+            NOORIA – Pionniers du <span className="text-primary">diagnostic solaire IA</span> au Maroc
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             Fondée à Casablanca, nous aidons les Marocains à passer au solaire avec des données fiables, une technologie de pointe et un réseau d'installateurs certifiés.
@@ -157,10 +163,10 @@ export default function About() {
               <h2 className="text-3xl font-bold text-foreground mb-6">Notre technologie</h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  <strong className="text-foreground">SunGPT</strong> est le moteur d'intelligence artificielle au cœur de NOORIA. Alimenté par l'API Gemini de Google, il analyse en temps réel votre profil de consommation ONEE, l'orientation et la surface de votre toiture, ainsi que les données d'ensoleillement de votre localisation.
+                  <strong className="text-foreground">SunGPT</strong> est le moteur d'intelligence artificielle propriétaire au cœur de NOORIA. Il combine trois technologies : l'OCR (reconnaissance optique de caractères) pour analyser automatiquement votre facture ONEE, un algorithme de dimensionnement solaire alimenté par les données d'ensoleillement PVGIS, et un système de matching intelligent avec les installateurs certifiés RGE.
                 </p>
                 <p>
-                  En moins de 2 minutes, SunGPT génère un diagnostic personnalisé incluant la puissance optimale, les économies prévisionnelles, le retour sur investissement et les aides d'état applicables à votre situation.
+                  En moins de 2 minutes, SunGPT génère un diagnostic personnalisé incluant la puissance optimale en kWc, les économies prévisionnelles en dirhams (MAD), le retour sur investissement et les aides d'état applicables (SR500, TATWIR, GEFF, exonérations AMEE).
                 </p>
                 <p>
                   Notre algorithme s'améliore continuellement grâce aux retours terrain de nos installateurs partenaires et aux données de production réelles des installations déjà en service.
@@ -218,6 +224,30 @@ export default function About() {
                 </div>
                 <h3 className="font-bold text-foreground mb-2">{point.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{point.desc}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Ils parlent de nous (press section) */}
+      <section className="py-20 px-4 bg-muted/50">
+        <motion.div {...fadeUp} className="container mx-auto max-w-4xl text-center">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-sm font-medium mb-6">
+            <Newspaper className="w-4 h-4" />
+            Presse
+          </div>
+          <h2 className="text-3xl font-bold text-foreground mb-4">Ils parlent de nous</h2>
+          <p className="text-muted-foreground mb-12 max-w-xl mx-auto">
+            NOORIA dans les médias et la presse spécialisée
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {["Média 1", "Média 2", "Média 3", "Média 4"].map((name) => (
+              <div
+                key={name}
+                className="p-8 bg-card border border-border rounded-2xl flex items-center justify-center hover:shadow-md transition-shadow"
+              >
+                <span className="text-lg font-semibold text-muted-foreground/40">{name}</span>
               </div>
             ))}
           </div>
