@@ -33,8 +33,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import CallbackModal from "@/components/CallbackModal";
 import QuotePanel from "@/components/QuotePanel";
 import EligibiliteScreen from "@/components/EligibiliteScreen";
