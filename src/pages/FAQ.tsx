@@ -11,9 +11,8 @@ export default function FAQ() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       <JsonLd schema={fullFaqSchema} />
-      <Header />
 
       <main className="flex-1 pt-16">
         <div className="text-center pt-12 px-4">
