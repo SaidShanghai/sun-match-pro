@@ -576,7 +576,7 @@ const Partenaires = () => {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };
 
