@@ -225,8 +225,7 @@ const AdminDashboardContent = () => {
   if (!isAdmin) return null;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <>
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-5xl mx-auto space-y-8">
           {/* Header */}
