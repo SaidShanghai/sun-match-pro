@@ -48,9 +48,8 @@ export default function About() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       <JsonLd schema={aboutSchema} />
-      <Header />
 
       {/* Hero */}
       <section className="relative pt-28 pb-20 px-4 overflow-hidden">
