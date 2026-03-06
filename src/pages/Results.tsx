@@ -47,8 +47,7 @@ const Results = () => {
   const estimatedSavings = diagnostic?.consumption?.includes("20 000") ? "2 800 €/an" : diagnostic?.consumption?.includes("15 000") ? "2 100 €/an" : "1 200 €/an";
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <>
       <main className="flex-1 relative">
         <div className="absolute top-20 -right-32 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
         <div className="absolute bottom-20 -left-32 h-64 w-64 rounded-full bg-solar-warm/5 blur-3xl" />
