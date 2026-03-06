@@ -535,7 +535,6 @@ const Partenaires = () => {
           </div>
         </div>
       </main>
-      <Footer />
 
       {/* Dialog verrouillé */}
       <Dialog open={showLockedDialog} onOpenChange={setShowLockedDialog}>

@@ -182,9 +182,8 @@ const Results = () => {
           </div>
         </div>
       </main>
-      <Footer />
       <QuotePanel open={quoteOpen} onOpenChange={setQuoteOpen} installerName={selectedInstaller} />
-    </div>
+    </>
   );
 };
 

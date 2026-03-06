@@ -1025,7 +1025,7 @@ const Diagnostic = () => {
         </main>
       )}
 
-      {screen === "landing" && <Footer />}
+      
 
       <QuotePanel
         open={quoteOpen}

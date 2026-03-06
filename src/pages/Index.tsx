@@ -1560,10 +1560,9 @@ const Index = () => {
         </Button>
       </div>
 
-      <Footer />
       <CallbackModal open={callbackOpen} onOpenChange={setCallbackOpen} />
       <QuotePanel open={quoteOpen} onOpenChange={setQuoteOpen} onSuccess={(id, name, email) => { setQuoteRef(id); setContactNom(name); setContactEmail(email); setPhoneScreen("merci"); }} />
-    </div>
+    </>
   );
 };
 

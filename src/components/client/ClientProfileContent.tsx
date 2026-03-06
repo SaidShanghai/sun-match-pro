@@ -158,8 +158,7 @@ const ClientProfileContent = () => {
           </Card>
         </div>
       </main>
-      <Footer />
-    </div>
+    </>
   );
 };
 

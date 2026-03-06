@@ -71,8 +71,7 @@ const MentionsLegales = () => {
           </div>
         </div>
       </main>
-      <Footer />
-    </div>
+    </>
   );
 };
 

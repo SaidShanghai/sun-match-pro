@@ -32,7 +32,6 @@ export default function FAQ() {
         />
       </main>
 
-      <Footer />
-    </div>
+    </>
   );
 }

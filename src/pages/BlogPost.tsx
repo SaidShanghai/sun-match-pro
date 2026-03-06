@@ -182,7 +182,6 @@ export default function BlogPost() {
           </motion.div>
         </article>
       </main>
-      <Footer />
-    </div>
+    </>
   );
 }

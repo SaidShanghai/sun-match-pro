@@ -158,8 +158,7 @@ const NosSolutions = () => {
         </div>
       </section>
 
-      <Footer />
-    </div>
+    </>
   );
 };
 

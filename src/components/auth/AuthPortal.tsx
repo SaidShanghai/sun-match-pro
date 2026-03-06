@@ -293,8 +293,7 @@ const AuthPortal = () => {
           </CardContent>
         </Card>
       </main>
-      <Footer />
-    </div>
+    </>
   );
 };
 

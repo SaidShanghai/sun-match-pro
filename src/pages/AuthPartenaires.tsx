@@ -160,8 +160,7 @@ const AuthPartenaires = () => {
           </CardContent>
         </Card>
       </main>
-      <Footer />
-    </div>
+    </>
   );
 };
 
