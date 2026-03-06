@@ -43,18 +43,10 @@ const Header = () => {
               <img src={nooriaLogo} alt="NOORIA" className="h-10 w-auto object-contain" />
             </Link>
             <nav className="hidden md:flex items-center gap-6">
-              {NAV_LINKS.map((link, i) => (
+              {NAV_LINKS.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
-                  onMouseEnter={() => setHoveredIndex(i)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                  style={{
-                    transform: `scale(${getScale(i)})`,
-                    transition: "transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                    display: "inline-block",
-                    transformOrigin: "center bottom",
-                  }}
                   className="text-sm font-medium hover:text-primary transition-colors"
                 >
                   {link.label}
