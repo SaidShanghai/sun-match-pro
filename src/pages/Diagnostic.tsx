@@ -312,9 +312,8 @@ const Diagnostic = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="flex-1 flex flex-col bg-background">
       <JsonLd schema={diagnosticSchema} />
-      <Header />
 
       {screen === "landing" ? (
         /* ── Landing page ── */
