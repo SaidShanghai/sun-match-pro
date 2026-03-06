@@ -9,8 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Sun, Mail, Lock, ArrowRight, Loader2, Search, MapPin, Zap, Home, ClipboardList } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const statusLabels: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   new: { label: "Nouveau", variant: "default" },
@@ -130,8 +128,7 @@ const AuthPortal = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <>
       <main className="container mx-auto px-4 pt-24 pb-16 flex items-start justify-center min-h-[80vh] gap-8 flex-col md:flex-row">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center space-y-2">
@@ -296,8 +293,7 @@ const AuthPortal = () => {
           </CardContent>
         </Card>
       </main>
-      <Footer />
-    </div>
+    </>
   );
 };
 

@@ -15,8 +15,6 @@ import {
   Star, Clock, BarChart3, AlertCircle, Pause, Ban, Activity,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import PackagesManager from "@/components/admin/PackagesManager";
 import QuoteRequestsManager from "@/components/admin/QuoteRequestsManager";
 import BlogManager from "@/components/admin/BlogManager";
@@ -227,8 +225,7 @@ const AdminDashboardContent = () => {
   if (!isAdmin) return null;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <>
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-5xl mx-auto space-y-8">
           {/* Header */}
@@ -541,8 +538,7 @@ const AdminDashboardContent = () => {
           </Dialog>
         </div>
       </main>
-      <Footer />
-    </div>
+    </>
   );
 };
 

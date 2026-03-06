@@ -7,8 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Sun, Lock, Loader2, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -77,8 +75,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <>
       <main className="container mx-auto px-4 pt-24 pb-16 flex items-center justify-center min-h-[80vh]">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center space-y-2">
@@ -152,8 +149,7 @@ const ResetPassword = () => {
           </CardContent>
         </Card>
       </main>
-      <Footer />
-    </div>
+    </>
   );
 };
 

@@ -1,5 +1,3 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Sun, Battery, Zap, Shield, ArrowRight, CheckCircle2 } from "lucide-react";
@@ -52,10 +50,8 @@ const NosSolutions = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <>
       <JsonLd schema={serviceSchema} />
-
-      <Header />
 
       {/* Hero */}
       <section className="relative pt-28 pb-16 md:pt-36 md:pb-24 overflow-hidden">
@@ -162,8 +158,7 @@ const NosSolutions = () => {
         </div>
       </section>
 
-      <Footer />
-    </div>
+    </>
   );
 };
 

@@ -1,8 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Sun, Shield, Brain, Users, CheckCircle, ArrowRight, Zap, Lock, Award, Newspaper } from "lucide-react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import JsonLd from "@/components/seo/JsonLd";
 import AnimatedCounter from "@/components/AnimatedCounter";
 import { STATS } from "@/config/stats";
@@ -50,9 +48,8 @@ export default function About() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       <JsonLd schema={aboutSchema} />
-      <Header />
 
       {/* Hero */}
       <section className="relative pt-28 pb-20 px-4 overflow-hidden">
@@ -239,7 +236,6 @@ export default function About() {
         </motion.div>
       </section>
 
-      <Footer />
-    </div>
+    </>
   );
 }

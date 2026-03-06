@@ -1,5 +1,3 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import FAQSection from "@/components/FAQSection";
 import JsonLd from "@/components/seo/JsonLd";
 import { faqData } from "@/data/faq";
@@ -13,9 +11,8 @@ export default function FAQ() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       <JsonLd schema={fullFaqSchema} />
-      <Header />
 
       <main className="flex-1 pt-16">
         <div className="text-center pt-12 px-4">
@@ -35,7 +32,6 @@ export default function FAQ() {
         />
       </main>
 
-      <Footer />
-    </div>
+    </>
   );
 }

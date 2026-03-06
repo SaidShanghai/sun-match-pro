@@ -33,8 +33,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import CallbackModal from "@/components/CallbackModal";
 import QuotePanel from "@/components/QuotePanel";
 import EligibiliteScreen from "@/components/EligibiliteScreen";
@@ -226,9 +224,8 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       <JsonLd schema={homepageSchema} />
-      <Header />
 
       {/* Hero */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-16">
@@ -1563,10 +1560,9 @@ const Index = () => {
         </Button>
       </div>
 
-      <Footer />
       <CallbackModal open={callbackOpen} onOpenChange={setCallbackOpen} />
       <QuotePanel open={quoteOpen} onOpenChange={setQuoteOpen} onSuccess={(id, name, email) => { setQuoteRef(id); setContactNom(name); setContactEmail(email); setPhoneScreen("merci"); }} />
-    </div>
+    </>
   );
 };
 

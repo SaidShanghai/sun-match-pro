@@ -13,8 +13,6 @@ import {
   Home, Building2, Store, Warehouse,
 } from "lucide-react";
 import FactureUpload from "@/components/FactureUpload";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import QuotePanel from "@/components/QuotePanel";
 import EligibiliteScreen from "@/components/EligibiliteScreen";
 import GoogleMapPicker from "@/components/GoogleMapPicker";
@@ -314,9 +312,8 @@ const Diagnostic = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="flex-1 flex flex-col bg-background">
       <JsonLd schema={diagnosticSchema} />
-      <Header />
 
       {screen === "landing" ? (
         /* ── Landing page ── */
@@ -1028,7 +1025,7 @@ const Diagnostic = () => {
         </main>
       )}
 
-      {screen === "landing" && <Footer />}
+      
 
       <QuotePanel
         open={quoteOpen}

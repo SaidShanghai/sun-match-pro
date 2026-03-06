@@ -8,8 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, CheckCircle2, XCircle, Clock, ShieldCheck, LogOut, Building2, Mail, Phone, MapPin, FileText, FileCheck, CreditCard, Package, Truck, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 interface DocDetail {
   id: string;
@@ -215,8 +213,7 @@ const AdminDashboard = () => {
   const rejected = partners.filter((p) => p.status === "rejected");
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <>
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-5xl mx-auto space-y-8">
           {/* Header */}
@@ -365,8 +362,7 @@ const AdminDashboard = () => {
           )}
         </div>
       </main>
-      <Footer />
-    </div>
+    </>
   );
 };
 

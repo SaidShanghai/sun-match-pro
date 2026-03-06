@@ -3,8 +3,6 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import JsonLd from "@/components/seo/JsonLd";
 import { buildArticleSchema } from "@/config/seoSchemas";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -73,9 +71,7 @@ export default function BlogPost() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1 pt-24 pb-16">
+      <main className="flex-1 pt-24 pb-16">
           <div className="container mx-auto px-4 max-w-3xl space-y-6">
             <Skeleton className="h-4 w-48" />
             <Skeleton className="h-[400px] w-full rounded-2xl" />
@@ -84,16 +80,13 @@ export default function BlogPost() {
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-2/3" />
           </div>
-        </main>
-      </div>
+      </main>
     );
   }
 
   if (!post) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <div className="flex-1 flex flex-col items-center justify-center gap-4">
+      <div className="flex-1 flex flex-col items-center justify-center gap-4">
           <BookOpen className="w-12 h-12 text-muted-foreground/40" />
           <p className="text-lg text-muted-foreground">Article introuvable</p>
           <Button asChild variant="outline">
@@ -101,8 +94,6 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4 mr-2" /> Retour au blog
             </Link>
           </Button>
-        </div>
-        <Footer />
       </div>
     );
   }
@@ -112,9 +103,8 @@ export default function BlogPost() {
   const articleSchema = buildArticleSchema(post);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       <JsonLd schema={articleSchema} />
-      <Header />
       <main className="flex-1 pt-24 pb-16">
         <article className="container mx-auto px-4 max-w-3xl">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -192,7 +182,6 @@ export default function BlogPost() {
           </motion.div>
         </article>
       </main>
-      <Footer />
-    </div>
+    </>
   );
 }

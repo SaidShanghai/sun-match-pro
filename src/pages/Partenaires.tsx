@@ -11,8 +11,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdmin } from "@/hooks/useAdmin";
 import { supabase } from "@/integrations/supabase/client";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import KitsSolaires from "@/components/KitsSolaires";
 import FraisLivraison from "@/components/FraisLivraison";
 import DocumentBadges from "@/components/DocumentBadges";
@@ -236,8 +234,7 @@ const Partenaires = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <>
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Header */}
@@ -538,7 +535,6 @@ const Partenaires = () => {
           </div>
         </div>
       </main>
-      <Footer />
 
       {/* Dialog verrouillé */}
       <Dialog open={showLockedDialog} onOpenChange={setShowLockedDialog}>
@@ -580,7 +576,7 @@ const Partenaires = () => {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };
 
