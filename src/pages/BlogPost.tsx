@@ -3,8 +3,6 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import JsonLd from "@/components/seo/JsonLd";
 import { buildArticleSchema } from "@/config/seoSchemas";
 import { Skeleton } from "@/components/ui/skeleton";
