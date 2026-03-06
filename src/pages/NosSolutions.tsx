@@ -50,10 +50,8 @@ const NosSolutions = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <>
       <JsonLd schema={serviceSchema} />
-
-      <Header />
 
       {/* Hero */}
       <section className="relative pt-28 pb-16 md:pt-36 md:pb-24 overflow-hidden">
