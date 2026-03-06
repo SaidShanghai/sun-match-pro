@@ -5,8 +5,6 @@ import { Star, MapPin, Shield, ArrowRight, CheckCircle, Zap, PiggyBank, Sun } fr
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import QuotePanel from "@/components/QuotePanel";
 
 const mockInstallers = [
