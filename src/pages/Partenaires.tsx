@@ -279,7 +279,7 @@ const Partenaires = () => {
                 <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-center">
                   <p className="text-sm font-medium text-green-700 flex items-center justify-center gap-2">
                     <CheckCircle2 className="w-4 h-4" />
-                    Votre profil est complet ! Vous apparaissez dans les résultats de recherche des clients NOORIA.
+                    Votre profil est complet ! Vous apparaissez dans les résultats de recherche des clients SOLARBOX.
                   </p>
                 </div>
               ) : (
