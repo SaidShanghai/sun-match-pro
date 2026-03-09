@@ -1211,14 +1211,17 @@ const Index = () => {
                         transition={{ duration: 0.25 }}
                         className="absolute inset-0 flex items-center justify-center"
                       >
-                        {/* Analyse animation - NOORIA logo clignotant centré */}
-                        <motion.img
-                          src={nooriaLogo}
-                          alt="NOORIA"
+                        {/* Analyse animation - SOLARBOX logo clignotant centré */}
+                        <motion.div
                           animate={{ opacity: [1, 0.1, 1] }}
                           transition={{ duration: 0.9, repeat: Infinity, ease: "easeInOut" }}
-                          className="w-44 object-contain select-none"
-                        />
+                          className="select-none"
+                        >
+                          <span className="font-black text-4xl tracking-tight">
+                            <span className="text-foreground">SOLAR</span>
+                            <span className="text-[hsl(24,95%,53%)]">BOX</span>
+                          </span>
+                        </motion.div>
                       </motion.div>
                     ) : phoneScreen === "solutions" ? (
                        /* Solutions screen */
