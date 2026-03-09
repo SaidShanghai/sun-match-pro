@@ -26,7 +26,7 @@ const MentionsLegales = () => {
             <section>
               <h2 className="text-xl font-semibold text-foreground">3. Protection des données personnelles</h2>
               <p>
-                Conformément à la <strong>loi marocaine n° 09-08</strong> relative à la protection des personnes physiques à l'égard du traitement des données à caractère personnel, NOORIA s'engage à protéger la vie privée de ses utilisateurs.
+                Conformément à la <strong>loi marocaine n° 09-08</strong> relative à la protection des personnes physiques à l'égard du traitement des données à caractère personnel, SOLARBOX s'engage à protéger la vie privée de ses utilisateurs.
               </p>
               <h3 className="text-lg font-medium text-foreground mt-4">Données collectées</h3>
               <ul className="list-disc pl-6 space-y-1">
