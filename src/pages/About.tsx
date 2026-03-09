@@ -207,7 +207,7 @@ export default function About() {
             Presse
           </div>
           <p className="text-muted-foreground text-lg leading-relaxed">
-            NOORIA est en cours de référencement dans les médias spécialisés.
+            SOLARBOX est en cours de référencement dans les médias spécialisés.
             <br />
             Vous êtes journaliste ?{" "}
             <a href="mailto:presse@sungpt.ma" className="text-primary font-medium hover:underline">
