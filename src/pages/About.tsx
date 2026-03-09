@@ -132,7 +132,7 @@ export default function About() {
               <h2 className="text-3xl font-bold text-foreground mb-6">Notre technologie</h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  <strong className="text-foreground">SunGPT</strong> est le moteur d'intelligence artificielle propriétaire au cœur de NOORIA. Il combine trois technologies : l'OCR (reconnaissance optique de caractères) pour analyser automatiquement votre facture ONEE, un algorithme de dimensionnement solaire alimenté par les données d'ensoleillement PVGIS, et un système de matching intelligent avec les installateurs certifiés RGE.
+                  <strong className="text-foreground">SOLARBOX</strong> est le moteur d'intelligence artificielle propriétaire au cœur de la plateforme. Il combine trois technologies : l'OCR (reconnaissance optique de caractères) pour analyser automatiquement votre facture ONEE, un algorithme de dimensionnement solaire alimenté par les données d'ensoleillement PVGIS, et un système de matching intelligent avec les installateurs certifiés RGE.
                 </p>
                 <p>
                   En moins de 2 minutes, SunGPT génère un diagnostic personnalisé incluant la puissance optimale en kWc, les économies prévisionnelles en dirhams (MAD), le retour sur investissement et les aides d'état applicables (SR500, TATWIR, GEFF, exonérations AMEE).
