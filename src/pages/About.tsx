@@ -57,7 +57,7 @@ export default function About() {
         <motion.div {...fadeUp} className="container mx-auto max-w-4xl text-center relative z-10">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-sm font-medium mb-6">
             <Sun className="w-4 h-4" />
-            À propos de NOORIA
+            À propos de SOLARBOX
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6">
             NOORIA – Pionniers du <span className="text-primary">diagnostic solaire IA</span> au Maroc
