@@ -9,8 +9,8 @@ export const homepageSchema = {
     {
       "@type": ["Organization", "LocalBusiness"],
       "@id": "https://sungpt.ma/#organization",
-      name: "NOORIA",
-      alternateName: "SunGPT",
+      name: "SOLARBOX",
+      alternateName: "SOLARBOX",
       url: "https://sungpt.ma",
       logo: {
         "@type": "ImageObject",
@@ -20,7 +20,7 @@ export const homepageSchema = {
       },
       image: "https://sungpt.ma/og-image.png",
       description:
-        "Première plateforme IA de diagnostic solaire au Maroc. Analysez votre facture ONEE, obtenez un devis personnalisé en 2 minutes et connectez-vous à des installateurs certifiés RGE partout au Maroc.",
+        "Première plateforme de diagnostic solaire au Maroc. Analysez votre facture ONEE, obtenez un devis personnalisé en 2 minutes et connectez-vous à des installateurs certifiés RGE partout au Maroc.",
       foundingDate: "2024",
       address: {
         "@type": "PostalAddress",
@@ -61,9 +61,9 @@ export const homepageSchema = {
         worstRating: "1",
       },
       sameAs: [
-        "https://facebook.com/nooria.ma",
-        "https://instagram.com/nooria.ma",
-        "https://linkedin.com/company/nooria-ma",
+        "https://facebook.com/solarbox.ma",
+        "https://instagram.com/solarbox.ma",
+        "https://linkedin.com/company/solarbox-ma",
       ],
       contactPoint: {
         "@type": "ContactPoint",
@@ -76,7 +76,7 @@ export const homepageSchema = {
       "@type": "WebSite",
       "@id": "https://sungpt.ma/#website",
       url: "https://sungpt.ma",
-      name: "NOORIA – Diagnostic Solaire IA Maroc",
+      name: "SOLARBOX – Diagnostic Solaire Maroc",
       publisher: { "@id": "https://sungpt.ma/#organization" },
       inLanguage: "fr-MA",
     },
@@ -84,9 +84,9 @@ export const homepageSchema = {
       "@type": "WebPage",
       "@id": "https://sungpt.ma/#webpage",
       url: "https://sungpt.ma",
-      name: "NOORIA – 1ère IA Solaire du Maroc | Diagnostic Gratuit en 2 min",
+      name: "SOLARBOX – Diagnostic Solaire Gratuit en 2 min au Maroc",
       description:
-        "Diagnostic solaire IA gratuit en 2 minutes. Économisez jusqu'à 70% sur votre facture ONEE. Installateurs certifiés RGE partout au Maroc.",
+        "Diagnostic solaire gratuit en 2 minutes. Économisez jusqu'à 70% sur votre facture ONEE. Installateurs certifiés RGE partout au Maroc.",
       isPartOf: { "@id": "https://sungpt.ma/#website" },
       about: { "@id": "https://sungpt.ma/#organization" },
       inLanguage: "fr-MA",
@@ -113,7 +113,7 @@ export const fullFaqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   url: "https://sungpt.ma/faq",
-  name: "FAQ Solaire Maroc 2025 – 12 Questions Répondues | NOORIA",
+  name: "FAQ Solaire Maroc 2025 – 12 Questions Répondues | SOLARBOX",
   mainEntity: faqData.map((item) => ({
     "@type": "Question",
     name: item.question,
@@ -133,7 +133,7 @@ export const serviceSchema = {
   name: "SolarBox – Installation Solaire Résidentielle et Professionnelle",
   provider: {
     "@type": "Organization",
-    name: "NOORIA",
+    name: "SOLARBOX",
     url: "https://sungpt.ma",
   },
   areaServed: {
@@ -159,9 +159,9 @@ export const serviceSchema = {
 export const diagnosticSchema = {
   "@context": "https://schema.org",
   "@type": "HowTo",
-  name: "Comment obtenir un diagnostic solaire gratuit au Maroc avec NOORIA",
+  name: "Comment obtenir un diagnostic solaire gratuit au Maroc avec SOLARBOX",
   description:
-    "Obtenez un diagnostic solaire personnalisé en 2 minutes grâce à l'IA SunGPT. Analysez votre facture ONEE et recevez une recommandation d'installation en dirhams (MAD).",
+    "Obtenez un diagnostic solaire personnalisé en 2 minutes grâce à SOLARBOX. Analysez votre facture ONEE et recevez une recommandation d'installation en dirhams (MAD).",
   totalTime: "PT2M",
   estimatedCost: {
     "@type": "MonetaryAmount",
@@ -179,7 +179,7 @@ export const diagnosticSchema = {
       "@type": "HowToStep",
       position: 2,
       name: "L'IA analyse votre profil",
-      text: "SunGPT combine votre consommation réelle avec les données PVGIS d'ensoleillement de votre région au Maroc pour calculer la puissance optimale.",
+      text: "SOLARBOX combine votre consommation réelle avec les données PVGIS d'ensoleillement de votre région au Maroc pour calculer la puissance optimale.",
     },
     {
       "@type": "HowToStep",
@@ -197,16 +197,16 @@ export const aboutSchema = {
   "@context": "https://schema.org",
   "@type": "AboutPage",
   url: "https://sungpt.ma/a-propos",
-  name: "À Propos de NOORIA – Experts Solaire IA au Maroc",
+  name: "À Propos de SOLARBOX – Experts Solaire au Maroc",
   description:
-    "NOORIA est la première plateforme IA dédiée au diagnostic solaire au Maroc. Fondée en 2024, elle connecte les particuliers et entreprises avec des installateurs certifiés RGE.",
+    "SOLARBOX est la première plateforme dédiée au diagnostic solaire au Maroc. Fondée en 2024, elle connecte les particuliers et entreprises avec des installateurs certifiés RGE.",
   about: {
     "@type": "Organization",
-    name: "NOORIA",
+    name: "SOLARBOX",
     url: "https://sungpt.ma",
     foundingDate: "2024",
     description:
-      "Plateforme IA de diagnostic et mise en relation solaire au Maroc",
+      "Plateforme de diagnostic et mise en relation solaire au Maroc",
     knowsAbout: [
       "Énergie solaire photovoltaïque",
       "Loi 82-21 Maroc",
@@ -244,12 +244,12 @@ export function buildArticleSchema(post: {
     image: post.cover_image_url || "https://sungpt.ma/og-image.png",
     author: {
       "@type": "Organization",
-      name: "NOORIA",
+      name: "SOLARBOX",
       url: "https://sungpt.ma",
     },
     publisher: {
       "@type": "Organization",
-      name: "NOORIA",
+      name: "SOLARBOX",
       logo: { "@type": "ImageObject", url: "https://sungpt.ma/logo.png" },
     },
     mainEntityOfPage: `https://sungpt.ma/blog/${post.slug}`,
@@ -259,7 +259,7 @@ export function buildArticleSchema(post: {
     inLanguage: "fr-MA",
     isPartOf: {
       "@type": "Blog",
-      name: "Blog NOORIA – Solaire au Maroc",
+      name: "Blog SOLARBOX – Solaire au Maroc",
       url: "https://sungpt.ma/blog",
     },
   };

@@ -1505,7 +1505,7 @@ const Index = () => {
               </h2>
               <p className="text-xl text-background/70 max-w-lg">
                 Rejoignez des milliers de Marocains qui ont réduit leur facture
-                d'énergie grâce à NOORIA.
+                d'énergie grâce à SOLARBOX.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 h-14 px-8 text-base">

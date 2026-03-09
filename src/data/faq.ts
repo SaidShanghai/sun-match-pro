@@ -15,9 +15,9 @@ export const faqData: FAQItem[] = [
       "L'amortissement moyen est de 4 à 6 ans au Maroc. Sur une durée de vie de 25 ans, cela représente 19 à 21 ans d'énergie quasi-gratuite. À Marrakech ou Agadir (ensoleillement supérieur à 5,5h/jour), l'amortissement peut descendre à 3,5 ans.",
   },
   {
-    question: "Comment fonctionne le diagnostic NOORIA / SunGPT ?",
+    question: "Comment fonctionne le diagnostic SOLARBOX ?",
     answer:
-      "Le diagnostic SunGPT fonctionne en 3 étapes : 1) Upload ou photo de votre facture ONEE, 2) L'OCR analyse votre consommation et l'algorithme PVGIS calcule l'ensoleillement de votre région, 3) En moins de 2 minutes vous recevez la puissance optimale en kWc, le coût en dirhams (MAD), le ROI et des installateurs certifiés RGE près de chez vous. Le diagnostic est 100% gratuit.",
+      "Le diagnostic SOLARBOX fonctionne en 3 étapes : 1) Upload ou photo de votre facture ONEE, 2) L'OCR analyse votre consommation et l'algorithme PVGIS calcule l'ensoleillement de votre région, 3) En moins de 2 minutes vous recevez la puissance optimale en kWc, le coût en dirhams (MAD), le ROI et des installateurs certifiés RGE près de chez vous. Le diagnostic est 100% gratuit.",
   },
   {
     question: "Quelles économies puis-je espérer sur ma facture ONEE ?",
@@ -32,7 +32,7 @@ export const faqData: FAQItem[] = [
   {
     question: "Quelle puissance solaire pour une villa marocaine ?",
     answer:
-      "Pour une villa consommant 850 kWh/mois, une installation de 3 à 5 kWc est recommandée (8 à 14 panneaux de 400Wc). Le Maroc bénéficie de 3 000 heures d'ensoleillement par an, soit 5 à 6 heures de soleil pic par jour selon la région. SunGPT calcule la puissance exacte selon votre consommation réelle et votre localisation.",
+      "Pour une villa consommant 850 kWh/mois, une installation de 3 à 5 kWc est recommandée (8 à 14 panneaux de 400Wc). Le Maroc bénéficie de 3 000 heures d'ensoleillement par an, soit 5 à 6 heures de soleil pic par jour selon la région. SOLARBOX calcule la puissance exacte selon votre consommation réelle et votre localisation.",
   },
   {
     question: "Puis-je vendre mon surplus d'électricité à l'ONEE ?",
@@ -42,12 +42,12 @@ export const faqData: FAQItem[] = [
   {
     question: "Quels sont les meilleurs panneaux solaires disponibles au Maroc ?",
     answer:
-      "Les panneaux monocristallins PERC (rendement 20-22%) sont les plus recommandés au Maroc pour leur efficacité sous fort ensoleillement. Les marques Longi, JA Solar et Jinko Solar sont les plus distribuées. NOORIA sélectionne uniquement des panneaux avec garantie performance 25 ans et certifiés IEC.",
+      "Les panneaux monocristallins PERC (rendement 20-22%) sont les plus recommandés au Maroc pour leur efficacité sous fort ensoleillement. Les marques Longi, JA Solar et Jinko Solar sont les plus distribuées. SOLARBOX sélectionne uniquement des panneaux avec garantie performance 25 ans et certifiés IEC.",
   },
   {
-    question: "SunGPT est-il gratuit ?",
+    question: "Le diagnostic SOLARBOX est-il gratuit ?",
     answer:
-      "Oui, le diagnostic SunGPT est entièrement gratuit et le restera. NOORIA se rémunère exclusivement auprès des installateurs partenaires sous forme de commission sur les projets réalisés. Aucune carte bancaire ni engagement requis pour accéder au diagnostic.",
+      "Oui, le diagnostic SOLARBOX est entièrement gratuit et le restera. SOLARBOX se rémunère exclusivement auprès des installateurs partenaires sous forme de commission sur les projets réalisés. Aucune carte bancaire ni engagement requis pour accéder au diagnostic.",
   },
   {
     question: "Quelle batterie solaire choisir pour le Maroc (LFP vs AGM) ?",
@@ -55,14 +55,14 @@ export const faqData: FAQItem[] = [
       "La batterie LFP (Lithium Fer Phosphate) est fortement recommandée pour le Maroc : 6 000 cycles de charge (vs 500 pour l'AGM), meilleure résistance aux fortes chaleurs, profondeur de décharge de 80-90% et durée de vie de 10 à 15 ans. L'AGM reste une option entrée de gamme mais nécessite un remplacement tous les 3 à 5 ans.",
   },
   {
-    question: "NOORIA est-elle certifiée MASEN ?",
+    question: "SOLARBOX est-elle certifiée MASEN ?",
     answer:
-      "NOORIA travaille en partenariat avec MASEN (Agence Marocaine pour l'Énergie Durable) et les installateurs de notre réseau sont sélectionnés selon les critères de certification RGE et les standards AMEE. Nous respectons la réglementation SR500 et les normes d'installation photovoltaïque en vigueur au Maroc.",
+      "SOLARBOX travaille en partenariat avec MASEN (Agence Marocaine pour l'Énergie Durable) et les installateurs de notre réseau sont sélectionnés selon les critères de certification RGE et les standards AMEE. Nous respectons la réglementation SR500 et les normes d'installation photovoltaïque en vigueur au Maroc.",
   },
   {
     question: "Comment comparer les installateurs solaires au Maroc ?",
     answer:
-      "NOORIA compare automatiquement les installateurs selon 5 critères : certification RGE, note clients (sur 5★), délai d'intervention, nombre d'installations réalisées et garantie proposée. Après votre diagnostic SunGPT, vous recevez 3 devis comparatifs d'installateurs certifiés dans votre région.",
+      "SOLARBOX compare automatiquement les installateurs selon 5 critères : certification RGE, note clients (sur 5★), délai d'intervention, nombre d'installations réalisées et garantie proposée. Après votre diagnostic SOLARBOX, vous recevez 3 devis comparatifs d'installateurs certifiés dans votre région.",
   },
 ];
 

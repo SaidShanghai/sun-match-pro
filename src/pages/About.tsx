@@ -225,7 +225,7 @@ export default function About() {
               Prêt à découvrir votre potentiel solaire ?
             </h2>
             <p className="text-primary-foreground/90 mb-8 max-w-lg mx-auto">
-              En 2 minutes, SunGPT analyse votre profil et vous recommande la solution idéale.
+              En 2 minutes, SOLARBOX analyse votre profil et vous recommande la solution idéale.
             </p>
             <Button asChild size="lg" className="bg-background text-foreground hover:bg-background/90 font-semibold h-14 px-8">
               <Link to="/diagnostic">

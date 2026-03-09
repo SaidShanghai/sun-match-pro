@@ -6,7 +6,7 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function FAQ() {
   usePageMeta({
-    title: "FAQ Solaire Maroc 2025 – 12 Questions Répondues | NOORIA",
+    title: "FAQ Solaire Maroc 2025 – 12 Questions Répondues | SOLARBOX",
     description: "Coûts, Loi 82-21, ONEE, aides AMEE... Toutes les réponses sur l'installation solaire au Maroc par les experts NOORIA.",
   });
 
