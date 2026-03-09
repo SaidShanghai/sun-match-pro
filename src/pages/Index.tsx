@@ -1460,7 +1460,7 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl font-bold mb-4">Pourquoi NOORIA ?</h2>
+            <h2 className="text-4xl font-bold mb-4">Pourquoi SOLARBOX ?</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Le comparateur solaire pensé pour simplifier votre transition énergétique.
             </p>
