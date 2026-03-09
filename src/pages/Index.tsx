@@ -340,7 +340,7 @@ const Index = () => {
                             : ""}
                         </span>
                     </div>
-                    <span className="text-[9px] text-muted-foreground">SunStone Finance</span>
+                    <span className="text-[9px] text-muted-foreground">SOLARBOX</span>
                   </div>
 
                   <div className={`flex-1 min-h-0 relative ${phoneScreen === "analyse" ? "overflow-hidden" : "overflow-y-auto"}`}>
