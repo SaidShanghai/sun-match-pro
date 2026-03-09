@@ -319,7 +319,7 @@ const Partenaires = () => {
                 </div>
                 <h2 className="text-2xl font-bold">Inscription refusée</h2>
                 <p className="text-muted-foreground max-w-md mx-auto">
-                  Votre demande d'inscription n'a pas été approuvée. Veuillez contacter l'équipe NOORIA pour plus d'informations.
+                  Votre demande d'inscription n'a pas été approuvée. Veuillez contacter l'équipe SOLARBOX pour plus d'informations.
                 </p>
               </CardContent>
             </Card>
