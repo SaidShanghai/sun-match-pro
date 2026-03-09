@@ -29,7 +29,7 @@ const Profil = () => {
     return <AuthPortal />;
   }
 
-  // Admin → show full NOORIA dashboard
+  // Admin → show full SOLARBOX dashboard
   if (isAdmin) {
     return <AdminDashboardContent />;
   }

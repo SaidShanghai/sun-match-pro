@@ -55,7 +55,7 @@ const ClientProfileContent = () => {
           <div className="space-y-1">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-sm font-medium">
               <Sun className="w-4 h-4" />
-              Mon Espace NOORIA
+              Mon Espace SOLARBOX
             </div>
             <h1 className="text-3xl font-bold">Mon Profil</h1>
             <p className="text-muted-foreground text-sm">{user?.email}</p>

@@ -745,9 +745,9 @@ export function generateQuotePdf(
     doc.setFont("helvetica", "normal");
     doc.setFontSize(6.5);
     doc.setTextColor(...GREY);
-    doc.text("NOORIA — sungpt.ma — contact@sungpt.ma", margin, pageH - 7);
+    doc.text("SOLARBOX — sungpt.ma — contact@sungpt.ma", margin, pageH - 7);
     doc.text(`${p} / ${totalPages}`, pageW - margin, pageH - 7, { align: "right" });
   }
 
-  doc.save(`NOORIA-Devis-${ref}.pdf`);
+  doc.save(`SOLARBOX-Devis-${ref}.pdf`);
 }

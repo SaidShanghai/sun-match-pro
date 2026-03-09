@@ -233,7 +233,7 @@ const AdminDashboardContent = () => {
             <div className="space-y-1">
               <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-sm font-medium">
                 <ShieldCheck className="w-4 h-4" />
-                Administration NOORIA
+                Administration SOLARBOX
               </div>
               <h1 className="text-4xl font-bold">Tableau de Bord</h1>
             </div>

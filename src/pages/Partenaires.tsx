@@ -553,7 +553,7 @@ const Partenaires = () => {
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
               Pour accéder aux <strong>Kits Solaires</strong> et à la <strong>Tarification</strong>,
-              vous devez d'abord enregistrer votre entreprise en tant que partenaire NOORIA.
+              vous devez d'abord enregistrer votre entreprise en tant que partenaire SOLARBOX.
             </p>
             <div className="bg-muted/50 rounded-xl p-4 space-y-2">
               <p className="text-xs font-semibold text-foreground">Pourquoi cette étape ?</p>
