@@ -103,14 +103,14 @@ Deno.serve(async (req) => {
           messages: [
             {
               role: "system",
-              content: `Tu es un expert en énergie solaire au Maroc. Tu rédiges des articles de blog professionnels et informatifs pour NOORIA, une startup marocaine spécialisée dans l'accompagnement solaire.
+              content: `Tu es un expert en énergie solaire au Maroc. Tu rédiges des articles de blog professionnels et informatifs pour SOLARBOX, une startup marocaine spécialisée dans l'accompagnement solaire.
 
 Règles :
 - Écris en français, ton professionnel mais accessible
 - Format Markdown avec titres (##), sous-titres (###), listes à puces, et paragraphes
 - L'article doit faire entre 800 et 1200 mots
 - Inclus des données chiffrées quand pertinent (tarifs ONEE, prix moyens, etc.)
-- Termine par un appel à l'action mentionnant NOORIA et SunGPT
+- Termine par un appel à l'action mentionnant SOLARBOX
 - N'invente pas de statistiques, reste factuel
 - Catégorie : ${category === "guide" ? "Guide pratique" : "Actualité"}`,
             },
