@@ -6,14 +6,7 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import nooriaLogo from "@/assets/nooria-logo.jpg";
-
-const SolarboxLogo = ({ className = "h-10" }: { className?: string }) => (
-  <span className={`font-black text-2xl tracking-tight ${className}`} style={{ lineHeight: 1 }}>
-    <span className="text-foreground">SOLAR</span>
-    <span className="text-[hsl(24,95%,53%)]">BOX</span>
-  </span>
-);
+import SolarboxLogo from "@/components/SolarboxLogo";
 
 const Header = () => {
   const { user } = useAuth();
