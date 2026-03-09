@@ -99,7 +99,7 @@ const HeroRotatingTitle = ({ entreprise = false, activeIndex }: { entreprise?: b
 
 const Index = () => {
   usePageMeta({
-    title: "NOORIA – 1ère IA Solaire du Maroc | Diagnostic Gratuit en 2 min",
+    title: "SOLARBOX – Diagnostic Solaire Gratuit en 2 min au Maroc",
     description: "Diagnostic solaire IA gratuit en 2 minutes. Économisez jusqu'à 70% sur votre facture ONEE. Installateurs certifiés RGE partout au Maroc.",
   });
   const [heroStepIndex, setHeroStepIndex] = useState(0);
