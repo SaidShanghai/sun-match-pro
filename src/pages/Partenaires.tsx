@@ -529,7 +529,7 @@ const Partenaires = () => {
                 : setupComplete && !docsComplete
                 ? "📄 Complétez vos documents justificatifs pour apparaître dans les recherches."
                 : entrepriseRegistered
-                ? "⚠️ Complétez les 3 étapes et vos documents pour apparaître dans les recherches clients NOORIA."
+                ? "⚠️ Complétez les 3 étapes et vos documents pour apparaître dans les recherches clients SOLARBOX."
                 : "🔒 Inscription entreprise obligatoire avant d'accéder aux kits et à la tarification."}
             </p>
           </div>

@@ -186,7 +186,7 @@ export default function BeforeAfterBill() {
             >
               <span className="text-2xl mt-0.5">😎</span>
               <div>
-                <p className="font-bold mb-1">Après NOORIA</p>
+                <p className="font-bold mb-1">Après SOLARBOX</p>
                 <p className="text-sm text-muted-foreground">
                   Facture réduite à <span className="font-bold text-primary">550 dirhams (MAD)/mois</span>. Autoconsommation solaire, retour sur investissement en 4-5 ans.
                 </p>

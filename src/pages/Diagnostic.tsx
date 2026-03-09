@@ -1005,7 +1005,7 @@ const Diagnostic = () => {
                     <h2 className="text-3xl font-black">Demande reçue !</h2>
                     <p className="text-muted-foreground leading-relaxed">
                       Prochaine étape : vérification technique et estimation préliminaire.<br />
-                      Un expert NOORIA vous contacte sous <span className="font-semibold text-foreground">24h</span> (WhatsApp ou appel).
+                      Un expert SOLARBOX vous contacte sous <span className="font-semibold text-foreground">24h</span> (WhatsApp ou appel).
                     </p>
                     {quoteRef && (
                       <div className="inline-flex items-center gap-2 bg-muted rounded-xl px-4 py-2 mt-2">

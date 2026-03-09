@@ -202,7 +202,7 @@ const KitsSolaires = ({ userId, companyId, onBack, onSaved }: KitsSolairesProps)
             </div>
             <h3 className="text-lg font-semibold">Aucun kit enregistré</h3>
             <p className="text-muted-foreground text-sm max-w-md mx-auto">
-              Ajoutez vos kits solaires pour qu'ils apparaissent dans les résultats de diagnostic des clients NOORIA.
+              Ajoutez vos kits solaires pour qu'ils apparaissent dans les résultats de diagnostic des clients SOLARBOX.
             </p>
             <Button onClick={openAdd}>
               <Plus className="w-4 h-4 mr-1" /> Ajouter mon premier kit
