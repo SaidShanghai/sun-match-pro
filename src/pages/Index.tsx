@@ -358,8 +358,8 @@ const Index = () => {
                           <Sun className="w-7 h-7 text-primary-foreground" />
                         </div>
                         <div>
-                          <h3 className="text-base font-bold">SUN_GPT</h3>
-                          <p className="text-[10px] text-muted-foreground">par SunStone Finance</p>
+                         <h3 className="text-base font-bold">SOLARBOX</h3>
+                          <p className="text-[10px] text-muted-foreground">par SOLARBOX</p>
                           <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
                             Analysez votre consommation, découvrez<br />la solution solaire optimale
                           </p>
