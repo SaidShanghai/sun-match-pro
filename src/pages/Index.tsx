@@ -333,7 +333,7 @@ const Index = () => {
                           <ChevronLeft className="w-4 h-4 text-foreground" />
                         </button>
                       )}
-                      <img src={nooriaLogo} alt="NOORIA" className="h-5 w-auto object-contain" />
+                      <img src={nooriaLogo} alt="SOLARBOX" className="h-5 w-auto object-contain" />
                       <span className="text-[8px] text-muted-foreground font-normal leading-none">
                           {selectedType && phoneScreen !== "intro" && phoneScreen !== "type"
                             ? (selectedType === "Maison" || selectedType === "Appartement" ? "Particulier" : selectedType === "Ferme" ? "Agriculteur" : selectedType)
