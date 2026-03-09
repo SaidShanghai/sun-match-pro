@@ -1,0 +1,3 @@
+UPDATE blog_posts SET cover_image_url = 'https://ffgclfdgqovirhptqipi.supabase.co/storage/v1/object/public/blog-covers/projets-solaires-geants-maroc.jpg' WHERE id = '95ff57a8-d22a-48d7-8c4f-6c99b7d4e5b1';
+UPDATE blog_posts SET cover_image_url = 'https://ffgclfdgqovirhptqipi.supabase.co/storage/v1/object/public/blog-covers/autoconsommation-onee-maroc.jpg' WHERE id = '8fbeba34-ef67-4162-a031-e494ea571cde';
+UPDATE blog_posts SET cover_image_url = 'https://ffgclfdgqovirhptqipi.supabase.co/storage/v1/object/public/blog-covers/prix-panneaux-solaires-maroc-2025.jpg' WHERE id = '9d051b45-aa9c-4bb6-8d3c-38c4feb94d24';
