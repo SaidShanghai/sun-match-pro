@@ -58,7 +58,7 @@ export default function BlogPost() {
   // Set document title and meta description for SEO
   useEffect(() => {
     if (post) {
-      document.title = `${post.title} | NOORIA`;
+      document.title = `${post.title} | SOLARBOX`;
       const metaDesc = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
       if (metaDesc) {
         metaDesc.content = post.meta_description || (post.content?.substring(0, 155) + "…") || "";
