@@ -131,36 +131,48 @@ function getRecommendation(req: QuoteData, packages: PackageInfo[]) {
       const largestAio = aioBoxes[aioBoxes.length - 1];
       recommended = largestAio;
 
-      const aioCapKwh = largestAio.specs?.capacite_batterie_kwh || 350;
-      const nbAio = Math.ceil(neededKwc > 200 ? neededKwc / (largestAio.power_kwc || 430) : 1);
+      // ⛔ STRICT: toutes les valeurs DOIVENT venir de la BDD — aucun fallback inventé
+      const aioCapKwh = largestAio.specs?.capacite_batterie_kwh;
+      if (!aioCapKwh) { warnings.push("⚠ Capacité AIO BOX manquante en BDD. Devis incomplet."); }
 
-      // Onduleurs per AIO from combo spec (e.g. "2x BCT-110kW-PRO")
-      const comboStr = String(largestAio.specs?.onduleur_combo || "1x");
-      const ondPerAio = parseInt(comboStr) || 1;
-      const nbOnduleurs = nbAio * ondPerAio;
+      const nbAio = Math.ceil(neededKwc > 200 ? neededKwc / (largestAio.power_kwc || 1) : 1);
 
-      // Total inverter power → DC/AC 1.2 → panels
-      const totalInvKw = nbOnduleurs * (bctOnduleur.power_kwc || 110);
+      const comboStr = String(largestAio.specs?.onduleur_combo || "");
+      const ondPerAio = parseInt(comboStr) || 0;
+      if (!ondPerAio) { warnings.push("⚠ Champ onduleur_combo manquant sur AIO BOX. Nombre d'onduleurs indéterminé."); }
+      const nbOnduleurs = nbAio * (ondPerAio || 1);
+
+      const totalInvKw = nbOnduleurs * bctOnduleur.power_kwc;
       const pvKwc = Math.round(totalInvKw * 1.2);
-      const panelWc = panneau?.specs?.puissance_crete_wc || 585;
-      const nbPanneaux = Math.ceil((pvKwc * 1000) / panelWc);
-      const panelUnitPrice = panneau?.price_ttc || 1000;
+
+      if (!panneau) {
+        warnings.push("⚠ Aucun panneau trouvé dans le catalogue. Impossible de calculer le nombre de panneaux.");
+      }
+      const panelWc = panneau?.specs?.puissance_crete_wc;
+      const panelUnitPrice = panneau?.price_ttc;
+
+      if (!panelWc) { warnings.push("⚠ Puissance crête panneau manquante en BDD."); }
+      if (panelUnitPrice === undefined || panelUnitPrice === null) { warnings.push("⚠ Prix panneau manquant en BDD."); }
+
+      const nbPanneaux = panelWc ? Math.ceil((pvKwc * 1000) / panelWc) : 0;
 
       bom.push({ label: largestAio.name, qty: nbAio, unitPrice: largestAio.price_ttc, totalPrice: nbAio * largestAio.price_ttc });
       bom.push({ label: bctOnduleur.name, qty: nbOnduleurs, unitPrice: bctOnduleur.price_ttc, totalPrice: nbOnduleurs * bctOnduleur.price_ttc });
-      bom.push({ label: `Panneau PVS ${panelWc}W`, qty: nbPanneaux, unitPrice: panelUnitPrice, totalPrice: nbPanneaux * panelUnitPrice });
+      if (panneau && panelWc && panelUnitPrice != null) {
+        bom.push({ label: `${panneau.name}`, qty: nbPanneaux, unitPrice: panelUnitPrice, totalPrice: nbPanneaux * panelUnitPrice });
+      }
 
       const totalBom = bom.reduce((s, l) => s + l.totalPrice, 0);
 
-      reasoning.push(`Stockage : ${nbAio}× ${largestAio.name} (${aioCapKwh} kWh)`);
+      reasoning.push(`Stockage : ${nbAio}× ${largestAio.name}${aioCapKwh ? ` (${aioCapKwh} kWh)` : ""}`);
       reasoning.push(`Onduleurs : ${nbOnduleurs}× ${bctOnduleur.name} (${bctOnduleur.power_kwc} kW)`);
-      reasoning.push(`Panneaux : ${nbPanneaux}× PVS ${panelWc}W (~${pvKwc} kWc, ratio DC/AC 1.2)`);
+      if (panneau && panelWc) reasoning.push(`Panneaux : ${nbPanneaux}× ${panneau.name} (~${pvKwc} kWc, ratio DC/AC 1.2)`);
       reasoning.push(`Total système C&I : ${fmtNum(totalBom)} DH TTC`);
 
       if (nbAio > 1) warnings.push(`Dimensionnement important : ${nbAio} unités AIO BOX. Étude sur mesure recommandée.`);
 
       const battSpecs = largestAio.specs || {};
-      if (battSpecs.cycles_de_vie) reasoning.push(`Batterie LFP : ${battSpecs.cycles_de_vie} cycles (${battSpecs.dod_pct || 95}% DoD)`);
+      if (battSpecs.cycles_de_vie) reasoning.push(`Batterie LFP : ${battSpecs.cycles_de_vie} cycles${battSpecs.dod_pct ? ` (${battSpecs.dod_pct}% DoD)` : ""}`);
     } else {
       const tri380 = packages
         .filter(p => p.name.toLowerCase().includes("solarbox") && p.name.includes("380V"))
