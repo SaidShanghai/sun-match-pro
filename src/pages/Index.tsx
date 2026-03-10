@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
 import heroBg from "@/assets/hero-bg.png";
-import solarboxLogoFull from "@/assets/solarbox-logo-full.jpeg";
+import solarboxLogoFull from "@/assets/solarbox-logo-mockup.png";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -355,7 +355,7 @@ const Index = () => {
                         transition={{ duration: 0.25 }}
                         className="px-5 py-6 flex flex-col items-center text-center gap-4"
                       >
-                        <img src={solarboxLogoFull} alt="SOLARBOX" className="w-20 h-20 object-contain" />
+                        <img src={solarboxLogoFull} alt="SOLARBOX" className="w-32 h-32 object-contain" />
                         <div>
                          <h3 className="text-base font-bold">SOLARBOX</h3>
                           <p className="text-[10px] text-muted-foreground">Votre diagnostic solaire</p>
