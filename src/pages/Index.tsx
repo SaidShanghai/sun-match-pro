@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import nooriaLogo from "@/assets/nooria-logo.jpg";
 import heroBg from "@/assets/hero-bg.png";
+import solarboxLogoFull from "@/assets/solarbox-logo-full.jpeg";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
