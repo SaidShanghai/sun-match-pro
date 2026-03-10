@@ -37,6 +37,7 @@ interface PackageInfo {
   power_kwc: number;
   price_ttc: number;
   specs: Record<string, any> | null;
+  category?: string;
 }
 
 /* ── Helpers ─────────────────────────────────────── */
