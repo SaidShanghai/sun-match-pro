@@ -497,7 +497,7 @@ export function generateQuotePdf(
   }
 
   // ─── RECOMMENDATION ───────────────────────────
-  const { recommended, reasoning, warnings } = getRecommendation(req, packages);
+  const { recommended, reasoning, warnings, bom } = getRecommendation(req, packages);
 
   y = drawSectionTitle(doc, "Analyse & Recommandation", y, margin);
 
@@ -528,19 +528,56 @@ export function generateQuotePdf(
     y += 2;
   }
 
-  // ─── PACKAGE SPECS ─────────────────────────────
-  if (recommended && recommended.specs) {
+  // ─── BOM TABLE (C&I) ──────────────────────────
+  if (bom.length > 0) {
     y += 2;
+    y = drawSectionTitle(doc, "Nomenclature du système", y, margin);
 
-    doc.setFillColor(...BLACK);
-    doc.roundedRect(margin, y - 4, contentW, 8, 1.5, 1.5, "F");
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(255, 255, 255);
-    doc.text(recommended.name, margin + 3, y);
-    doc.setFontSize(8);
-    doc.text(`${fmtNum(recommended.price_ttc)} DH TTC`, pageW - margin - 3, y, { align: "right" });
-    y += 8;
+    const bomRows = bom.map(line => [
+      line.label,
+      String(line.qty),
+      `${fmtNum(line.unitPrice)} DH`,
+      `${fmtNum(line.totalPrice)} DH`,
+    ]);
+    const totalBom = bom.reduce((s, l) => s + l.totalPrice, 0);
+    bomRows.push(["TOTAL TTC", "", "", `${fmtNum(totalBom)} DH`]);
+
+    autoTable(doc, {
+      startY: y,
+      head: [["Composant", "Qté", "Prix unitaire", "Total"]],
+      body: bomRows,
+      theme: "grid",
+      margin: { left: margin, right: margin },
+      styles: {
+        fontSize: 7.5,
+        cellPadding: 2,
+        lineColor: [240, 240, 240],
+        lineWidth: 0.15,
+      },
+      headStyles: {
+        fillColor: BLACK,
+        textColor: 255,
+        fontStyle: "bold",
+        fontSize: 7.5,
+      },
+      alternateRowStyles: { fillColor: [252, 250, 248] },
+      columnStyles: {
+        0: { cellWidth: 65 },
+        1: { halign: "center", cellWidth: 20 },
+        2: { halign: "right", cellWidth: 35 },
+        3: { halign: "right", cellWidth: 35, fontStyle: "bold" },
+      },
+      didParseCell: (data: any) => {
+        // Bold the total row
+        if (data.section === "body" && data.row.index === bomRows.length - 1) {
+          data.cell.styles.fontStyle = "bold";
+          data.cell.styles.fillColor = [249, 115, 22];
+          data.cell.styles.textColor = [255, 255, 255];
+        }
+      },
+    });
+    y = (doc as any).lastAutoTable.finalY + 4;
+  }
 
     const specs = recommended.specs;
     const specLabels: Record<string, string> = {
