@@ -233,9 +233,62 @@ function getRecommendation(req: QuoteData, packages: PackageInfo[]) {
   if (recommended) {
     const specs = recommended.specs || {};
     const battKwh = specs.capacite_batterie_kwh || specs.capacite_utilisable_kwh;
-    const nbPanneaux = specs.nb_panneaux_recommandes || specs.nb_panneaux_max;
     if (battKwh) reasoning.push(`Stockage : ${battKwh} kWh LFP (${specs.cycles_de_vie || 6000} cycles)`);
-    if (nbPanneaux) reasoning.push(`Config. : ${nbPanneaux} panneaux PVS 585W`);
+
+    // ── BOM résidentiel ──
+    const panneau = packages.find(p => p.category === "panneaux");
+    const panelWc = panneau?.specs?.puissance_crete_wc;
+    const panelUnitPrice = panneau?.price_ttc;
+
+    const isSolarBox = recommended.name.toLowerCase().includes("solarbox");
+
+    if (isSolarBox) {
+      // SolarBox = tout-en-un (onduleur + batterie intégrés), panneaux en supplément
+      bom.push({ label: recommended.name, qty: 1, unitPrice: recommended.price_ttc, totalPrice: recommended.price_ttc });
+
+      const recKwc = recommended.power_kwc;
+      const pvKwc = Math.round(recKwc * 1.2); // ratio DC/AC 1.2
+
+      if (!panneau) {
+        warnings.push("⚠ Aucun panneau trouvé dans le catalogue.");
+      } else if (!panelWc) {
+        warnings.push("⚠ Puissance crête panneau manquante en BDD.");
+      } else if (panelUnitPrice == null) {
+        warnings.push("⚠ Prix panneau manquant en BDD.");
+      } else {
+        const nbPanneaux = Math.ceil((pvKwc * 1000) / panelWc);
+        bom.push({ label: panneau.name, qty: nbPanneaux, unitPrice: panelUnitPrice, totalPrice: nbPanneaux * panelUnitPrice });
+        reasoning.push(`Panneaux : ${nbPanneaux}× ${panneau.name} (~${pvKwc} kWc, ratio DC/AC 1.2)`);
+      }
+
+      const totalBom = bom.reduce((s, l) => s + l.totalPrice, 0);
+      reasoning.push(`Total système résidentiel : ${fmtNum(totalBom)} DH TTC`);
+    } else {
+      // Onduleur(s) seul(s) sans batterie — ex: BCT-HP en parallèle
+      const onduleurKw = recommended.power_kwc;
+      const nbOnduleurs = Math.max(1, Math.ceil(neededKwc / (onduleurKw || 1)));
+      bom.push({ label: recommended.name, qty: nbOnduleurs, unitPrice: recommended.price_ttc, totalPrice: nbOnduleurs * recommended.price_ttc });
+
+      const totalInvKw = nbOnduleurs * onduleurKw;
+      const pvKwc = Math.round(totalInvKw * 1.2); // ratio DC/AC 1.2
+
+      if (nbOnduleurs > 1) reasoning.push(`Onduleurs : ${nbOnduleurs}× ${recommended.name} (mise en parallèle)`);
+
+      if (!panneau) {
+        warnings.push("⚠ Aucun panneau trouvé dans le catalogue.");
+      } else if (!panelWc) {
+        warnings.push("⚠ Puissance crête panneau manquante en BDD.");
+      } else if (panelUnitPrice == null) {
+        warnings.push("⚠ Prix panneau manquant en BDD.");
+      } else {
+        const nbPanneaux = Math.ceil((pvKwc * 1000) / panelWc);
+        bom.push({ label: panneau.name, qty: nbPanneaux, unitPrice: panelUnitPrice, totalPrice: nbPanneaux * panelUnitPrice });
+        reasoning.push(`Panneaux : ${nbPanneaux}× ${panneau.name} (~${pvKwc} kWc, ratio DC/AC 1.2)`);
+      }
+
+      const totalBom = bom.reduce((s, l) => s + l.totalPrice, 0);
+      reasoning.push(`Total système résidentiel : ${fmtNum(totalBom)} DH TTC`);
+    }
   }
 
   return { recommended, reasoning, warnings, bom };
