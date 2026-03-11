@@ -145,7 +145,7 @@ const QuoteRequestsManager = () => {
   const fetchPackages = async () => {
     const { data } = await supabase
       .from("packages")
-      .select("name, power_kwc, price_ttc, specs")
+      .select("name, power_kwc, price_ttc, specs, category")
       .eq("is_active", true);
     if (data) setAllPackages(data as any);
   };
