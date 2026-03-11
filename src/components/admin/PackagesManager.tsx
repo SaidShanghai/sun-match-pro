@@ -162,6 +162,7 @@ const PackagesManager = () => {
   const [ocrFields, setOcrFields] = useState<Set<string>>(new Set());
   const { toast } = useToast();
   const [calcFields, setCalcFields] = useState<Set<string>>(new Set());
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
   const h = (key: string) => ocrFields.has(key); // shorthand for highlighted
   const isCalc = (key: string) => calcFields.has(key); // auto-calculated indicator
@@ -418,7 +419,9 @@ const PackagesManager = () => {
       applicable_aids: f.applicable_aids.includes(aid) ? f.applicable_aids.filter((a) => a !== aid) : [...f.applicable_aids, aid],
     }));
 
-  const grouped = packages.reduce<Record<string, PackageRow[]>>((acc, p) => {
+  const filteredPackages = activeFilter ? packages.filter(p => (p.category || "panneaux") === activeFilter) : packages;
+
+  const grouped = filteredPackages.reduce<Record<string, PackageRow[]>>((acc, p) => {
     const key = p.category || "panneaux";
     if (!acc[key]) acc[key] = [];
     acc[key].push(p);
@@ -675,6 +678,25 @@ const PackagesManager = () => {
           <Plus className="w-4 h-4 mr-2" />
           Nouveau produit
         </Button>
+      </div>
+
+      {/* Category filter CTAs */}
+      <div className="flex gap-2 flex-wrap">
+        <button
+          onClick={() => setActiveFilter(null)}
+          className={`px-4 py-2 rounded-full text-xs font-semibold border transition-colors ${!activeFilter ? "bg-primary text-primary-foreground border-primary" : "bg-muted text-muted-foreground border-border hover:border-primary/50"}`}
+        >
+          Tous
+        </button>
+        {CATEGORY_OPTIONS.map((cat) => (
+          <button
+            key={cat.value}
+            onClick={() => setActiveFilter(activeFilter === cat.value ? null : cat.value)}
+            className={`px-4 py-2 rounded-full text-xs font-semibold border transition-colors ${activeFilter === cat.value ? "bg-primary text-primary-foreground border-primary" : "bg-muted text-muted-foreground border-border hover:border-primary/50"}`}
+          >
+            {cat.label}
+          </button>
+        ))}
       </div>
 
       {loading ? (
