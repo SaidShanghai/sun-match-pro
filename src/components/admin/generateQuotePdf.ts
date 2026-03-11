@@ -107,8 +107,9 @@ function getRecommendation(req: QuoteData, packages: PackageInfo[]) {
   const abonnement = (req.type_abonnement || "").toLowerCase();
   const isTriphase = abonnement.includes("triphasé") || abonnement.includes("haute tension");
   const isHauteTension = abonnement.includes("haute tension");
-  const wantAutonomy = req.objectif?.toLowerCase().includes("autonomie");
-  const wantReduceFact = req.objectif?.toLowerCase().includes("rédu");
+  const objLower = (req.objectif || "").toLowerCase();
+  const wantAutonomy = objLower.includes("autonomie");
+  const wantReduceFact = objLower.includes("facture") || objLower.includes("rédu");
 
   const neededKwc = calcNeededKwc(consoKwh, 3);
   reasoning.push(`Consommation annuelle : ${consoKwh > 0 ? fmtNum(consoKwh) + " kWh" : "N/R"}`);
