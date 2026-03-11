@@ -645,7 +645,7 @@ export function generateQuotePdf(
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
     for (const w of warnings) {
-      doc.text(`▸ ${w}`, margin + 2, y);
+      doc.text(`- ${w}`, margin + 2, y);
       y += 3.5;
     }
     y += 2;
