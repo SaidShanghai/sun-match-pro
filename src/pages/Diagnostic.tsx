@@ -446,19 +446,35 @@ const Diagnostic = () => {
                   <div className="space-y-3">
                     <label className="text-sm font-semibold">Objectif principal</label>
                     <div className="flex gap-3">
-                      <button onClick={() => setObjectif("facture")} className={`flex-1 flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium border-2 transition-colors ${objectif === "facture" ? "bg-primary border-primary" : "border-border hover:border-primary/50"}`}>
-                        <TrendingDown className="w-6 h-6 shrink-0" />
-                        <span className="flex flex-col items-start leading-tight">
-                          <span>Réduire la facture</span>
-                          <span className="text-[10px] font-normal opacity-75">Sans stockage d'énergie</span>
-                        </span>
+                      <button onClick={() => setObjectif("facture")} className={`flex-1 flex flex-col gap-2 px-4 py-4 rounded-xl text-sm font-medium border-2 transition-all ${objectif === "facture" ? "bg-primary/5 border-primary ring-2 ring-primary/20" : "border-border hover:border-primary/50"}`}>
+                        <div className="flex items-center gap-2">
+                          <TrendingDown className="w-6 h-6 shrink-0 text-primary" />
+                          <span className="font-bold text-base">Réduire la facture</span>
+                        </div>
+                        <div className="text-left space-y-1 mt-1">
+                          <p className="text-xs text-muted-foreground leading-snug">
+                            Panneaux + onduleur uniquement. L'électricité produite est consommée en journée, le surplus injecté dans le réseau.
+                          </p>
+                          <div className="flex items-center gap-1.5 text-[10px] font-semibold text-amber-600 bg-amber-50 rounded-full px-2 py-0.5 w-fit">
+                            <TrendingDown className="w-3 h-3" />
+                            Sans batteries — coût réduit
+                          </div>
+                        </div>
                       </button>
-                      <button onClick={() => setObjectif("autonomie")} className={`flex-1 flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium border-2 transition-colors ${objectif === "autonomie" ? "bg-primary border-primary" : "border-border hover:border-primary/50"}`}>
-                        <Battery className="w-6 h-6 shrink-0" />
-                        <span className="flex flex-col items-start leading-tight">
-                          <span>Autonomie totale</span>
-                          <span className="text-[10px] font-normal opacity-75">Avec stockage d'énergie</span>
-                        </span>
+                      <button onClick={() => setObjectif("autonomie")} className={`flex-1 flex flex-col gap-2 px-4 py-4 rounded-xl text-sm font-medium border-2 transition-all ${objectif === "autonomie" ? "bg-primary/5 border-primary ring-2 ring-primary/20" : "border-border hover:border-primary/50"}`}>
+                        <div className="flex items-center gap-2">
+                          <Battery className="w-6 h-6 shrink-0 text-primary" />
+                          <span className="font-bold text-base">Autonomie totale</span>
+                        </div>
+                        <div className="text-left space-y-1 mt-1">
+                          <p className="text-xs text-muted-foreground leading-snug">
+                            Panneaux + onduleur + batteries. L'énergie est stockée pour une utilisation jour et nuit, même en cas de coupure.
+                          </p>
+                          <div className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-600 bg-emerald-50 rounded-full px-2 py-0.5 w-fit">
+                            <Battery className="w-3 h-3" />
+                            Avec batteries — indépendance énergétique
+                          </div>
+                        </div>
                       </button>
                     </div>
                   </div>
