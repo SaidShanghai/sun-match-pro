@@ -590,18 +590,17 @@ export function generateQuotePdf(
 
   // ─── OBJECTIF EXPLANATION BOX ─────────────────
   const wantAutonomyObj = req.objectif?.toLowerCase().includes("autonomie");
-  const objLabel = wantAutonomyObj ? "Autonomie totale" : "Réduire la facture";
-  const objIcon = wantAutonomyObj ? "🔋" : "📉";
+  const objLabel = wantAutonomyObj ? "Autonomie totale" : "Reduire la facture";
   const objDesc = wantAutonomyObj
-    ? "Votre système inclut des batteries de stockage. L'énergie produite en journée est stockée pour une utilisation jour et nuit, garantissant une indépendance énergétique même en cas de coupure réseau."
-    : "Votre système fonctionne sans batteries. L'électricité solaire est consommée en temps réel pendant la journée. Le surplus est injecté dans le réseau, réduisant votre facture ONEE.";
+    ? "Votre systeme inclut des batteries de stockage. L'energie produite en journee est stockee pour une utilisation jour et nuit, garantissant une independance energetique meme en cas de coupure reseau."
+    : "Votre systeme fonctionne sans batteries. L'electricite solaire est consommee en temps reel pendant la journee. Le surplus est injecte dans le reseau, reduisant votre facture ONEE.";
 
   doc.setFillColor(wantAutonomyObj ? 236 : 254, wantAutonomyObj ? 253 : 252, wantAutonomyObj ? 245 : 232);
   doc.roundedRect(margin, y - 2, contentW, 18, 2, 2, "F");
   doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...DARK);
-  doc.text(`${objIcon}  ${objLabel}`, margin + 3, y + 3);
+  doc.text(`OBJECTIF : ${objLabel}`, margin + 3, y + 3);
   doc.setFontSize(7);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...GREY);
