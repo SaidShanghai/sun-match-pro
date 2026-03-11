@@ -567,18 +567,15 @@ const Index = () => {
                             </div>
                           ) : (
                             <button
-                              className="w-full rounded-xl border border-dashed border-border hover:border-primary/50 p-3 flex flex-col items-center gap-1 transition-colors group"
+                              className="w-full rounded-lg border border-dashed border-border hover:border-primary/50 px-3 py-2 flex items-center gap-2 transition-colors group"
                               onClick={() => mockupFileRef.current?.click()}
                             >
-                              <div className="w-8 h-8 rounded-xl bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center transition-colors">
-                                <Camera className="w-4 h-4 text-primary" />
+                              <div className="w-6 h-6 rounded-lg bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center transition-colors shrink-0">
+                                <Camera className="w-3 h-3 text-primary" />
                               </div>
-                              <p className="text-[8px] font-medium text-foreground">Photographiez votre facture ONEE</p>
-                              <p className="text-[7px] text-muted-foreground">L'IA pré-remplira vos informations</p>
-                              <div className="flex items-center gap-1 mt-0.5">
-                                <span className="text-[7px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted">JPG</span>
-                                <span className="text-[7px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted">PNG</span>
-                                <span className="text-[7px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted">PDF</span>
+                              <div className="text-left">
+                                <p className="text-[8px] font-medium text-foreground">Photographiez votre facture ONEE</p>
+                                <p className="text-[7px] text-muted-foreground">JPG · PNG · PDF — L'IA pré-remplira vos infos</p>
                               </div>
                             </button>
                           )}
