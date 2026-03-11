@@ -2,6 +2,11 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { scaleSolar, parseConsoKwh, neededKwc as calcNeededKwc } from "@/lib/solarScaling";
 
+/** Strip accents & emojis so jsPDF helvetica can render cleanly */
+const pdfSafe = (s: string): string =>
+  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+   .replace(/[^\x20-\x7E\n]/g, "");
+
 interface QuoteData {
   id: string;
   client_name: string;
