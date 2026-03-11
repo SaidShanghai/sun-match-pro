@@ -1,8 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, forwardRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, FileText, Loader2, CheckCircle2, X, Sparkles } from "lucide-react";
+import { Camera, Loader2, CheckCircle2, X, Sparkles } from "lucide-react";
+import { compressImageToBase64 } from "@/lib/compressImage";
 
 interface OcrResult {
   numero_contrat?: string | null;
@@ -32,7 +33,8 @@ interface FactureUploadProps {
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
 
-const FactureUpload = ({ onDataExtracted }: FactureUploadProps) => {
+const FactureUpload = forwardRef<HTMLDivElement, FactureUploadProps>(
+  ({ onDataExtracted }, ref) => {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -76,21 +78,15 @@ const FactureUpload = ({ onDataExtracted }: FactureUploadProps) => {
     }
 
     try {
-      // Convert to base64
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+      // Compress image before sending (reduces payload size significantly)
+      const { base64, mimeType } = await compressImageToBase64(file, 1600, 0.75);
 
       // Call OCR edge function
       const { data, error } = await supabase.functions.invoke("ocr-facture", {
-        body: { imageBase64: base64, mimeType: file.type },
+        body: { imageBase64: base64, mimeType },
       });
 
       if (error) {
-        // Check if it's an auth error (non-2xx from edge function)
         const errorMsg = error?.message || "";
         if (errorMsg.includes("non-2xx") || errorMsg.includes("401") || errorMsg.includes("Authentication")) {
           toast({
@@ -117,7 +113,6 @@ const FactureUpload = ({ onDataExtracted }: FactureUploadProps) => {
       if (data?.success && data.data) {
         const ocrData = data.data as OcrResult;
         
-        // Track which fields were extracted
         const fields: string[] = [];
         if (ocrData.consommation_kwh) fields.push("Consommation");
         if (ocrData.montant_ttc) fields.push("Montant TTC");
@@ -157,7 +152,7 @@ const FactureUpload = ({ onDataExtracted }: FactureUploadProps) => {
   };
 
   return (
-    <div className="space-y-3">
+    <div ref={ref} className="space-y-3">
       <div className="flex items-center justify-between">
         <label className="text-sm font-semibold flex items-center gap-1.5">
           <Camera className="w-4 h-4 text-primary" />
@@ -257,6 +252,8 @@ const FactureUpload = ({ onDataExtracted }: FactureUploadProps) => {
       </AnimatePresence>
     </div>
   );
-};
+});
+
+FactureUpload.displayName = "FactureUpload";
 
 export default FactureUpload;
