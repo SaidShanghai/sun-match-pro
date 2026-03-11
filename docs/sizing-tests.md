@@ -71,7 +71,6 @@
 |-----|--------|--------|
 | Pas d'onduleur triphasé standalone 18-54 kW | Impossible de proposer une solution tri sans batterie sous 110 kW | À sourcer chez fournisseur |
 | Prix BCT-V-48-200 et BCT-V-48-300 = 0 DH | Scénario onduleur + batteries séparées non chiffrable | En attente tarifs fournisseur |
-| BOM résidentiel pas codé dans le moteur auto | Seul le C&I génère un BOM complet dans le PDF | À implémenter |
 
 ---
 
