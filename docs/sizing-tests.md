@@ -82,6 +82,8 @@
 | Pas de branche résidentielle sans batterie | Impossible de proposer onduleur seul même si objectif = réduire facture | Branche `standaloneInverters` ajoutée dans `getRecommendation()` |
 | Objectif affiché en brut dans le dashboard admin | Affiche `"facture"` au lieu de `"📉 Réduire la facture"` | Mapping humain ajouté dans `QuoteRequestsManager` |
 | Objectif stocké en code (`"facture"`) au lieu du label lisible | Données ambiguës en BDD | Diagnostic envoie désormais `"Réduire la facture"` / `"Autonomie totale"` |
+| Emojis/accents dans PDF (jsPDF helvetica) | Caractères garbled `Ø=ÜÉ` au lieu de `OBJECTIF : Réduire la facture` | Fonction `pdfSafe()` + monkey-patch `doc.text()` pour strip accents & emojis |
+| `category` absent du SELECT packages dans `QuoteRequestsManager` | `packages.find(p => p.category === "panneaux")` retourne `undefined` → "Aucun panneau trouvé" | Ajout de `category` dans `.select("name, power_kwc, price_ttc, specs, category")` |
 
 ---
 
