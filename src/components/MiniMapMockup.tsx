@@ -72,8 +72,11 @@ const MiniMapMockup = ({ city, fullscreen = false, onValidate }: MiniMapMockupPr
               new AdvancedMarkerElement({ map, position: geoPos, content: dot, title: "Votre position" });
               map.setCenter(geoPos);
               redMarker.position = geoPos;
+              setGeoStatus("granted");
             },
-            () => {},
+            () => {
+              setGeoStatus("denied");
+            },
             { enableHighAccuracy: true, timeout: 8000 }
           );
         }
