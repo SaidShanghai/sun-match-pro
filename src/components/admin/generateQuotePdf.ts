@@ -551,7 +551,7 @@ export function generateQuotePdf(
       while (doc.getTextWidth(displayVal) > maxW && displayVal.length > 3) {
         displayVal = displayVal.slice(0, -1);
       }
-      if (displayVal !== val) displayVal += "…";
+      if (displayVal !== val) displayVal += "...";
       doc.text(displayVal, startX + 26, cy);
       cy += lineH;
     }
