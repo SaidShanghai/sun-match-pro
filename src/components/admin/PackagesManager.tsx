@@ -678,6 +678,25 @@ const PackagesManager = () => {
         </Button>
       </div>
 
+      {/* Category filter CTAs */}
+      <div className="flex gap-2 flex-wrap">
+        <button
+          onClick={() => setActiveFilter(null)}
+          className={`px-4 py-2 rounded-full text-xs font-semibold border transition-colors ${!activeFilter ? "bg-primary text-primary-foreground border-primary" : "bg-muted text-muted-foreground border-border hover:border-primary/50"}`}
+        >
+          Tous
+        </button>
+        {CATEGORY_OPTIONS.map((cat) => (
+          <button
+            key={cat.value}
+            onClick={() => setActiveFilter(activeFilter === cat.value ? null : cat.value)}
+            className={`px-4 py-2 rounded-full text-xs font-semibold border transition-colors ${activeFilter === cat.value ? "bg-primary text-primary-foreground border-primary" : "bg-muted text-muted-foreground border-border hover:border-primary/50"}`}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
       {loading ? (
         <div className="flex justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
