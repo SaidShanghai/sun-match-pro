@@ -629,12 +629,17 @@ const Diagnostic = () => {
                   <button
                     onClick={() => {
                       const valid = selectedType === "Entreprise"
-                        ? !!(typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement)
-                        : !!(objectif && (facture.trim() || conso.trim()));
+                        ? !!(consentAccepted && typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement)
+                        : !!(consentAccepted && objectif && (facture.trim() || conso.trim()));
                       if (valid) setScreen(selectedType === "Entreprise" ? "informations" : "site");
                     }}
+                    disabled={selectedType === "Entreprise"
+                      ? !(consentAccepted && typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement)
+                      : !(consentAccepted && objectif && (facture.trim() || conso.trim()))}
                     className={`w-full rounded-2xl h-14 font-semibold text-base flex items-center justify-center gap-2 transition-colors ${
-                      (selectedType === "Entreprise" ? !!(typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement) : !!(objectif && (facture.trim() || conso.trim())))
+                      (selectedType === "Entreprise"
+                        ? !!(consentAccepted && typeBatiment && conso.trim() && facture.trim() && puissanceSouscrite.trim() && typeAbonnement)
+                        : !!(consentAccepted && objectif && (facture.trim() || conso.trim())))
                         ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed"
                     }`}
                   >

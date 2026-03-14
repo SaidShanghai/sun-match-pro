@@ -35,6 +35,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import CallbackModal from "@/components/CallbackModal";
 import QuotePanel from "@/components/QuotePanel";
 import EligibiliteScreen from "@/components/EligibiliteScreen";
@@ -131,6 +132,7 @@ const Index = () => {
   const { toast } = useToast();
   // OCR mockup state
   const mockupFileRef = useRef<HTMLInputElement>(null);
+  const [mockupConsentAccepted, setMockupConsentAccepted] = useState(false);
   const [mockupOcrState, setMockupOcrState] = useState<"idle" | "loading" | "success">("idle");
   const [mockupOcrFields, setMockupOcrFields] = useState<string[]>([]);
   const [siteMapFullscreen, setSiteMapFullscreen] = useState(true);
@@ -499,6 +501,28 @@ const Index = () => {
 
                         {/* Mini facture upload — real file picker + OCR */}
                         <div className="space-y-1">
+                          <div className={`flex items-start gap-1.5 p-2 rounded-lg border ${mockupConsentAccepted ? "border-primary/40 bg-primary/5" : "border-destructive/40 bg-destructive/5"}`}>
+                            <Checkbox
+                              id="mockup-consent"
+                              checked={mockupConsentAccepted}
+                              onCheckedChange={(checked) => {
+                                const accepted = checked === true;
+                                setMockupConsentAccepted(accepted);
+                                if (!accepted) {
+                                  setMockupOcrState("idle");
+                                  setMockupOcrFields([]);
+                                }
+                              }}
+                              className="mt-0.5 h-3 w-3"
+                            />
+                            <label htmlFor="mockup-consent" className="text-[8px] leading-tight text-muted-foreground cursor-pointer">
+                              J'ai lu et j'accepte les{" "}
+                              <Link to="/cgv" target="_blank" rel="noopener noreferrer" className="text-primary underline" onClick={(e) => e.stopPropagation()}>CGV</Link>
+                              {" "}et la{" "}
+                              <Link to="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline" onClick={(e) => e.stopPropagation()}>Politique de Confidentialité</Link>
+                            </label>
+                          </div>
+
                           <label className="text-[9px] font-semibold flex items-center gap-1">
                             <Camera className="w-3 h-3 text-primary" />
                             Photo de votre facture
@@ -512,6 +536,11 @@ const Index = () => {
                             onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (!file) return;
+                              if (!mockupConsentAccepted) {
+                                toast({ title: "Consentement requis", description: "Veuillez accepter les CGV et la politique de confidentialité.", variant: "destructive" });
+                                if (mockupFileRef.current) mockupFileRef.current.value = "";
+                                return;
+                              }
                               const MAX = 5 * 1024 * 1024;
                               if (file.size > MAX) { toast({ title: "Fichier trop volumineux", description: "Max 5 Mo", variant: "destructive" }); return; }
                               setMockupOcrState("loading");
@@ -543,43 +572,45 @@ const Index = () => {
                               if (mockupFileRef.current) mockupFileRef.current.value = "";
                             }}
                           />
-                          {mockupOcrState === "success" ? (
-                            <div className="rounded-xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-700 p-2 space-y-1.5">
-                              <div className="flex items-center gap-1">
-                                <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                                <p className="text-[8px] font-semibold text-emerald-800 dark:text-emerald-300">Facture analysée</p>
+                          <div className={!mockupConsentAccepted ? "opacity-50 pointer-events-none select-none" : ""}>
+                            {mockupOcrState === "success" ? (
+                              <div className="rounded-xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-700 p-2 space-y-1.5">
+                                <div className="flex items-center gap-1">
+                                  <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                                  <p className="text-[8px] font-semibold text-emerald-800 dark:text-emerald-300">Facture analysée</p>
+                                </div>
+                                <div className="flex flex-wrap gap-1">
+                                  {mockupOcrFields.map(f => (
+                                    <span key={f} className="inline-flex items-center gap-0.5 text-[7px] font-medium px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-800/40 text-emerald-700 dark:text-emerald-300">
+                                      <Sparkles className="w-2 h-2" /> {f}
+                                    </span>
+                                  ))}
+                                </div>
+                                <button onClick={() => mockupFileRef.current?.click()} className="text-[7px] text-emerald-700 dark:text-emerald-400 font-medium hover:underline">
+                                  Changer de photo
+                                </button>
                               </div>
-                              <div className="flex flex-wrap gap-1">
-                                {mockupOcrFields.map(f => (
-                                  <span key={f} className="inline-flex items-center gap-0.5 text-[7px] font-medium px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-800/40 text-emerald-700 dark:text-emerald-300">
-                                    <Sparkles className="w-2 h-2" /> {f}
-                                  </span>
-                                ))}
+                            ) : mockupOcrState === "loading" ? (
+                              <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 flex flex-col items-center gap-1.5">
+                                <Loader2 className="w-5 h-5 text-primary animate-spin" />
+                                <p className="text-[8px] font-semibold">Analyse IA en cours…</p>
+                                <p className="text-[7px] text-muted-foreground animate-pulse">Extraction des données</p>
                               </div>
-                              <button onClick={() => mockupFileRef.current?.click()} className="text-[7px] text-emerald-700 dark:text-emerald-400 font-medium hover:underline">
-                                Changer de photo
+                            ) : (
+                              <button
+                                className="w-full rounded-lg border border-dashed border-border hover:border-primary/50 px-3 py-2 flex items-center gap-2 transition-colors group"
+                                onClick={() => mockupFileRef.current?.click()}
+                              >
+                                <div className="w-6 h-6 rounded-lg bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center transition-colors shrink-0">
+                                  <Camera className="w-3 h-3 text-primary" />
+                                </div>
+                                <div className="text-left">
+                                  <p className="text-[8px] font-medium text-foreground">Photographiez votre facture ONEE</p>
+                                  <p className="text-[7px] text-muted-foreground">JPG · PNG · PDF — L'IA pré-remplira vos infos</p>
+                                </div>
                               </button>
-                            </div>
-                          ) : mockupOcrState === "loading" ? (
-                            <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 flex flex-col items-center gap-1.5">
-                              <Loader2 className="w-5 h-5 text-primary animate-spin" />
-                              <p className="text-[8px] font-semibold">Analyse IA en cours…</p>
-                              <p className="text-[7px] text-muted-foreground animate-pulse">Extraction des données</p>
-                            </div>
-                          ) : (
-                            <button
-                              className="w-full rounded-lg border border-dashed border-border hover:border-primary/50 px-3 py-2 flex items-center gap-2 transition-colors group"
-                              onClick={() => mockupFileRef.current?.click()}
-                            >
-                              <div className="w-6 h-6 rounded-lg bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center transition-colors shrink-0">
-                                <Camera className="w-3 h-3 text-primary" />
-                              </div>
-                              <div className="text-left">
-                                <p className="text-[8px] font-medium text-foreground">Photographiez votre facture ONEE</p>
-                                <p className="text-[7px] text-muted-foreground">JPG · PNG · PDF — L'IA pré-remplira vos infos</p>
-                              </div>
-                            </button>
-                          )}
+                            )}
+                          </div>
                         </div>
 
                         {selectedType === "Entreprise" ? (
