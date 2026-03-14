@@ -499,8 +499,8 @@ const Diagnostic = () => {
                     </label>
                   </div>
 
-                  {/* Facture upload with AI OCR */}
-                  {consentAccepted && (
+                  {/* Facture upload with AI OCR – blocked until consent */}
+                  <div className={!consentAccepted ? "opacity-50 pointer-events-none select-none" : ""}>
                     <FactureUpload
                       onDataExtracted={(ocrData) => {
                         setOcrRawData(ocrData as OcrFactureData);
