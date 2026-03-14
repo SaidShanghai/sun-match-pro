@@ -6,13 +6,13 @@ interface SolarboxLogoProps {
 const SolarboxLogo = ({ className = "", size = "md" }: SolarboxLogoProps) => {
   const heights = { sm: 28, md: 36, lg: 48 };
   const h = heights[size];
-  const svgW = h * 3.6;
+  const svgW = h * 3.2;
   const bFontSize = h * 0.85;
   const textFontSize = h * 0.36;
 
   return (
     <svg
-      viewBox="0 0 360 100"
+      viewBox="0 0 300 100"
       width={svgW}
       height={h}
       className={className}
@@ -20,7 +20,7 @@ const SolarboxLogo = ({ className = "", size = "md" }: SolarboxLogoProps) => {
       role="img"
     >
       {/* Sun arc + rays */}
-      <g transform="translate(42, 50)">
+      <g transform="translate(30, 50)">
         {/* Half-circle (sun body) */}
         <path
           d="M 0,-14 A 14,14 0 0,0 0,14"
@@ -62,7 +62,7 @@ const SolarboxLogo = ({ className = "", size = "md" }: SolarboxLogoProps) => {
 
       {/* Bold "B" — premium serif style */}
       <text
-        x="80"
+        x="58"
         y="72"
         fontFamily="'Georgia', 'Times New Roman', serif"
         fontWeight="900"
@@ -76,12 +76,12 @@ const SolarboxLogo = ({ className = "", size = "md" }: SolarboxLogoProps) => {
 
       {/* SOLAR text */}
       <text
-        x="138"
+        x="108"
         y="52"
         fontFamily="system-ui, -apple-system, sans-serif"
         fontWeight="900"
         fontSize={textFontSize}
-        letterSpacing="1.5"
+        letterSpacing="1"
         className="fill-foreground"
         style={{ fill: "var(--foreground, #1a1a1a)" }}
       >
@@ -90,12 +90,12 @@ const SolarboxLogo = ({ className = "", size = "md" }: SolarboxLogoProps) => {
 
       {/* BOX text in orange */}
       <text
-        x="248"
+        x="204"
         y="52"
         fontFamily="system-ui, -apple-system, sans-serif"
         fontWeight="900"
         fontSize={textFontSize}
-        letterSpacing="1.5"
+        letterSpacing="1"
         fill="#F97316"
       >
         BOX
@@ -103,9 +103,9 @@ const SolarboxLogo = ({ className = "", size = "md" }: SolarboxLogoProps) => {
 
       {/* Thin baseline accent */}
       <line
-        x1="138"
+        x1="108"
         y1="60"
-        x2="310"
+        x2="260"
         y2="60"
         stroke="#F97316"
         strokeWidth="1"
