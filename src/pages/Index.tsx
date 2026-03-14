@@ -132,6 +132,7 @@ const Index = () => {
   const { toast } = useToast();
   // OCR mockup state
   const mockupFileRef = useRef<HTMLInputElement>(null);
+  const [mockupConsentAccepted, setMockupConsentAccepted] = useState(false);
   const [mockupOcrState, setMockupOcrState] = useState<"idle" | "loading" | "success">("idle");
   const [mockupOcrFields, setMockupOcrFields] = useState<string[]>([]);
   const [siteMapFullscreen, setSiteMapFullscreen] = useState(true);
