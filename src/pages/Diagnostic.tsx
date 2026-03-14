@@ -130,6 +130,7 @@ const Diagnostic = () => {
   const [solarLoading, setSolarLoading] = useState(false);
   const [solarError, setSolarError] = useState<string | null>(null);
   const [ocrRawData, setOcrRawData] = useState<OcrFactureData | null>(null);
+  const [consentAccepted, setConsentAccepted] = useState(false);
   const { toast } = useToast();
   const [projetPlaceholderIndex, setProjetPlaceholderIndex] = useState(0);
   const [projetPlaceholderVisible, setProjetPlaceholderVisible] = useState(true);
