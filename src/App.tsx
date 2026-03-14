@@ -13,6 +13,8 @@ import Profil from "./pages/Profil";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
+import Privacy from "./pages/Privacy";
+import CGV from "./pages/CGV";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import NosSolutions from "./pages/NosSolutions";
@@ -46,6 +48,8 @@ const App = () => (
             <Route path="/admin" element={<Navigate to="/profil" replace />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/cgv" element={<CGV />} />
             <Route path="/nos-solutions" element={<NosSolutions />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/a-propos" element={<About />} />

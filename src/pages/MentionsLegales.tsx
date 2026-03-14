@@ -1,77 +1,65 @@
+import { usePageMeta } from "@/hooks/usePageMeta";
+import { Link } from "react-router-dom";
 
 const MentionsLegales = () => {
+  usePageMeta({
+    title: "Mentions Légales – SOLARBOX",
+    description: "Mentions légales du site sungpt.ma édité par AFRICACOM SARL, exploitant la marque SOLARBOX.",
+  });
+
   return (
-    <>
-      <main className="flex-1 pt-24 pb-16">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <h1 className="text-3xl font-bold mb-8">Mentions Légales</h1>
+    <main className="flex-1 pt-24 pb-16">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <h1 className="text-3xl font-bold mb-8">Mentions Légales – SOLARBOX</h1>
 
-          <div className="prose prose-sm max-w-none space-y-8 text-foreground/80">
-            <section>
-              <h2 className="text-xl font-semibold text-foreground">1. Éditeur du site</h2>
-              <p>
-                Le site <strong>sungpt.ma</strong> est édité par <strong>SOLARBOX</strong>, plateforme de mise en relation entre particuliers/entreprises et installateurs solaires certifiés au Maroc.
-              </p>
-              <p>Siège social : Casablanca, Maroc</p>
-              <p>Email de contact : contact@sungpt.ma</p>
-            </section>
+        <div className="prose prose-sm max-w-none space-y-8 text-foreground/80">
+          <section>
+            <h2 className="text-xl font-semibold text-foreground">Éditeur du site</h2>
+            <p>
+              Raison sociale : <strong>AFRICACOM SARL</strong><br />
+              Marque exploitée : <strong>SOLARBOX</strong><br />
+              Adresse : 10, rue Liberté, Casablanca, Maroc<br />
+              Email : privacy@sungpt.ma<br />
+              Registre du commerce : Casablanca
+            </p>
+          </section>
 
-            <section>
-              <h2 className="text-xl font-semibold text-foreground">2. Hébergement</h2>
-              <p>
-                Le site est hébergé par <strong>Lovable Cloud</strong> (infrastructure européenne sécurisée).
-              </p>
-            </section>
+          <section>
+            <h2 className="text-xl font-semibold text-foreground">Directeur de la publication</h2>
+            <p>AFRICACOM SARL</p>
+          </section>
 
-            <section>
-              <h2 className="text-xl font-semibold text-foreground">3. Protection des données personnelles</h2>
-              <p>
-                Conformément à la <strong>loi marocaine n° 09-08</strong> relative à la protection des personnes physiques à l'égard du traitement des données à caractère personnel, SOLARBOX s'engage à protéger la vie privée de ses utilisateurs.
-              </p>
-              <h3 className="text-lg font-medium text-foreground mt-4">Données collectées</h3>
-              <ul className="list-disc pl-6 space-y-1">
-                <li>Nom, prénom, email, téléphone (formulaire de devis)</li>
-                <li>Données de consommation énergétique (diagnostic solaire)</li>
-                <li>Localisation géographique (ville, adresse du projet)</li>
-                <li>Cookies techniques et analytiques</li>
-              </ul>
-              <h3 className="text-lg font-medium text-foreground mt-4">Finalité du traitement</h3>
-              <p>
-                Les données sont collectées uniquement pour fournir un diagnostic solaire personnalisé et mettre en relation les utilisateurs avec des installateurs certifiés. Aucune donnée n'est vendue à des tiers.
-              </p>
-              <h3 className="text-lg font-medium text-foreground mt-4">Droits des utilisateurs</h3>
-              <p>
-                Conformément à la loi 09-08, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour exercer ces droits, contactez-nous à <strong>contact@sungpt.ma</strong>.
-              </p>
-              <p>
-                Autorité de contrôle : <strong>CNDP</strong> (Commission Nationale de contrôle de la protection des Données à caractère Personnel) — <a href="https://www.cndp.ma" target="_blank" rel="noopener noreferrer" className="text-primary underline">www.cndp.ma</a>
-              </p>
-            </section>
+          <section>
+            <h2 className="text-xl font-semibold text-foreground">Hébergement</h2>
+            <p>
+              Le site sungpt.ma est hébergé par :<br />
+              Supabase Inc. – Infrastructure AWS, région eu-west-1 (Irlande, Union Européenne)<br />
+              <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" className="text-primary underline">https://supabase.com</a>
+            </p>
+          </section>
 
-            <section>
-              <h2 className="text-xl font-semibold text-foreground">4. Cookies</h2>
-              <p>
-                Le site utilise des cookies essentiels au fonctionnement et des cookies analytiques pour améliorer l'expérience utilisateur. Vous pouvez accepter ou refuser les cookies non essentiels via la bannière affichée lors de votre première visite.
-              </p>
-            </section>
+          <section>
+            <h2 className="text-xl font-semibold text-foreground">Propriété intellectuelle</h2>
+            <p>L'ensemble des contenus publiés sur sungpt.ma (textes, images, interface, algorithmes, logotypes) sont la propriété exclusive d'AFRICACOM SARL et sont protégés par les dispositions du droit marocain relatif à la propriété intellectuelle. Toute reproduction ou représentation, totale ou partielle, sans autorisation écrite préalable d'AFRICACOM SARL est strictement interdite.</p>
+          </section>
 
-            <section>
-              <h2 className="text-xl font-semibold text-foreground">5. Propriété intellectuelle</h2>
-              <p>
-                L'ensemble du contenu du site (textes, images, logos, marques) est protégé par le droit de la propriété intellectuelle. Toute reproduction, même partielle, est interdite sans autorisation écrite préalable de SOLARBOX.
-              </p>
-            </section>
+          <section>
+            <h2 className="text-xl font-semibold text-foreground">Données personnelles</h2>
+            <p>Le traitement des données personnelles des utilisateurs est effectué conformément à la loi marocaine n°09-08 et est décrit dans la <Link to="/privacy" className="text-primary underline">Politique de Confidentialité</Link> accessible à l'adresse : sungpt.ma/privacy</p>
+          </section>
 
-            <section>
-              <h2 className="text-xl font-semibold text-foreground">6. Limitation de responsabilité</h2>
-              <p>
-                SOLARBOX agit en tant que plateforme de mise en relation. Les devis, installations et prestations sont réalisés par les installateurs partenaires, qui sont seuls responsables de la qualité de leurs services. SOLARBOX ne saurait être tenue responsable des dommages directs ou indirects liés à l'utilisation du site ou aux prestations des installateurs.
-              </p>
-            </section>
-          </div>
+          <section>
+            <h2 className="text-xl font-semibold text-foreground">Cookies</h2>
+            <p>Le site utilise uniquement des cookies techniques nécessaires au fonctionnement du service. Aucun cookie de tracking ou publicitaire n'est déposé.</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-foreground">Droit applicable</h2>
+            <p>Le présent site et ses contenus sont soumis au droit marocain. Tout litige relatif à l'utilisation du site relève de la compétence exclusive des juridictions de Casablanca, Maroc.</p>
+          </section>
         </div>
-      </main>
-    </>
+      </div>
+    </main>
   );
 };
 

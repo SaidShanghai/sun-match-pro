@@ -13,6 +13,8 @@ import {
   Home, Building2, Store, Warehouse,
 } from "lucide-react";
 import FactureUpload from "@/components/FactureUpload";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Link } from "react-router-dom";
 import QuotePanel from "@/components/QuotePanel";
 import EligibiliteScreen from "@/components/EligibiliteScreen";
 import GoogleMapPicker from "@/components/GoogleMapPicker";
@@ -128,6 +130,7 @@ const Diagnostic = () => {
   const [solarLoading, setSolarLoading] = useState(false);
   const [solarError, setSolarError] = useState<string | null>(null);
   const [ocrRawData, setOcrRawData] = useState<OcrFactureData | null>(null);
+  const [consentAccepted, setConsentAccepted] = useState(false);
   const { toast } = useToast();
   const [projetPlaceholderIndex, setProjetPlaceholderIndex] = useState(0);
   const [projetPlaceholderVisible, setProjetPlaceholderVisible] = useState(true);
@@ -479,15 +482,28 @@ const Diagnostic = () => {
                     </div>
                   </div>
 
+                  {/* Consent checkbox */}
+                  <div className="flex items-start gap-3 p-4 rounded-xl border border-border bg-muted/30">
+                    <Checkbox
+                      id="consent"
+                      checked={consentAccepted}
+                      onCheckedChange={(checked) => setConsentAccepted(checked === true)}
+                      className="mt-0.5"
+                    />
+                    <label htmlFor="consent" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
+                      J'ai lu et j'accepte les{" "}
+                      <Link to="/cgv" target="_blank" className="text-primary underline font-medium">CGV</Link>
+                      {" "}et la{" "}
+                      <Link to="/privacy" target="_blank" className="text-primary underline font-medium">Politique de Confidentialité</Link>.
+                    </label>
+                  </div>
+
                   {/* Facture upload with AI OCR */}
-                  {(
+                  {consentAccepted && (
                     <FactureUpload
                       onDataExtracted={(ocrData) => {
-                        // Store raw OCR data for PIC
                         setOcrRawData(ocrData as OcrFactureData);
-                        // Auto-fill form fields from OCR
                         if (ocrData.montant_ttc) {
-                          // Estimate annual from period
                           const days = ocrData.periode_jours || 30;
                           const annualAmount = Math.round((ocrData.montant_ttc / days) * 365);
                           setFacture(annualAmount.toLocaleString("fr-FR"));
@@ -498,7 +514,6 @@ const Diagnostic = () => {
                           setConso(annualKwh.toLocaleString("fr-FR"));
                         }
                         if (ocrData.ville) {
-                          // Try to match with our city list
                           const match = villesMaroc.find(v => 
                             v.toLowerCase() === ocrData.ville!.toLowerCase() ||
                             v.toLowerCase().includes(ocrData.ville!.toLowerCase()) ||
