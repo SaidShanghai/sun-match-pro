@@ -80,7 +80,7 @@ const HeroRotatingTitle = ({ entreprise = false, activeIndex }: { entreprise?: b
   const index = activeIndex % words.length;
 
   return (
-    <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
+    <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold leading-tight">
       <span className="block h-[1.2em] relative overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.span
