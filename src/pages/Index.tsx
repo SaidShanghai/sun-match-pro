@@ -232,7 +232,7 @@ const Index = () => {
       <JsonLd schema={homepageSchema} />
 
       {/* Hero */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-16">
+      <section className="relative min-h-[60vh] lg:min-h-[90vh] flex items-center overflow-hidden pt-20 pb-10 lg:pt-16 lg:pb-0">
          <div className="absolute inset-0 bg-background" />
 
         <div className="container mx-auto px-4 relative z-10">
@@ -241,11 +241,11 @@ const Index = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="space-y-8"
+              className="space-y-5 lg:space-y-8"
             >
-              <div className="inline-flex items-center gap-3 px-6 py-3 bg-primary/10 rounded-full">
-                <div className="w-3 h-3 bg-primary rounded-full animate-pulse" />
-                <span className="text-xl md:text-2xl font-semibold">Vous payez trop cher votre électricité ONEE ?</span>
+              <div className="inline-flex items-center gap-2 lg:gap-3 px-4 lg:px-6 py-2 lg:py-3 bg-primary/10 rounded-full">
+                <div className="w-2.5 lg:w-3 h-2.5 lg:h-3 bg-primary rounded-full animate-pulse" />
+                <span className="text-base md:text-xl lg:text-2xl font-semibold">Vous payez trop cher votre électricité ONEE ?</span>
               </div>
 
               <HeroRotatingTitle entreprise={selectedType === "Entreprise"} activeIndex={heroStepIndex} />
