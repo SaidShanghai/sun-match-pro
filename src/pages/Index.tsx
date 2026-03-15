@@ -236,7 +236,7 @@ const Index = () => {
          <div className="absolute inset-0 bg-background" />
 
         <div className="w-full max-w-[1800px] mx-auto px-6 lg:px-16 relative z-10">
-          <div className="grid xl:grid-cols-[1.15fr_auto_0.85fr] gap-10 xl:gap-14 items-center">
+          <div className="grid lg:grid-cols-[1.15fr_auto_0.85fr] gap-10 lg:gap-14 items-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
