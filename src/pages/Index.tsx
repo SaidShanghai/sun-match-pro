@@ -322,8 +322,8 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="hidden lg:block"
             >
-              <div className="relative mx-auto w-[360px] bg-foreground rounded-[3rem] p-3 shadow-2xl">
-                <div className="w-full bg-background rounded-[2.5rem] overflow-hidden flex flex-col h-[696px]">
+              <div className="relative mx-auto w-[380px] 2xl:w-[410px] bg-foreground rounded-[3rem] p-3 shadow-2xl">
+                <div className="w-full bg-background rounded-[2.5rem] overflow-hidden flex flex-col h-[730px] 2xl:h-[770px]">
                   {/* Notch */}
                   <div className="flex justify-center pt-3 pb-1">
                     <div className="w-24 h-4 bg-muted rounded-full" />
