@@ -80,7 +80,7 @@ const HeroRotatingTitle = ({ entreprise = false, activeIndex }: { entreprise?: b
   const index = activeIndex % words.length;
 
   return (
-    <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
+    <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold leading-tight">
       <span className="block h-[1.2em] relative overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.span
@@ -232,7 +232,7 @@ const Index = () => {
       <JsonLd schema={homepageSchema} />
 
       {/* Hero */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-16">
+      <section className="relative min-h-[60vh] lg:min-h-[90vh] flex items-center overflow-hidden pt-20 pb-10 lg:pt-16 lg:pb-0">
          <div className="absolute inset-0 bg-background" />
 
         <div className="container mx-auto px-4 relative z-10">
@@ -241,36 +241,36 @@ const Index = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="space-y-8"
+              className="space-y-5 lg:space-y-8"
             >
-              <div className="inline-flex items-center gap-3 px-6 py-3 bg-primary/10 rounded-full">
-                <div className="w-3 h-3 bg-primary rounded-full animate-pulse" />
-                <span className="text-xl md:text-2xl font-semibold">Vous payez trop cher votre électricité ONEE ?</span>
+              <div className="inline-flex items-center gap-2 lg:gap-3 px-4 lg:px-6 py-2 lg:py-3 bg-primary/10 rounded-full">
+                <div className="w-2.5 lg:w-3 h-2.5 lg:h-3 bg-primary rounded-full animate-pulse" />
+                <span className="text-base md:text-xl lg:text-2xl font-semibold">Vous payez trop cher votre électricité ONEE ?</span>
               </div>
 
               <HeroRotatingTitle entreprise={selectedType === "Entreprise"} activeIndex={heroStepIndex} />
 
-              <div className="max-w-xl text-center space-y-3">
-                <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
+              <div className="max-w-xl space-y-2 lg:space-y-3">
+                <p className="text-base md:text-lg lg:text-xl text-foreground/80 leading-relaxed">
                   Uploadez votre facture. Notre IA analyse votre consommation et génère votre plan solaire personnalisé&nbsp;: puissance idéale, économies estimées et retour sur investissement.
                 </p>
-                <p className="text-lg md:text-xl font-bold text-foreground">
+                <p className="text-base md:text-lg lg:text-xl font-bold text-foreground">
                   En moins de 2 minutes. Gratuit. Sans engagement.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                   asChild
                   size="lg"
-                  className="group h-14 px-8 text-base text-black animate-[pulse_1.5s_ease-in-out_infinite] hover:animate-none"
+                  className="group h-12 lg:h-14 px-6 lg:px-8 text-sm lg:text-base text-black animate-[pulse_1.5s_ease-in-out_infinite] hover:animate-none"
                 >
                   <Link to="/diagnostic">
                     VOIR MES ÉCONOMIES
                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-14 px-8 text-base">
+                <Button asChild variant="outline" size="lg" className="h-12 lg:h-14 px-6 lg:px-8 text-sm lg:text-base">
                   <Link to="/diagnostic">
                     Comment ça marche ?
                   </Link>
@@ -278,37 +278,37 @@ const Index = () => {
               </div>
 
               {/* Trust indicators */}
-              <div className="flex items-center gap-8 pt-8 border-t border-border">
+              <div className="flex items-center gap-4 lg:gap-8 pt-6 lg:pt-8 border-t border-border">
                 <div className="text-center">
-                  <AnimatedCounter end={STATS.diagnostics.value} suffix={STATS.diagnostics.suffix} className="text-3xl font-bold" />
-                  <div className="text-sm text-muted-foreground">{STATS.diagnostics.label}</div>
+                  <AnimatedCounter end={STATS.diagnostics.value} suffix={STATS.diagnostics.suffix} className="text-2xl lg:text-3xl font-bold" />
+                  <div className="text-xs lg:text-sm text-muted-foreground">{STATS.diagnostics.label}</div>
                 </div>
                 <div className="text-center">
-                  <AnimatedCounter end={STATS.installateurs.value} suffix={STATS.installateurs.suffix} className="text-3xl font-bold" />
-                  <div className="text-sm text-muted-foreground">{STATS.installateurs.label}</div>
+                  <AnimatedCounter end={STATS.installateurs.value} suffix={STATS.installateurs.suffix} className="text-2xl lg:text-3xl font-bold" />
+                  <div className="text-xs lg:text-sm text-muted-foreground">{STATS.installateurs.label}</div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Star className="w-5 h-5 text-warning fill-warning" />
-                  <AnimatedCounter end={STATS.rating.value} decimals={STATS.rating.decimals} suffix={STATS.rating.suffix} className="text-3xl font-bold" />
+                  <Star className="w-4 lg:w-5 h-4 lg:h-5 text-warning fill-warning" />
+                  <AnimatedCounter end={STATS.rating.value} decimals={STATS.rating.decimals} suffix={STATS.rating.suffix} className="text-2xl lg:text-3xl font-bold" />
                 </div>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-2 lg:gap-3">
                 <button
                   onClick={() => {
                     const el = document.getElementById("diagnostic");
                     if (el) el.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className="flex items-center gap-2 h-14 px-8 text-base font-semibold bg-black text-white rounded-md hover:scale-105 transition-transform"
+                  className="flex items-center gap-2 h-11 lg:h-14 px-5 lg:px-8 text-sm lg:text-base font-semibold bg-foreground text-background rounded-md hover:scale-105 transition-transform"
                 >
-                  <span className="w-2 h-2 bg-white rounded-full shrink-0" />
+                  <span className="w-2 h-2 bg-background rounded-full shrink-0" />
                   PARTICULIERS
                 </button>
                 <button
                   onClick={handleAideCTA}
-                  className="flex items-center gap-2 h-14 px-8 text-base font-semibold bg-black text-white rounded-md hover:scale-105 transition-transform"
+                  className="flex items-center gap-2 h-11 lg:h-14 px-5 lg:px-8 text-sm lg:text-base font-semibold bg-foreground text-background rounded-md hover:scale-105 transition-transform"
                 >
-                  <span className="w-2 h-2 bg-white rounded-full shrink-0" />
+                  <span className="w-2 h-2 bg-background rounded-full shrink-0" />
                   ENTREPRISES
                 </button>
               </div>
