@@ -235,8 +235,8 @@ const Index = () => {
       <section className="relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden">
          <div className="absolute inset-0 bg-background" />
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid lg:grid-cols-[1.2fr_auto_0.8fr] gap-6 items-center">
+        <div className="w-full max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10">
+          <div className="grid lg:grid-cols-[1.2fr_auto_0.8fr] gap-10 items-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
