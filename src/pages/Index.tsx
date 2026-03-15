@@ -259,18 +259,18 @@ const Index = () => {
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                   asChild
                   size="lg"
-                  className="group h-14 px-8 text-base text-black animate-[pulse_1.5s_ease-in-out_infinite] hover:animate-none"
+                  className="group h-12 lg:h-14 px-6 lg:px-8 text-sm lg:text-base text-black animate-[pulse_1.5s_ease-in-out_infinite] hover:animate-none"
                 >
                   <Link to="/diagnostic">
                     VOIR MES ÉCONOMIES
                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-14 px-8 text-base">
+                <Button asChild variant="outline" size="lg" className="h-12 lg:h-14 px-6 lg:px-8 text-sm lg:text-base">
                   <Link to="/diagnostic">
                     Comment ça marche ?
                   </Link>
